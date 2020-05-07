@@ -1,4 +1,4 @@
-open FFS4;
+open FFS4Delta;
 open Sidewinder.Theia;
 
 let hSeq = (~gap=0., nodes) => seq(~nodes, ~linkRender=None, ~gap, ~direction=LeftRight, ());

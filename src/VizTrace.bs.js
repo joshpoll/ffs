@@ -8,10 +8,9 @@ var LCA$Sidewinder = require("sidewinder/src/LCA.bs.js");
 var Debug$Sidewinder = require("sidewinder/src/Debug.bs.js");
 var Layout$Sidewinder = require("sidewinder/src/Layout.bs.js");
 var Render$Sidewinder = require("sidewinder/src/Render.bs.js");
-var Rectangle$Sidewinder = require("sidewinder/src/Rectangle.bs.js");
 var RenderLinks$Sidewinder = require("sidewinder/src/RenderLinks.bs.js");
-var FFS4$ReasonReactExamples = require("./FFS4.bs.js");
-var FFS4Viz$ReasonReactExamples = require("./FFS4Viz.bs.js");
+var FFS4Delta$ReasonReactExamples = require("./FFS4Delta.bs.js");
+var FFS4DeltaViz$ReasonReactExamples = require("./FFS4DeltaViz.bs.js");
 
 var leftButtonStyle = {
   width: "48px",
@@ -33,7 +32,7 @@ function render($staropt$star, n) {
 }
 
 var initialState_trace = /* :: */[
-  FFS4$ReasonReactExamples.loading,
+  FFS4Delta$ReasonReactExamples.loading,
   /* [] */0
 ];
 
@@ -75,16 +74,12 @@ function VizTrace(Props) {
   var dispatch = match$1[1];
   var state = match$1[0];
   React.useEffect((function () {
-          Curry._1(dispatch, /* Trace */[FFS4$ReasonReactExamples.interpretTrace(program)]);
+          Curry._1(dispatch, /* Trace */[FFS4Delta$ReasonReactExamples.interpretTrace(program)]);
           return ;
         }), ([]));
   var trace = state.trace;
-  var swTrace = List.map(FFS4Viz$ReasonReactExamples.vizMachineState, trace);
+  var swTrace = List.map(FFS4DeltaViz$ReasonReactExamples.vizMachineState, trace);
   var initState = render(false, List.nth(swTrace, state.pos));
-  var width = Rectangle$Sidewinder.width(initState.bbox);
-  var height = Rectangle$Sidewinder.height(initState.bbox);
-  var xOffset = Rectangle$Sidewinder.x1(initState.bbox);
-  var yOffset = Rectangle$Sidewinder.y1(initState.bbox);
   return React.createElement("div", undefined, React.createElement("div", undefined, "state: ", String(state.pos)), React.createElement("button", {
                   style: leftButtonStyle,
                   onClick: (function (_event) {
@@ -96,12 +91,12 @@ function VizTrace(Props) {
                       return Curry._1(dispatch, /* Increment */0);
                     })
                 }, "->"), React.createElement("svg", {
-                  height: (height + padding * 2).toString(),
-                  width: (width + padding * 2).toString(),
+                  height: (300 + padding * 2).toString(),
+                  width: (1000 + padding * 2).toString(),
                   xmlns: "http://www.w3.org/2000/svg"
                 }, React.createElement("g", {
-                      transform: "translate(" + ((-xOffset + padding).toString() + (", " + ((-yOffset + padding).toString() + ")")))
-                    }, initState.rendered)));
+                      transform: "translate(" + ((0 + padding).toString() + (", " + ((100 + padding).toString() + ")")))
+                    }, initState)));
 }
 
 var make = VizTrace;
