@@ -9,8 +9,8 @@ var Debug$Sidewinder = require("sidewinder/src/Debug.bs.js");
 var Layout$Sidewinder = require("sidewinder/src/Layout.bs.js");
 var Render$Sidewinder = require("sidewinder/src/Render.bs.js");
 var RenderLinks$Sidewinder = require("sidewinder/src/RenderLinks.bs.js");
-var FFS4Delta$ReasonReactExamples = require("./FFS4Delta.bs.js");
-var FFS4DeltaViz$ReasonReactExamples = require("./FFS4DeltaViz.bs.js");
+var FFS4$ReasonReactExamples = require("./FFS4.bs.js");
+var FFS4Viz$ReasonReactExamples = require("./FFS4Viz.bs.js");
 
 var leftButtonStyle = {
   width: "48px",
@@ -32,7 +32,7 @@ function render($staropt$star, n) {
 }
 
 var initialState_trace = /* :: */[
-  FFS4Delta$ReasonReactExamples.loading,
+  FFS4$ReasonReactExamples.loading,
   /* [] */0
 ];
 
@@ -74,11 +74,11 @@ function VizTrace(Props) {
   var dispatch = match$1[1];
   var state = match$1[0];
   React.useEffect((function () {
-          Curry._1(dispatch, /* Trace */[FFS4Delta$ReasonReactExamples.interpretTrace(program)]);
+          Curry._1(dispatch, /* Trace */[FFS4$ReasonReactExamples.interpretTrace(program)]);
           return ;
         }), ([]));
   var trace = state.trace;
-  var swTrace = List.map(FFS4DeltaViz$ReasonReactExamples.vizMachineState, trace);
+  var swTrace = List.map(FFS4Viz$ReasonReactExamples.vizMachineState, trace);
   var initState = render(false, List.nth(swTrace, state.pos));
   return React.createElement("div", undefined, React.createElement("div", undefined, "state: ", String(state.pos)), React.createElement("button", {
                   style: leftButtonStyle,

@@ -24,16 +24,16 @@ let render = (~debug=false, n) =>
 
 type state = {
   pos: int,
-  trace: list(FFS4Delta.config),
+  trace: list(FFS4.config),
 };
 
 type action =
   | Increment
   | Decrement
-  | Trace(list(FFS4Delta.config))
+  | Trace(list(FFS4.config))
   | Error;
 
-let initialState = {pos: 0, trace: [FFS4Delta.loading] /* , traceProgress: LoadingTrace */};
+let initialState = {pos: 0, trace: [FFS4.loading] /* , traceProgress: LoadingTrace */};
 
 let reducer = (state, action) => {
   switch (action) {
@@ -51,7 +51,7 @@ let make = (~padding=10., ~program) => {
   // Notice that instead of `useEffect`, we have `useEffect0`. See
   // reasonml.github.io/reason-react/docs/en/components#hooks for more info
   React.useEffect0(() => {
-    dispatch(Trace(FFS4Delta.interpretTrace(program)));
+    dispatch(Trace(FFS4.interpretTrace(program)));
 
     // Returning None, instead of Some(() => ...), means we don't have any
     // cleanup to do before unmounting. That's not 100% true. We should
@@ -65,7 +65,7 @@ let make = (~padding=10., ~program) => {
 
   switch (state.trace) {
   | trace =>
-    let swTrace = trace |> List.map(FFS4DeltaViz.vizMachineState);
+    let swTrace = trace |> List.map(FFS4Viz.vizMachineState);
     /* |> List.map(Sidewinder.Transform.hide("idStatus"))
        |> List.map((Some(x)) => x)
        |> List.map(Sidewinder.Transform.denest("::", "::")); */
