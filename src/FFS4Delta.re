@@ -78,7 +78,7 @@
    (frame : frame)       /- f -/
    (stack : list ffs2.frame)  /- s -/ */
 
-type uid = int; /* only unique within a structure, not across them */
+type uid = string; /* only unique within a structure, not across them */
 let counter = ref(0);
 
 let readAndUpdateCounter = () => {
@@ -86,7 +86,7 @@ let readAndUpdateCounter = () => {
   counter^ - 1;
 };
 
-let rauc = readAndUpdateCounter;
+let rauc = () => readAndUpdateCounter() |> string_of_int;
 
 type vid = (uid, string);
 

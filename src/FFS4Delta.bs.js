@@ -16,23 +16,27 @@ function readAndUpdateCounter(param) {
   return counter.contents - 1 | 0;
 }
 
+function rauc(param) {
+  return String(readAndUpdateCounter(/* () */0));
+}
+
 function vid(x) {
   return /* tuple */[
-          readAndUpdateCounter(/* () */0),
+          String(readAndUpdateCounter(/* () */0)),
           x
         ];
 }
 
 function int_uid(n) {
   return /* tuple */[
-          readAndUpdateCounter(/* () */0),
+          String(readAndUpdateCounter(/* () */0)),
           n
         ];
 }
 
 function lambda(vid, exp_uid) {
   return {
-          uid: readAndUpdateCounter(/* () */0),
+          uid: String(readAndUpdateCounter(/* () */0)),
           vid: vid,
           exp_uid: exp_uid
         };
@@ -40,28 +44,28 @@ function lambda(vid, exp_uid) {
 
 function aexp_uid(ae) {
   return /* tuple */[
-          readAndUpdateCounter(/* () */0),
+          String(readAndUpdateCounter(/* () */0)),
           ae
         ];
 }
 
 function exp_uid(e) {
   return /* tuple */[
-          readAndUpdateCounter(/* () */0),
+          String(readAndUpdateCounter(/* () */0)),
           e
         ];
 }
 
 function value_uid(v) {
   return /* tuple */[
-          readAndUpdateCounter(/* () */0),
+          String(readAndUpdateCounter(/* () */0)),
           v
         ];
 }
 
 function binding(vid, value_uid) {
   return {
-          uid: readAndUpdateCounter(/* () */0),
+          uid: String(readAndUpdateCounter(/* () */0)),
           vid: vid,
           value_uid: value_uid
         };
@@ -69,35 +73,35 @@ function binding(vid, value_uid) {
 
 function env_uid(bs) {
   return /* tuple */[
-          readAndUpdateCounter(/* () */0),
+          String(readAndUpdateCounter(/* () */0)),
           bs
         ];
 }
 
 function ctxt_uid(c) {
   return /* tuple */[
-          readAndUpdateCounter(/* () */0),
+          String(readAndUpdateCounter(/* () */0)),
           c
         ];
 }
 
 function focus_uid(f) {
   return /* tuple */[
-          readAndUpdateCounter(/* () */0),
+          String(readAndUpdateCounter(/* () */0)),
           f
         ];
 }
 
 function ctxts_uid(cs) {
   return /* tuple */[
-          readAndUpdateCounter(/* () */0),
+          String(readAndUpdateCounter(/* () */0)),
           cs
         ];
 }
 
 function frame(ctxts_uid, env_uid) {
   return {
-          uid: readAndUpdateCounter(/* () */0),
+          uid: String(readAndUpdateCounter(/* () */0)),
           ctxts_uid: ctxts_uid,
           env_uid: env_uid
         };
@@ -105,14 +109,14 @@ function frame(ctxts_uid, env_uid) {
 
 function stack_uid(fs) {
   return /* tuple */[
-          readAndUpdateCounter(/* () */0),
+          String(readAndUpdateCounter(/* () */0)),
           fs
         ];
 }
 
 function config(focus_uid, frame, stack_uid) {
   return {
-          uid: readAndUpdateCounter(/* () */0),
+          uid: String(readAndUpdateCounter(/* () */0)),
           focus_uid: focus_uid,
           frame: frame,
           stack_uid: stack_uid
@@ -127,7 +131,7 @@ function lookup(x, _env) {
       var match = env_val[0];
       var env_uid = env[0];
       if (x[1] === match.vid[1]) {
-        var fresh = readAndUpdateCounter(/* () */0);
+        var fresh = String(readAndUpdateCounter(/* () */0));
         return /* tuple */[
                 /* tuple */[
                   fresh,
@@ -190,7 +194,7 @@ function step(c) {
                 var match$8 = match$7[0];
                 return /* tuple */[
                         config(/* tuple */[
-                              readAndUpdateCounter(/* () */0),
+                              String(readAndUpdateCounter(/* () */0)),
                               /* Value */Block.__(2, [/* tuple */[
                                     match$8[0],
                                     match$8[1]
@@ -254,13 +258,13 @@ function step(c) {
               var f_uid = f[0];
               return /* tuple */[
                       config(/* tuple */[
-                            readAndUpdateCounter(/* () */0),
+                            String(readAndUpdateCounter(/* () */0)),
                             /* AExp */Block.__(0, [f])
                           ], frame(/* tuple */[
-                                readAndUpdateCounter(/* () */0),
+                                String(readAndUpdateCounter(/* () */0)),
                                 /* Ctxt */[
                                   /* tuple */[
-                                    readAndUpdateCounter(/* () */0),
+                                    String(readAndUpdateCounter(/* () */0)),
                                     /* AppL */Block.__(0, [
                                         /* () */0,
                                         x
@@ -330,12 +334,12 @@ function step(c) {
               var ctxts_uid$1 = match$13[0];
               var l = match$1[0];
               var l_uid = l.uid;
-              var env_uid2 = readAndUpdateCounter(/* () */0);
+              var env_uid2 = String(readAndUpdateCounter(/* () */0));
               return /* tuple */[
                       config(/* tuple */[
-                            readAndUpdateCounter(/* () */0),
+                            String(readAndUpdateCounter(/* () */0)),
                             /* Value */Block.__(2, [/* tuple */[
-                                  readAndUpdateCounter(/* () */0),
+                                  String(readAndUpdateCounter(/* () */0)),
                                   /* Clo */Block.__(1, [
                                       l,
                                       /* tuple */[
@@ -406,12 +410,12 @@ function step(c) {
               var f_uid$1 = f$1.uid;
               var s_uid$1 = s$1[0];
               var f$2 = /* Value */Block.__(2, [/* tuple */[
-                    readAndUpdateCounter(/* () */0),
+                    String(readAndUpdateCounter(/* () */0)),
                     /* VNum */Block.__(0, [n])
                   ]]);
               return /* tuple */[
                       config(/* tuple */[
-                            readAndUpdateCounter(/* () */0),
+                            String(readAndUpdateCounter(/* () */0)),
                             f$2
                           ], f$1, s$1),
                       /* tuple */[
@@ -459,7 +463,7 @@ function step(c) {
               var x$1 = match$1[0];
               var x_uid$1 = x$1[0];
               var cs_000 = /* tuple */[
-                readAndUpdateCounter(/* () */0),
+                String(readAndUpdateCounter(/* () */0)),
                 /* AddL */Block.__(3, [
                     /* () */0,
                     y
@@ -471,10 +475,10 @@ function step(c) {
               ];
               return /* tuple */[
                       config(/* tuple */[
-                            readAndUpdateCounter(/* () */0),
+                            String(readAndUpdateCounter(/* () */0)),
                             /* AExp */Block.__(0, [x$1])
                           ], frame(/* tuple */[
-                                readAndUpdateCounter(/* () */0),
+                                String(readAndUpdateCounter(/* () */0)),
                                 cs
                               ], en), s$2),
                       /* tuple */[
@@ -536,7 +540,7 @@ function step(c) {
               var e = match$1[0];
               var e_uid = e[0];
               var s$3 = c.stack_uid;
-              var en_uid2 = readAndUpdateCounter(/* () */0);
+              var en_uid2 = String(readAndUpdateCounter(/* () */0));
               var s_uid$3 = s$3[0];
               var fs_000 = frame(c$3, /* tuple */[
                     en_uid2,
@@ -548,13 +552,13 @@ function step(c) {
               ];
               return /* tuple */[
                       config(/* tuple */[
-                            readAndUpdateCounter(/* () */0),
+                            String(readAndUpdateCounter(/* () */0)),
                             /* Exp */Block.__(1, [e])
                           ], frame(/* tuple */[
-                                readAndUpdateCounter(/* () */0),
+                                String(readAndUpdateCounter(/* () */0)),
                                 /* Empty */0
                               ], en$1), /* tuple */[
-                            readAndUpdateCounter(/* () */0),
+                            String(readAndUpdateCounter(/* () */0)),
                             fs
                           ]),
                       /* tuple */[
@@ -620,7 +624,7 @@ function step(c) {
           var x$2 = match$16[0];
           var x_uid$2 = x$2[0];
           var cs_000$1 = /* tuple */[
-            readAndUpdateCounter(/* () */0),
+            String(readAndUpdateCounter(/* () */0)),
             /* LetL */Block.__(2, [
                 x$2,
                 /* () */0,
@@ -633,10 +637,10 @@ function step(c) {
           ];
           return /* tuple */[
                   config(/* tuple */[
-                        readAndUpdateCounter(/* () */0),
+                        String(readAndUpdateCounter(/* () */0)),
                         /* AExp */Block.__(0, [ae1])
                       ], frame(/* tuple */[
-                            readAndUpdateCounter(/* () */0),
+                            String(readAndUpdateCounter(/* () */0)),
                             cs$1
                           ], env_uid$3), stack_uid$2),
                   /* tuple */[
@@ -707,7 +711,7 @@ function step(c) {
           var s_uid$5 = s$4[0];
           return /* tuple */[
                   config(/* tuple */[
-                        readAndUpdateCounter(/* () */0),
+                        String(readAndUpdateCounter(/* () */0)),
                         /* AExp */Block.__(0, [a])
                       ], f$3, s$4),
                   /* tuple */[
@@ -762,7 +766,7 @@ function step(c) {
                 var x_uid$3 = x$3[0];
                 var v_uid = v[0];
                 var cs_000$2 = /* tuple */[
-                  readAndUpdateCounter(/* () */0),
+                  String(readAndUpdateCounter(/* () */0)),
                   /* AppR */Block.__(1, [
                       v,
                       /* () */0
@@ -774,10 +778,10 @@ function step(c) {
                 ];
                 return /* tuple */[
                         config(/* tuple */[
-                              readAndUpdateCounter(/* () */0),
+                              String(readAndUpdateCounter(/* () */0)),
                               /* AExp */Block.__(0, [x$3])
                             ], frame(/* tuple */[
-                                  readAndUpdateCounter(/* () */0),
+                                  String(readAndUpdateCounter(/* () */0)),
                                   cs$2
                                 ], env$1), s$5),
                         /* tuple */[
@@ -859,16 +863,16 @@ function step(c) {
                   ];
                   return /* tuple */[
                           config(/* tuple */[
-                                readAndUpdateCounter(/* () */0),
+                                String(readAndUpdateCounter(/* () */0)),
                                 /* Exp */Block.__(1, [e$1])
                               ], frame(/* tuple */[
-                                    readAndUpdateCounter(/* () */0),
+                                    String(readAndUpdateCounter(/* () */0)),
                                     /* Empty */0
                                   ], /* tuple */[
-                                    readAndUpdateCounter(/* () */0),
+                                    String(readAndUpdateCounter(/* () */0)),
                                     bs
                                   ]), /* tuple */[
-                                readAndUpdateCounter(/* () */0),
+                                String(readAndUpdateCounter(/* () */0)),
                                 fs$1
                               ]),
                           /* tuple */[
@@ -961,10 +965,10 @@ function step(c) {
                 ];
                 return /* tuple */[
                         config(/* tuple */[
-                              readAndUpdateCounter(/* () */0),
+                              String(readAndUpdateCounter(/* () */0)),
                               /* Exp */Block.__(1, [e2$1])
                             ], frame(c$7, /* tuple */[
-                                  readAndUpdateCounter(/* () */0),
+                                  String(readAndUpdateCounter(/* () */0)),
                                   bs$1
                                 ]), s$7),
                         /* tuple */[
@@ -1037,7 +1041,7 @@ function step(c) {
                 var y_uid$1 = y$1[0];
                 var v_uid$3 = v[0];
                 var cs_000$3 = /* tuple */[
-                  readAndUpdateCounter(/* () */0),
+                  String(readAndUpdateCounter(/* () */0)),
                   /* AddR */Block.__(4, [
                       v,
                       /* () */0
@@ -1049,10 +1053,10 @@ function step(c) {
                 ];
                 return /* tuple */[
                         config(/* tuple */[
-                              readAndUpdateCounter(/* () */0),
+                              String(readAndUpdateCounter(/* () */0)),
                               /* AExp */Block.__(0, [y$1])
                             ], frame(/* tuple */[
-                                  readAndUpdateCounter(/* () */0),
+                                  String(readAndUpdateCounter(/* () */0)),
                                   cs$3
                                 ], en$3), s$8),
                         /* tuple */[
@@ -1120,13 +1124,13 @@ function step(c) {
                     var s$9 = c.stack_uid;
                     var en$4 = match$24.env_uid;
                     var c$9 = match$25[1];
-                    var z_uid = readAndUpdateCounter(/* () */0);
+                    var z_uid = String(readAndUpdateCounter(/* () */0));
                     var z_val = x$6[1] + y$2[1] | 0;
                     var s_uid$10 = s$9[0];
                     var en_uid$6 = en$4[0];
                     var c_uid$8 = c$9[0];
                     var f$4 = /* Value */Block.__(2, [/* tuple */[
-                          readAndUpdateCounter(/* () */0),
+                          String(readAndUpdateCounter(/* () */0)),
                           /* VNum */Block.__(0, [/* tuple */[
                                 z_uid,
                                 z_val
@@ -1134,7 +1138,7 @@ function step(c) {
                         ]]);
                     return /* tuple */[
                             config(/* tuple */[
-                                  readAndUpdateCounter(/* () */0),
+                                  String(readAndUpdateCounter(/* () */0)),
                                   f$4
                                 ], frame(c$9, en$4), s$9),
                             /* tuple */[
@@ -1201,7 +1205,7 @@ function step(c) {
             var s_uid$11 = s$10[0];
             return /* tuple */[
                     config(/* tuple */[
-                          readAndUpdateCounter(/* () */0),
+                          String(readAndUpdateCounter(/* () */0)),
                           /* Value */Block.__(2, [v])
                         ], f$5, s$10),
                     /* tuple */[
@@ -1252,21 +1256,21 @@ function step(c) {
 
 function vidToUID(v) {
   return /* tuple */[
-          readAndUpdateCounter(/* () */0),
+          String(readAndUpdateCounter(/* () */0)),
           v
         ];
 }
 
 function intToUID(n) {
   return /* tuple */[
-          readAndUpdateCounter(/* () */0),
+          String(readAndUpdateCounter(/* () */0)),
           n
         ];
 }
 
 function lambdaToUID(param) {
   return lambda(/* tuple */[
-              readAndUpdateCounter(/* () */0),
+              String(readAndUpdateCounter(/* () */0)),
               param.vid
             ], expToUID(param.exp));
 }
@@ -1276,7 +1280,7 @@ function aexpToUID(ae) {
   switch (ae.tag | 0) {
     case /* Var */0 :
         ae$1 = /* Var */Block.__(0, [/* tuple */[
-              readAndUpdateCounter(/* () */0),
+              String(readAndUpdateCounter(/* () */0)),
               ae[0]
             ]]);
         break;
@@ -1291,7 +1295,7 @@ function aexpToUID(ae) {
         break;
     case /* Num */3 :
         ae$1 = /* Num */Block.__(3, [/* tuple */[
-              readAndUpdateCounter(/* () */0),
+              String(readAndUpdateCounter(/* () */0)),
               ae[0]
             ]]);
         break;
@@ -1307,7 +1311,7 @@ function aexpToUID(ae) {
     
   }
   return /* tuple */[
-          readAndUpdateCounter(/* () */0),
+          String(readAndUpdateCounter(/* () */0)),
           ae$1
         ];
 }
@@ -1316,14 +1320,14 @@ function expToUID(e) {
   var e$1;
   e$1 = e.tag ? /* Let */Block.__(1, [
         /* tuple */[
-          readAndUpdateCounter(/* () */0),
+          String(readAndUpdateCounter(/* () */0)),
           e[0]
         ],
         aexpToUID(e[1]),
         expToUID(e[2])
       ]) : /* Lift */Block.__(0, [aexpToUID(e[0])]);
   return /* tuple */[
-          readAndUpdateCounter(/* () */0),
+          String(readAndUpdateCounter(/* () */0)),
           e$1
         ];
 }
@@ -1334,18 +1338,18 @@ function valueToUID(v) {
         lambdaToUID(v[0]),
         envToUID(v[1])
       ]) : /* VNum */Block.__(0, [/* tuple */[
-          readAndUpdateCounter(/* () */0),
+          String(readAndUpdateCounter(/* () */0)),
           v[0]
         ]]);
   return /* tuple */[
-          readAndUpdateCounter(/* () */0),
+          String(readAndUpdateCounter(/* () */0)),
           v$1
         ];
 }
 
 function bindingToUID(param) {
   return binding(/* tuple */[
-              readAndUpdateCounter(/* () */0),
+              String(readAndUpdateCounter(/* () */0)),
               param.vid
             ], valueToUID(param.value));
 }
@@ -1356,7 +1360,7 @@ function envToUID(e) {
       envToUID(e[1])
     ] : /* Empty */0;
   return /* tuple */[
-          readAndUpdateCounter(/* () */0),
+          String(readAndUpdateCounter(/* () */0)),
           bs
         ];
 }
@@ -1379,7 +1383,7 @@ function ctxtToUID(c) {
     case /* LetL */2 :
         c$1 = /* LetL */Block.__(2, [
             /* tuple */[
-              readAndUpdateCounter(/* () */0),
+              String(readAndUpdateCounter(/* () */0)),
               c[0]
             ],
             /* () */0,
@@ -1401,7 +1405,7 @@ function ctxtToUID(c) {
     
   }
   return /* tuple */[
-          readAndUpdateCounter(/* () */0),
+          String(readAndUpdateCounter(/* () */0)),
           c$1
         ];
 }
@@ -1412,7 +1416,7 @@ function ctxtsToUID(cs) {
       ctxtsToUID(cs[1])
     ] : /* Empty */0;
   return /* tuple */[
-          readAndUpdateCounter(/* () */0),
+          String(readAndUpdateCounter(/* () */0)),
           cs$1
         ];
 }
@@ -1432,7 +1436,7 @@ function focusToUID(f) {
     
   }
   return /* tuple */[
-          readAndUpdateCounter(/* () */0),
+          String(readAndUpdateCounter(/* () */0)),
           f$1
         ];
 }
@@ -1447,7 +1451,7 @@ function stackToUID(s) {
       stackToUID(s[1])
     ] : /* Empty */0;
   return /* tuple */[
-          readAndUpdateCounter(/* () */0),
+          String(readAndUpdateCounter(/* () */0)),
           fs
         ];
 }
@@ -1628,16 +1632,16 @@ function configFromUID(param) {
 function inject(e) {
   var f = /* Exp */Block.__(1, [expToUID(e)]);
   return config(/* tuple */[
-              readAndUpdateCounter(/* () */0),
+              String(readAndUpdateCounter(/* () */0)),
               f
             ], frame(/* tuple */[
-                  readAndUpdateCounter(/* () */0),
+                  String(readAndUpdateCounter(/* () */0)),
                   /* Empty */0
                 ], /* tuple */[
-                  readAndUpdateCounter(/* () */0),
+                  String(readAndUpdateCounter(/* () */0)),
                   /* Empty */0
                 ]), /* tuple */[
-              readAndUpdateCounter(/* () */0),
+              String(readAndUpdateCounter(/* () */0)),
               /* Empty */0
             ]);
 }
@@ -1734,8 +1738,6 @@ function interpret(p) {
 }
 
 var loading = inject(/* Lift */Block.__(0, [/* Var */Block.__(0, ["loading..."])]));
-
-var rauc = readAndUpdateCounter;
 
 var advance = step;
 

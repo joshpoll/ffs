@@ -9,23 +9,23 @@ var Rectangle$Sidewinder = require("sidewinder/src/Rectangle.bs.js");
 
 function hSeq($staropt$star, nodes) {
   var gap = $staropt$star !== undefined ? $staropt$star : 0;
-  return Theia$Sidewinder.seq(undefined, nodes, undefined, gap, /* LeftRight */2, /* () */0);
+  return Theia$Sidewinder.seq(undefined, undefined, undefined, nodes, undefined, gap, /* LeftRight */2, /* () */0);
 }
 
 function vSeq($staropt$star, nodes) {
   var gap = $staropt$star !== undefined ? $staropt$star : 0;
-  return Theia$Sidewinder.seq(undefined, nodes, undefined, gap, /* UpDown */0, /* () */0);
+  return Theia$Sidewinder.seq(undefined, undefined, undefined, nodes, undefined, gap, /* UpDown */0, /* () */0);
 }
 
 function value(name, node) {
-  return Theia$Sidewinder.box(/* :: */[
+  return Theia$Sidewinder.box(undefined, undefined, /* :: */[
               name,
               /* [] */0
             ], 5, 5, node, /* [] */0, /* () */0);
 }
 
 function cell(name, node) {
-  return Theia$Sidewinder.box(/* :: */[
+  return Theia$Sidewinder.box(undefined, undefined, /* :: */[
               name,
               /* [] */0
             ], 5, 5, node, /* [] */0, /* () */0);
@@ -85,11 +85,11 @@ function zipper(focus, konts) {
 
 function paren(x) {
   return hSeq(undefined, /* :: */[
-              Theia$Sidewinder.str(undefined, "(", /* () */0),
+              Theia$Sidewinder.str(undefined, undefined, undefined, "(", /* () */0),
               /* :: */[
                 x,
                 /* :: */[
-                  Theia$Sidewinder.str(undefined, ")", /* () */0),
+                  Theia$Sidewinder.str(undefined, undefined, undefined, ")", /* () */0),
                   /* [] */0
                 ]
               ]
@@ -99,7 +99,7 @@ function paren(x) {
 function vizAExp(ae) {
   switch (ae.tag | 0) {
     case /* Var */0 :
-        return Theia$Sidewinder.str(undefined, ae[0], /* () */0);
+        return Theia$Sidewinder.str(undefined, undefined, undefined, ae[0], /* () */0);
     case /* App */1 :
         return hSeq(2, /* :: */[
                     paren(vizAExp(ae[0])),
@@ -111,12 +111,12 @@ function vizAExp(ae) {
     case /* Lam */2 :
         return vizLambda(ae[0]);
     case /* Num */3 :
-        return Theia$Sidewinder.str(undefined, String(ae[0]), /* () */0);
+        return Theia$Sidewinder.str(undefined, undefined, undefined, String(ae[0]), /* () */0);
     case /* Add */4 :
         return hSeq(2, /* :: */[
                     paren(vizAExp(ae[0])),
                     /* :: */[
-                      Theia$Sidewinder.str(undefined, "+", /* () */0),
+                      Theia$Sidewinder.str(undefined, undefined, undefined, "+", /* () */0),
                       /* :: */[
                         paren(vizAExp(ae[1])),
                         /* [] */0
@@ -125,11 +125,11 @@ function vizAExp(ae) {
                   ]);
     case /* Bracket */5 :
         return hSeq(2, /* :: */[
-                    Theia$Sidewinder.str(undefined, "{", /* () */0),
+                    Theia$Sidewinder.str(undefined, undefined, undefined, "{", /* () */0),
                     /* :: */[
                       vizExp(ae[0]),
                       /* :: */[
-                        Theia$Sidewinder.str(undefined, "}", /* () */0),
+                        Theia$Sidewinder.str(undefined, undefined, undefined, "}", /* () */0),
                         /* [] */0
                       ]
                     ]
@@ -142,15 +142,15 @@ function vizExp(e) {
   if (e.tag) {
     return vSeq(undefined, /* :: */[
                 hSeq(2, /* :: */[
-                      Theia$Sidewinder.str(undefined, "let", /* () */0),
+                      Theia$Sidewinder.str(undefined, undefined, undefined, "let", /* () */0),
                       /* :: */[
-                        Theia$Sidewinder.str(undefined, e[0], /* () */0),
+                        Theia$Sidewinder.str(undefined, undefined, undefined, e[0], /* () */0),
                         /* :: */[
-                          Theia$Sidewinder.str(undefined, "=", /* () */0),
+                          Theia$Sidewinder.str(undefined, undefined, undefined, "=", /* () */0),
                           /* :: */[
                             vizAExp(e[1]),
                             /* :: */[
-                              Theia$Sidewinder.str(undefined, "in", /* () */0),
+                              Theia$Sidewinder.str(undefined, undefined, undefined, "in", /* () */0),
                               /* [] */0
                             ]
                           ]
@@ -170,7 +170,7 @@ function vizExp(e) {
 function vizValue(v) {
   if (v.tag) {
     return value("closure", hSeq(undefined, List.map((function (n) {
-                          return Theia$Sidewinder.box(undefined, undefined, undefined, n, /* [] */0, /* () */0);
+                          return Theia$Sidewinder.box(undefined, undefined, undefined, undefined, undefined, n, /* [] */0, /* () */0);
                         }), /* :: */[
                         vizLambda(v[0]),
                         /* :: */[
@@ -179,22 +179,22 @@ function vizValue(v) {
                         ]
                       ])));
   } else {
-    return value("num", Theia$Sidewinder.str(undefined, String(v[0]), /* () */0));
+    return value("num", Theia$Sidewinder.str(undefined, undefined, undefined, String(v[0]), /* () */0));
   }
 }
 
 function vizEnv(e) {
-  return Theia$Sidewinder.table(undefined, /* :: */[
+  return Theia$Sidewinder.table(undefined, undefined, undefined, /* :: */[
               /* :: */[
-                Theia$Sidewinder.str(undefined, "Id", /* () */0),
+                Theia$Sidewinder.str(undefined, undefined, undefined, "Id", /* () */0),
                 /* :: */[
-                  Theia$Sidewinder.str(undefined, "Val", /* () */0),
+                  Theia$Sidewinder.str(undefined, undefined, undefined, "Val", /* () */0),
                   /* [] */0
                 ]
               ],
               List.rev(List.map((function (param) {
                           return /* :: */[
-                                  Theia$Sidewinder.str(undefined, param.vid, /* () */0),
+                                  Theia$Sidewinder.str(undefined, undefined, undefined, param.vid, /* () */0),
                                   /* :: */[
                                     vizValue(param.value),
                                     /* [] */0
@@ -222,7 +222,7 @@ function vizEnv(e) {
 
 function vizLambda(param) {
   return hSeq(undefined, /* :: */[
-              Theia$Sidewinder.str(undefined, "\\" + (param.vid + "."), /* () */0),
+              Theia$Sidewinder.str(undefined, undefined, undefined, "\\" + (param.vid + "."), /* () */0),
               /* :: */[
                 vizExp(param.exp),
                 /* [] */0
@@ -264,13 +264,13 @@ function vizCtxt(c) {
         return (function (hole) {
             return vSeq(undefined, /* :: */[
                         hSeq(2, insert(hole, /* :: */[
-                                  Theia$Sidewinder.str(undefined, "let", /* () */0),
+                                  Theia$Sidewinder.str(undefined, undefined, undefined, "let", /* () */0),
                                   /* :: */[
-                                    Theia$Sidewinder.str(undefined, x, /* () */0),
+                                    Theia$Sidewinder.str(undefined, undefined, undefined, x, /* () */0),
                                     /* :: */[
-                                      Theia$Sidewinder.str(undefined, "=", /* () */0),
+                                      Theia$Sidewinder.str(undefined, undefined, undefined, "=", /* () */0),
                                       /* :: */[
-                                        Theia$Sidewinder.str(undefined, "in", /* () */0),
+                                        Theia$Sidewinder.str(undefined, undefined, undefined, "in", /* () */0),
                                         /* [] */0
                                       ]
                                     ]
@@ -283,7 +283,7 @@ function vizCtxt(c) {
                       ]);
           });
     case /* AddL */3 :
-        var partial_arg_000$2 = Theia$Sidewinder.str(undefined, "+", /* () */0);
+        var partial_arg_000$2 = Theia$Sidewinder.str(undefined, undefined, undefined, "+", /* () */0);
         var partial_arg_001 = /* :: */[
           paren(vizAExp(c[1])),
           /* [] */0
@@ -302,7 +302,7 @@ function vizCtxt(c) {
     case /* AddR */4 :
         var partial_arg_000$3 = paren(vizValue(c[0]));
         var partial_arg_001$1 = /* :: */[
-          Theia$Sidewinder.str(undefined, "+", /* () */0),
+          Theia$Sidewinder.str(undefined, undefined, undefined, "+", /* () */0),
           /* [] */0
         ];
         var partial_arg$9 = /* :: */[
@@ -324,7 +324,7 @@ function vizCtxts(param) {
   return List.map(vizCtxt, param);
 }
 
-var hole = Theia$Sidewinder.atom(undefined, /* [] */0, React.createElement("rect", {
+var hole = Theia$Sidewinder.atom(undefined, undefined, undefined, /* [] */0, React.createElement("rect", {
           height: "10",
           width: "10",
           fill: "red",
@@ -358,7 +358,7 @@ function vizStack(fs) {
   if (fs) {
     return vSeq(undefined, List.map(vizFrame, fs));
   } else {
-    return Theia$Sidewinder.str(undefined, " ", /* () */0);
+    return Theia$Sidewinder.str(undefined, undefined, undefined, " ", /* () */0);
   }
 }
 
