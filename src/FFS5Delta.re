@@ -234,14 +234,17 @@ type config = {
 let config = (~zipper, ~env_uid, ~stack_uid) => {uid: rauc(), zipper, env_uid, stack_uid};
 
 /* TODO: pick a name for this*/
-/* TODO: add mutation flag? */
-type flow = {
-  left: uid,
-  right: list(uid),
-};
+/* TODO: !!!add mutation flag?!!! */
+/* type flow = {
+     left: uid,
+     right: list(uid),
+   };
 
-/* TODO: name */
-type ribbon = list(flow);
+   /* TODO: name */
+   type ribbon = list(flow); */
+
+module MS = Belt.Map.String;
+type flow = MS.t(list(uid));
 
 /* def lookup (x : vid) : env -> option val
    | env.emp := option.none
@@ -251,7 +254,7 @@ type ribbon = list(flow);
 
 /* computes ribbon, too, but not an overapproximation of the ribbon that suggests more state
    involved than there really is. TODO: refine ribbon? */
-let rec lookup = (x: vid, env: env_uid): option((value_uid, ribbon)) => {
+let rec lookup = (x: vid, env: env_uid): option((value_uid, flow)) => {
   let (x_uid, x_val) = x;
   let (env_uid, env_val) = env;
   switch (env_val) {
@@ -260,10 +263,7 @@ let rec lookup = (x: vid, env: env_uid): option((value_uid, ribbon)) => {
     let (y_uid, y_val) = y;
     if (x_val == y_val) {
       let fresh = rauc();
-      Some((
-        (fresh, v_val),
-        [{left: x_uid, right: [fresh]}, {left: env_uid, right: [fresh]}],
-      ));
+      Some(((fresh, v_val), MS.fromArray([|(x_uid, [fresh]), (env_uid, [fresh])|])));
     } else {
       lookup(x, (env_uid, env_val));
     };
@@ -272,9 +272,13 @@ let rec lookup = (x: vid, env: env_uid): option((value_uid, ribbon)) => {
 
 // let sorry = raise(failwith("TODO"));
 
+let mapUnion = (m1: MS.t('a), m2: MS.t('a)) => {
+  MS.reduce(m2, m1, (m, k, v) => m->MS.set(k, v));
+};
+
 /* TODO: should really be a monad, but OCaml/ReasonML lack good support at the moment. Janestreet
    thing is somewhat hacky, but official support is coming soon. */
-let step = (c: config): option((config, (string, ribbon))) =>
+let step = (c: config): option((config, (string, flow))) =>
   switch (c) {
   /* var */
   /*
@@ -288,7 +292,6 @@ let step = (c: config): option((config, (string, ribbon))) =>
     } =>
     switch (lookup(x, (env_uid, env_val))) {
     | Some(((v_uid, v_val), lookup_ribbon)) =>
-      /* TODO: add a ribbon-normalizing function somewhere? */
       Some((
         config(
           ~zipper=
@@ -301,12 +304,14 @@ let step = (c: config): option((config, (string, ribbon))) =>
         ),
         (
           "var",
-          [
-            {left: ctxts_uid, right: [ctxts_uid]},
-            {left: env_uid, right: [env_uid]},
-            {left: stack_uid, right: [stack_uid]},
-            ...lookup_ribbon,
-          ],
+          mapUnion(
+            MS.fromArray([|
+              (ctxts_uid, [ctxts_uid]),
+              (env_uid, [env_uid]),
+              (stack_uid, [stack_uid]),
+            |]),
+            lookup_ribbon,
+          ),
         ),
       ))
     | None => None
@@ -337,12 +342,12 @@ let step = (c: config): option((config, (string, ribbon))) =>
       ),
       (
         "lam",
-        [
-          {left: l_uid, right: [l_uid]},
-          {left: ctxts_uid, right: [ctxts_uid]},
-          {left: env_uid, right: [env_uid, env_uid2]},
-          {left: stack_uid, right: [stack_uid]},
-        ],
+        MS.fromArray([|
+          (l_uid, [l_uid]),
+          (ctxts_uid, [ctxts_uid]),
+          (env_uid, [env_uid, env_uid2]),
+          (stack_uid, [stack_uid]),
+        |]),
       ),
     ));
   /* app */
@@ -370,13 +375,13 @@ let step = (c: config): option((config, (string, ribbon))) =>
       ),
       (
         "app_begin",
-        [
-          {left: f_uid, right: [f_uid]},
-          {left: x_uid, right: [x_uid]},
-          {left: c_uid, right: [c_uid]},
-          {left: env_uid, right: [env_uid]},
-          {left: s_uid, right: [s_uid]},
-        ],
+        MS.fromArray([|
+          (f_uid, [f_uid]),
+          (x_uid, [x_uid]),
+          (c_uid, [c_uid]),
+          (env_uid, [env_uid]),
+          (s_uid, [s_uid]),
+        |]),
       ),
     ));
   /* app_l */
@@ -407,13 +412,13 @@ let step = (c: config): option((config, (string, ribbon))) =>
       ),
       (
         "app_l",
-        [
-          {left: v_uid, right: [v_uid]},
-          {left: x_uid, right: [x_uid]},
-          {left: c_uid, right: [c_uid]},
-          {left: env_uid, right: [env_uid]},
-          {left: s_uid, right: [s_uid]},
-        ],
+        MS.fromArray([|
+          (v_uid, [v_uid]),
+          (x_uid, [x_uid]),
+          (c_uid, [c_uid]),
+          (env_uid, [env_uid]),
+          (s_uid, [s_uid]),
+        |]),
       ),
     ));
   /* app_r */
@@ -446,15 +451,15 @@ let step = (c: config): option((config, (string, ribbon))) =>
       ),
       (
         "app_r",
-        [
-          {left: v_uid, right: [v_uid]},
-          {left: x_uid, right: [x_uid]},
-          {left: e_uid, right: [e_uid]},
-          {left: en_uid, right: [en_uid]},
-          {left: c_uid, right: [c_uid]},
-          {left: en2_uid, right: [en2_uid]},
-          {left: s_uid, right: [s_uid]},
-        ],
+        MS.fromArray([|
+          (v_uid, [v_uid]),
+          (x_uid, [x_uid]),
+          (e_uid, [e_uid]),
+          (en_uid, [en_uid]),
+          (c_uid, [c_uid]),
+          (en2_uid, [en2_uid]),
+          (s_uid, [s_uid]),
+        |]),
       ),
     ));
   /* app_exit */
@@ -481,13 +486,13 @@ let step = (c: config): option((config, (string, ribbon))) =>
       ),
       (
         "app_exit",
-        [
-          {left: v_uid, right: [v_uid]},
-          {left: en_uid, right: []},
-          {left: c_uid, right: [c_uid]},
-          {left: en2_uid, right: [en2_uid]},
-          {left: s_uid, right: [s_uid]},
-        ],
+        MS.fromArray([|
+          (v_uid, [v_uid]),
+          (en_uid, []),
+          (c_uid, [c_uid]),
+          (en2_uid, [en2_uid]),
+          (s_uid, [s_uid]),
+        |]),
       ),
     ));
   /* let */
@@ -516,14 +521,14 @@ let step = (c: config): option((config, (string, ribbon))) =>
       ),
       (
         "let_begin",
-        [
-          {left: x_uid, right: [x_uid]},
-          {left: ae1_uid, right: [ae1_uid]},
-          {left: e2_uid, right: [e2_uid]},
-          {left: c_uid, right: [c_uid]},
-          {left: en_uid, right: [en_uid]},
-          {left: s_uid, right: [s_uid]},
-        ],
+        MS.fromArray([|
+          (x_uid, [x_uid]),
+          (ae1_uid, [ae1_uid]),
+          (e2_uid, [e2_uid]),
+          (c_uid, [c_uid]),
+          (en_uid, [en_uid]),
+          (s_uid, [s_uid]),
+        |]),
       ),
     ));
   /* let_l */
@@ -551,14 +556,14 @@ let step = (c: config): option((config, (string, ribbon))) =>
       ),
       (
         "let_l",
-        [
-          {left: v_uid, right: [v_uid]},
-          {left: x_uid, right: [x_uid]},
-          {left: e2_uid, right: [e2_uid]},
-          {left: c_uid, right: [c_uid]},
-          {left: en_uid, right: [en_uid]},
-          {left: s_uid, right: [s_uid]},
-        ],
+        MS.fromArray([|
+          (v_uid, [v_uid]),
+          (x_uid, [x_uid]),
+          (e2_uid, [e2_uid]),
+          (c_uid, [c_uid]),
+          (en_uid, [en_uid]),
+          (s_uid, [s_uid]),
+        |]),
       ),
     ));
   /* num */
@@ -579,12 +584,12 @@ let step = (c: config): option((config, (string, ribbon))) =>
       ),
       (
         "num",
-        [
-          {left: n_uid, right: [n_uid]},
-          {left: c_uid, right: [c_uid]},
-          {left: en_uid, right: [en_uid]},
-          {left: s_uid, right: [s_uid]},
-        ],
+        MS.fromArray([|
+          (n_uid, [n_uid]),
+          (c_uid, [c_uid]),
+          (en_uid, [en_uid]),
+          (s_uid, [s_uid]),
+        |]),
       ),
     ));
   /* add */
@@ -612,13 +617,13 @@ let step = (c: config): option((config, (string, ribbon))) =>
       ),
       (
         "add_begin",
-        [
-          {left: x_uid, right: [x_uid]},
-          {left: y_uid, right: [y_uid]},
-          {left: c_uid, right: [c_uid]},
-          {left: en_uid, right: [en_uid]},
-          {left: s_uid, right: [s_uid]},
-        ],
+        MS.fromArray([|
+          (x_uid, [x_uid]),
+          (y_uid, [y_uid]),
+          (c_uid, [c_uid]),
+          (en_uid, [en_uid]),
+          (s_uid, [s_uid]),
+        |]),
       ),
     ));
   /* add_l */
@@ -649,13 +654,13 @@ let step = (c: config): option((config, (string, ribbon))) =>
       ),
       (
         "add_l",
-        [
-          {left: v_uid, right: [v_uid]},
-          {left: y_uid, right: [y_uid]},
-          {left: c_uid, right: [c_uid]},
-          {left: en_uid, right: [en_uid]},
-          {left: s_uid, right: [s_uid]},
-        ],
+        MS.fromArray([|
+          (v_uid, [v_uid]),
+          (y_uid, [y_uid]),
+          (c_uid, [c_uid]),
+          (en_uid, [en_uid]),
+          (s_uid, [s_uid]),
+        |]),
       ),
     ));
   /* add_r */
@@ -687,13 +692,13 @@ let step = (c: config): option((config, (string, ribbon))) =>
       ),
       (
         "add_r",
-        [
-          {left: x_uid, right: [z_uid]},
-          {left: y_uid, right: [z_uid]},
-          {left: c_uid, right: [c_uid]},
-          {left: en_uid, right: [en_uid]},
-          {left: s_uid, right: [s_uid]},
-        ],
+        MS.fromArray([|
+          (x_uid, [z_uid]),
+          (y_uid, [z_uid]),
+          (c_uid, [c_uid]),
+          (en_uid, [en_uid]),
+          (s_uid, [s_uid]),
+        |]),
       ),
     ));
   /* bracket */
@@ -716,12 +721,12 @@ let step = (c: config): option((config, (string, ribbon))) =>
       ),
       (
         "bracket",
-        [
-          {left: e_uid, right: [e_uid]},
-          {left: c_uid, right: [c_uid]},
-          {left: en_uid, right: [en_uid, en_uid2]},
-          {left: s_uid, right: [s_uid]},
-        ],
+        MS.fromArray([|
+          (e_uid, [e_uid]),
+          (c_uid, [c_uid]),
+          (en_uid, [en_uid, en_uid2]),
+          (s_uid, [s_uid]),
+        |]),
       ),
     ));
   /* lift */
@@ -743,12 +748,12 @@ let step = (c: config): option((config, (string, ribbon))) =>
       ),
       (
         "lift",
-        [
-          {left: a_uid, right: [a_uid]},
-          {left: c_uid, right: [c_uid]},
-          {left: en_uid, right: [en_uid]},
-          {left: s_uid, right: [s_uid]},
-        ],
+        MS.fromArray([|
+          (a_uid, [a_uid]),
+          (c_uid, [c_uid]),
+          (en_uid, [en_uid]),
+          (s_uid, [s_uid]),
+        |]),
       ),
     ));
   // | {focus, frame, stack} => Some({focus: sorry, frame: sorry, stack: sorry})

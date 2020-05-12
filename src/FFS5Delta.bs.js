@@ -6,6 +6,7 @@ var Block = require("bs-platform/lib/js/block.js");
 var Curry = require("bs-platform/lib/js/curry.js");
 var Pervasives = require("bs-platform/lib/js/pervasives.js");
 var Caml_option = require("bs-platform/lib/js/caml_option.js");
+var Belt_MapString = require("bs-platform/lib/js/belt_MapString.js");
 
 var counter = {
   contents: 0
@@ -145,25 +146,22 @@ function lookup(x, _env) {
                   fresh,
                   match.value_uid[1]
                 ],
-                /* :: */[
-                  {
-                    left: x[0],
-                    right: /* :: */[
-                      fresh,
-                      /* [] */0
-                    ]
-                  },
-                  /* :: */[
-                    {
-                      left: env_uid,
-                      right: /* :: */[
-                        fresh,
-                        /* [] */0
+                Belt_MapString.fromArray([
+                      /* tuple */[
+                        x[0],
+                        /* :: */[
+                          fresh,
+                          /* [] */0
+                        ]
+                      ],
+                      /* tuple */[
+                        env_uid,
+                        /* :: */[
+                          fresh,
+                          /* [] */0
+                        ]
                       ]
-                    },
-                    /* [] */0
-                  ]
-                ]
+                    ])
               ];
       } else {
         _env = /* tuple */[
@@ -176,6 +174,10 @@ function lookup(x, _env) {
       return ;
     }
   };
+}
+
+function mapUnion(m1, m2) {
+  return Belt_MapString.reduce(m2, m1, Belt_MapString.set);
 }
 
 function step(c) {
@@ -219,34 +221,29 @@ function step(c) {
                             ]),
                         /* tuple */[
                           "var",
-                          /* :: */[
-                            {
-                              left: ctxts_uid,
-                              right: /* :: */[
-                                ctxts_uid,
-                                /* [] */0
-                              ]
-                            },
-                            /* :: */[
-                              {
-                                left: env_uid,
-                                right: /* :: */[
-                                  env_uid,
-                                  /* [] */0
-                                ]
-                              },
-                              /* :: */[
-                                {
-                                  left: stack_uid,
-                                  right: /* :: */[
-                                    stack_uid,
-                                    /* [] */0
-                                  ]
-                                },
-                                match$7[1]
-                              ]
-                            ]
-                          ]
+                          mapUnion(Belt_MapString.fromArray([
+                                    /* tuple */[
+                                      ctxts_uid,
+                                      /* :: */[
+                                        ctxts_uid,
+                                        /* [] */0
+                                      ]
+                                    ],
+                                    /* tuple */[
+                                      env_uid,
+                                      /* :: */[
+                                        env_uid,
+                                        /* [] */0
+                                      ]
+                                    ],
+                                    /* tuple */[
+                                      stack_uid,
+                                      /* :: */[
+                                        stack_uid,
+                                        /* [] */0
+                                      ]
+                                    ]
+                                  ]), match$7[1])
                         ]
                       ];
               } else {
@@ -284,52 +281,43 @@ function step(c) {
                               ]), env, s),
                       /* tuple */[
                         "app_begin",
-                        /* :: */[
-                          {
-                            left: f_uid,
-                            right: /* :: */[
-                              f_uid,
-                              /* [] */0
-                            ]
-                          },
-                          /* :: */[
-                            {
-                              left: x_uid,
-                              right: /* :: */[
+                        Belt_MapString.fromArray([
+                              /* tuple */[
+                                f_uid,
+                                /* :: */[
+                                  f_uid,
+                                  /* [] */0
+                                ]
+                              ],
+                              /* tuple */[
                                 x_uid,
-                                /* [] */0
-                              ]
-                            },
-                            /* :: */[
-                              {
-                                left: c_uid,
-                                right: /* :: */[
+                                /* :: */[
+                                  x_uid,
+                                  /* [] */0
+                                ]
+                              ],
+                              /* tuple */[
+                                c_uid,
+                                /* :: */[
                                   c_uid,
                                   /* [] */0
                                 ]
-                              },
-                              /* :: */[
-                                {
-                                  left: env_uid$1,
-                                  right: /* :: */[
-                                    env_uid$1,
-                                    /* [] */0
-                                  ]
-                                },
+                              ],
+                              /* tuple */[
+                                env_uid$1,
                                 /* :: */[
-                                  {
-                                    left: s_uid,
-                                    right: /* :: */[
-                                      s_uid,
-                                      /* [] */0
-                                    ]
-                                  },
+                                  env_uid$1,
+                                  /* [] */0
+                                ]
+                              ],
+                              /* tuple */[
+                                s_uid,
+                                /* :: */[
+                                  s_uid,
                                   /* [] */0
                                 ]
                               ]
-                            ]
-                          ]
-                        ]
+                            ])
                       ]
                     ];
           case /* Lam */2 :
@@ -368,46 +356,39 @@ function step(c) {
                           ]),
                       /* tuple */[
                         "lam",
-                        /* :: */[
-                          {
-                            left: l_uid,
-                            right: /* :: */[
-                              l_uid,
-                              /* [] */0
-                            ]
-                          },
-                          /* :: */[
-                            {
-                              left: ctxts_uid$1,
-                              right: /* :: */[
+                        Belt_MapString.fromArray([
+                              /* tuple */[
+                                l_uid,
+                                /* :: */[
+                                  l_uid,
+                                  /* [] */0
+                                ]
+                              ],
+                              /* tuple */[
                                 ctxts_uid$1,
-                                /* [] */0
-                              ]
-                            },
-                            /* :: */[
-                              {
-                                left: env_uid$2,
-                                right: /* :: */[
+                                /* :: */[
+                                  ctxts_uid$1,
+                                  /* [] */0
+                                ]
+                              ],
+                              /* tuple */[
+                                env_uid$2,
+                                /* :: */[
                                   env_uid$2,
                                   /* :: */[
                                     env_uid2,
                                     /* [] */0
                                   ]
                                 ]
-                              },
-                              /* :: */[
-                                {
-                                  left: stack_uid$1,
-                                  right: /* :: */[
-                                    stack_uid$1,
-                                    /* [] */0
-                                  ]
-                                },
-                                /* [] */0
+                              ],
+                              /* tuple */[
+                                stack_uid$1,
+                                /* :: */[
+                                  stack_uid$1,
+                                  /* [] */0
+                                ]
                               ]
-                            ]
-                          ]
-                        ]
+                            ])
                       ]
                     ];
           case /* Num */3 :
@@ -430,43 +411,36 @@ function step(c) {
                               ], c$2), en, s$1),
                       /* tuple */[
                         "num",
-                        /* :: */[
-                          {
-                            left: n_uid,
-                            right: /* :: */[
-                              n_uid,
-                              /* [] */0
-                            ]
-                          },
-                          /* :: */[
-                            {
-                              left: c_uid$1,
-                              right: /* :: */[
+                        Belt_MapString.fromArray([
+                              /* tuple */[
+                                n_uid,
+                                /* :: */[
+                                  n_uid,
+                                  /* [] */0
+                                ]
+                              ],
+                              /* tuple */[
                                 c_uid$1,
-                                /* [] */0
-                              ]
-                            },
-                            /* :: */[
-                              {
-                                left: en_uid,
-                                right: /* :: */[
+                                /* :: */[
+                                  c_uid$1,
+                                  /* [] */0
+                                ]
+                              ],
+                              /* tuple */[
+                                en_uid,
+                                /* :: */[
                                   en_uid,
                                   /* [] */0
                                 ]
-                              },
-                              /* :: */[
-                                {
-                                  left: s_uid$1,
-                                  right: /* :: */[
-                                    s_uid$1,
-                                    /* [] */0
-                                  ]
-                                },
-                                /* [] */0
+                              ],
+                              /* tuple */[
+                                s_uid$1,
+                                /* :: */[
+                                  s_uid$1,
+                                  /* [] */0
+                                ]
                               ]
-                            ]
-                          ]
-                        ]
+                            ])
                       ]
                     ];
           case /* Add */4 :
@@ -501,52 +475,43 @@ function step(c) {
                               ]), en$1, s$2),
                       /* tuple */[
                         "add_begin",
-                        /* :: */[
-                          {
-                            left: x_uid$1,
-                            right: /* :: */[
-                              x_uid$1,
-                              /* [] */0
-                            ]
-                          },
-                          /* :: */[
-                            {
-                              left: y_uid,
-                              right: /* :: */[
+                        Belt_MapString.fromArray([
+                              /* tuple */[
+                                x_uid$1,
+                                /* :: */[
+                                  x_uid$1,
+                                  /* [] */0
+                                ]
+                              ],
+                              /* tuple */[
                                 y_uid,
-                                /* [] */0
-                              ]
-                            },
-                            /* :: */[
-                              {
-                                left: c_uid$2,
-                                right: /* :: */[
+                                /* :: */[
+                                  y_uid,
+                                  /* [] */0
+                                ]
+                              ],
+                              /* tuple */[
+                                c_uid$2,
+                                /* :: */[
                                   c_uid$2,
                                   /* [] */0
                                 ]
-                              },
-                              /* :: */[
-                                {
-                                  left: en_uid$1,
-                                  right: /* :: */[
-                                    en_uid$1,
-                                    /* [] */0
-                                  ]
-                                },
+                              ],
+                              /* tuple */[
+                                en_uid$1,
                                 /* :: */[
-                                  {
-                                    left: s_uid$2,
-                                    right: /* :: */[
-                                      s_uid$2,
-                                      /* [] */0
-                                    ]
-                                  },
+                                  en_uid$1,
+                                  /* [] */0
+                                ]
+                              ],
+                              /* tuple */[
+                                s_uid$2,
+                                /* :: */[
+                                  s_uid$2,
                                   /* [] */0
                                 ]
                               ]
-                            ]
-                          ]
-                        ]
+                            ])
                       ]
                     ];
           case /* Bracket */5 :
@@ -580,46 +545,39 @@ function step(c) {
                           ]),
                       /* tuple */[
                         "bracket",
-                        /* :: */[
-                          {
-                            left: e_uid,
-                            right: /* :: */[
-                              e_uid,
-                              /* [] */0
-                            ]
-                          },
-                          /* :: */[
-                            {
-                              left: c_uid$3,
-                              right: /* :: */[
+                        Belt_MapString.fromArray([
+                              /* tuple */[
+                                e_uid,
+                                /* :: */[
+                                  e_uid,
+                                  /* [] */0
+                                ]
+                              ],
+                              /* tuple */[
                                 c_uid$3,
-                                /* [] */0
-                              ]
-                            },
-                            /* :: */[
-                              {
-                                left: en_uid$2,
-                                right: /* :: */[
+                                /* :: */[
+                                  c_uid$3,
+                                  /* [] */0
+                                ]
+                              ],
+                              /* tuple */[
+                                en_uid$2,
+                                /* :: */[
                                   en_uid$2,
                                   /* :: */[
                                     en_uid2,
                                     /* [] */0
                                   ]
                                 ]
-                              },
-                              /* :: */[
-                                {
-                                  left: s_uid$3,
-                                  right: /* :: */[
-                                    s_uid$3,
-                                    /* [] */0
-                                  ]
-                                },
-                                /* [] */0
+                              ],
+                              /* tuple */[
+                                s_uid$3,
+                                /* :: */[
+                                  s_uid$3,
+                                  /* [] */0
+                                ]
                               ]
-                            ]
-                          ]
-                        ]
+                            ])
                       ]
                     ];
           
@@ -661,61 +619,50 @@ function step(c) {
                           ]), env_uid$3, stack_uid$2),
                   /* tuple */[
                     "let_begin",
-                    /* :: */[
-                      {
-                        left: x_uid$2,
-                        right: /* :: */[
-                          x_uid$2,
-                          /* [] */0
-                        ]
-                      },
-                      /* :: */[
-                        {
-                          left: ae1_uid,
-                          right: /* :: */[
+                    Belt_MapString.fromArray([
+                          /* tuple */[
+                            x_uid$2,
+                            /* :: */[
+                              x_uid$2,
+                              /* [] */0
+                            ]
+                          ],
+                          /* tuple */[
                             ae1_uid,
-                            /* [] */0
-                          ]
-                        },
-                        /* :: */[
-                          {
-                            left: e2_uid,
-                            right: /* :: */[
+                            /* :: */[
+                              ae1_uid,
+                              /* [] */0
+                            ]
+                          ],
+                          /* tuple */[
+                            e2_uid,
+                            /* :: */[
                               e2_uid,
                               /* [] */0
                             ]
-                          },
-                          /* :: */[
-                            {
-                              left: c_uid$4,
-                              right: /* :: */[
-                                c_uid$4,
-                                /* [] */0
-                              ]
-                            },
+                          ],
+                          /* tuple */[
+                            c_uid$4,
                             /* :: */[
-                              {
-                                left: en_uid$3,
-                                right: /* :: */[
-                                  en_uid$3,
-                                  /* [] */0
-                                ]
-                              },
-                              /* :: */[
-                                {
-                                  left: s_uid$4,
-                                  right: /* :: */[
-                                    s_uid$4,
-                                    /* [] */0
-                                  ]
-                                },
-                                /* [] */0
-                              ]
+                              c_uid$4,
+                              /* [] */0
+                            ]
+                          ],
+                          /* tuple */[
+                            en_uid$3,
+                            /* :: */[
+                              en_uid$3,
+                              /* [] */0
+                            ]
+                          ],
+                          /* tuple */[
+                            s_uid$4,
+                            /* :: */[
+                              s_uid$4,
+                              /* [] */0
                             ]
                           ]
-                        ]
-                      ]
-                    ]
+                        ])
                   ]
                 ];
         } else {
@@ -734,43 +681,36 @@ function step(c) {
                           ], c$6), en$3, s$4),
                   /* tuple */[
                     "lift",
-                    /* :: */[
-                      {
-                        left: a_uid,
-                        right: /* :: */[
-                          a_uid,
-                          /* [] */0
-                        ]
-                      },
-                      /* :: */[
-                        {
-                          left: c_uid$5,
-                          right: /* :: */[
+                    Belt_MapString.fromArray([
+                          /* tuple */[
+                            a_uid,
+                            /* :: */[
+                              a_uid,
+                              /* [] */0
+                            ]
+                          ],
+                          /* tuple */[
                             c_uid$5,
-                            /* [] */0
-                          ]
-                        },
-                        /* :: */[
-                          {
-                            left: en_uid$4,
-                            right: /* :: */[
+                            /* :: */[
+                              c_uid$5,
+                              /* [] */0
+                            ]
+                          ],
+                          /* tuple */[
+                            en_uid$4,
+                            /* :: */[
                               en_uid$4,
                               /* [] */0
                             ]
-                          },
-                          /* :: */[
-                            {
-                              left: s_uid$5,
-                              right: /* :: */[
-                                s_uid$5,
-                                /* [] */0
-                              ]
-                            },
-                            /* [] */0
+                          ],
+                          /* tuple */[
+                            s_uid$5,
+                            /* :: */[
+                              s_uid$5,
+                              /* [] */0
+                            ]
                           ]
-                        ]
-                      ]
-                    ]
+                        ])
                   ]
                 ];
         }
@@ -812,52 +752,43 @@ function step(c) {
                                 ]), env$1, s$5),
                         /* tuple */[
                           "app_l",
-                          /* :: */[
-                            {
-                              left: v_uid,
-                              right: /* :: */[
-                                v_uid,
-                                /* [] */0
-                              ]
-                            },
-                            /* :: */[
-                              {
-                                left: x_uid$3,
-                                right: /* :: */[
+                          Belt_MapString.fromArray([
+                                /* tuple */[
+                                  v_uid,
+                                  /* :: */[
+                                    v_uid,
+                                    /* [] */0
+                                  ]
+                                ],
+                                /* tuple */[
                                   x_uid$3,
-                                  /* [] */0
-                                ]
-                              },
-                              /* :: */[
-                                {
-                                  left: c_uid$6,
-                                  right: /* :: */[
+                                  /* :: */[
+                                    x_uid$3,
+                                    /* [] */0
+                                  ]
+                                ],
+                                /* tuple */[
+                                  c_uid$6,
+                                  /* :: */[
                                     c_uid$6,
                                     /* [] */0
                                   ]
-                                },
-                                /* :: */[
-                                  {
-                                    left: env_uid$4,
-                                    right: /* :: */[
-                                      env_uid$4,
-                                      /* [] */0
-                                    ]
-                                  },
+                                ],
+                                /* tuple */[
+                                  env_uid$4,
                                   /* :: */[
-                                    {
-                                      left: s_uid$6,
-                                      right: /* :: */[
-                                        s_uid$6,
-                                        /* [] */0
-                                      ]
-                                    },
+                                    env_uid$4,
+                                    /* [] */0
+                                  ]
+                                ],
+                                /* tuple */[
+                                  s_uid$6,
+                                  /* :: */[
+                                    s_uid$6,
                                     /* [] */0
                                   ]
                                 ]
-                              ]
-                            ]
-                          ]
+                              ])
                         ]
                       ];
             case /* AppR */1 :
@@ -903,70 +834,57 @@ function step(c) {
                               ]),
                           /* tuple */[
                             "app_r",
-                            /* :: */[
-                              {
-                                left: v_uid$1,
-                                right: /* :: */[
-                                  v_uid$1,
-                                  /* [] */0
-                                ]
-                              },
-                              /* :: */[
-                                {
-                                  left: x_uid$4,
-                                  right: /* :: */[
+                            Belt_MapString.fromArray([
+                                  /* tuple */[
+                                    v_uid$1,
+                                    /* :: */[
+                                      v_uid$1,
+                                      /* [] */0
+                                    ]
+                                  ],
+                                  /* tuple */[
                                     x_uid$4,
-                                    /* [] */0
-                                  ]
-                                },
-                                /* :: */[
-                                  {
-                                    left: e_uid$1,
-                                    right: /* :: */[
+                                    /* :: */[
+                                      x_uid$4,
+                                      /* [] */0
+                                    ]
+                                  ],
+                                  /* tuple */[
+                                    e_uid$1,
+                                    /* :: */[
                                       e_uid$1,
                                       /* [] */0
                                     ]
-                                  },
-                                  /* :: */[
-                                    {
-                                      left: en_uid$5,
-                                      right: /* :: */[
-                                        en_uid$5,
-                                        /* [] */0
-                                      ]
-                                    },
+                                  ],
+                                  /* tuple */[
+                                    en_uid$5,
                                     /* :: */[
-                                      {
-                                        left: c_uid$7,
-                                        right: /* :: */[
-                                          c_uid$7,
-                                          /* [] */0
-                                        ]
-                                      },
-                                      /* :: */[
-                                        {
-                                          left: en2_uid,
-                                          right: /* :: */[
-                                            en2_uid,
-                                            /* [] */0
-                                          ]
-                                        },
-                                        /* :: */[
-                                          {
-                                            left: s_uid$7,
-                                            right: /* :: */[
-                                              s_uid$7,
-                                              /* [] */0
-                                            ]
-                                          },
-                                          /* [] */0
-                                        ]
-                                      ]
+                                      en_uid$5,
+                                      /* [] */0
+                                    ]
+                                  ],
+                                  /* tuple */[
+                                    c_uid$7,
+                                    /* :: */[
+                                      c_uid$7,
+                                      /* [] */0
+                                    ]
+                                  ],
+                                  /* tuple */[
+                                    en2_uid,
+                                    /* :: */[
+                                      en2_uid,
+                                      /* [] */0
+                                    ]
+                                  ],
+                                  /* tuple */[
+                                    s_uid$7,
+                                    /* :: */[
+                                      s_uid$7,
+                                      /* [] */0
                                     ]
                                   ]
-                                ]
-                              ]
-                            ]
+                                ])
                           ]
                         ];
                 } else {
@@ -999,61 +917,50 @@ function step(c) {
                             ], s$7),
                         /* tuple */[
                           "let_l",
-                          /* :: */[
-                            {
-                              left: v_uid$2,
-                              right: /* :: */[
-                                v_uid$2,
-                                /* [] */0
-                              ]
-                            },
-                            /* :: */[
-                              {
-                                left: x_uid$5,
-                                right: /* :: */[
+                          Belt_MapString.fromArray([
+                                /* tuple */[
+                                  v_uid$2,
+                                  /* :: */[
+                                    v_uid$2,
+                                    /* [] */0
+                                  ]
+                                ],
+                                /* tuple */[
                                   x_uid$5,
-                                  /* [] */0
-                                ]
-                              },
-                              /* :: */[
-                                {
-                                  left: e2_uid$1,
-                                  right: /* :: */[
+                                  /* :: */[
+                                    x_uid$5,
+                                    /* [] */0
+                                  ]
+                                ],
+                                /* tuple */[
+                                  e2_uid$1,
+                                  /* :: */[
                                     e2_uid$1,
                                     /* [] */0
                                   ]
-                                },
-                                /* :: */[
-                                  {
-                                    left: c_uid$8,
-                                    right: /* :: */[
-                                      c_uid$8,
-                                      /* [] */0
-                                    ]
-                                  },
+                                ],
+                                /* tuple */[
+                                  c_uid$8,
                                   /* :: */[
-                                    {
-                                      left: en_uid$6,
-                                      right: /* :: */[
-                                        en_uid$6,
-                                        /* [] */0
-                                      ]
-                                    },
-                                    /* :: */[
-                                      {
-                                        left: s_uid$8,
-                                        right: /* :: */[
-                                          s_uid$8,
-                                          /* [] */0
-                                        ]
-                                      },
-                                      /* [] */0
-                                    ]
+                                    c_uid$8,
+                                    /* [] */0
+                                  ]
+                                ],
+                                /* tuple */[
+                                  en_uid$6,
+                                  /* :: */[
+                                    en_uid$6,
+                                    /* [] */0
+                                  ]
+                                ],
+                                /* tuple */[
+                                  s_uid$8,
+                                  /* :: */[
+                                    s_uid$8,
+                                    /* [] */0
                                   ]
                                 ]
-                              ]
-                            ]
-                          ]
+                              ])
                         ]
                       ];
             case /* AddL */3 :
@@ -1087,52 +994,43 @@ function step(c) {
                                 ]), en$5, s$8),
                         /* tuple */[
                           "add_l",
-                          /* :: */[
-                            {
-                              left: v_uid$3,
-                              right: /* :: */[
-                                v_uid$3,
-                                /* [] */0
-                              ]
-                            },
-                            /* :: */[
-                              {
-                                left: y_uid$1,
-                                right: /* :: */[
+                          Belt_MapString.fromArray([
+                                /* tuple */[
+                                  v_uid$3,
+                                  /* :: */[
+                                    v_uid$3,
+                                    /* [] */0
+                                  ]
+                                ],
+                                /* tuple */[
                                   y_uid$1,
-                                  /* [] */0
-                                ]
-                              },
-                              /* :: */[
-                                {
-                                  left: c_uid$9,
-                                  right: /* :: */[
+                                  /* :: */[
+                                    y_uid$1,
+                                    /* [] */0
+                                  ]
+                                ],
+                                /* tuple */[
+                                  c_uid$9,
+                                  /* :: */[
                                     c_uid$9,
                                     /* [] */0
                                   ]
-                                },
-                                /* :: */[
-                                  {
-                                    left: en_uid$7,
-                                    right: /* :: */[
-                                      en_uid$7,
-                                      /* [] */0
-                                    ]
-                                  },
+                                ],
+                                /* tuple */[
+                                  en_uid$7,
                                   /* :: */[
-                                    {
-                                      left: s_uid$9,
-                                      right: /* :: */[
-                                        s_uid$9,
-                                        /* [] */0
-                                      ]
-                                    },
+                                    en_uid$7,
+                                    /* [] */0
+                                  ]
+                                ],
+                                /* tuple */[
+                                  s_uid$9,
+                                  /* :: */[
+                                    s_uid$9,
                                     /* [] */0
                                   ]
                                 ]
-                              ]
-                            ]
-                          ]
+                              ])
                         ]
                       ];
             case /* AddR */4 :
@@ -1168,52 +1066,43 @@ function step(c) {
                                     ], c$11), en$6, s$9),
                             /* tuple */[
                               "add_r",
-                              /* :: */[
-                                {
-                                  left: x$6[0],
-                                  right: /* :: */[
-                                    z_uid,
-                                    /* [] */0
-                                  ]
-                                },
-                                /* :: */[
-                                  {
-                                    left: y$2[0],
-                                    right: /* :: */[
-                                      z_uid,
-                                      /* [] */0
-                                    ]
-                                  },
-                                  /* :: */[
-                                    {
-                                      left: c_uid$10,
-                                      right: /* :: */[
+                              Belt_MapString.fromArray([
+                                    /* tuple */[
+                                      x$6[0],
+                                      /* :: */[
+                                        z_uid,
+                                        /* [] */0
+                                      ]
+                                    ],
+                                    /* tuple */[
+                                      y$2[0],
+                                      /* :: */[
+                                        z_uid,
+                                        /* [] */0
+                                      ]
+                                    ],
+                                    /* tuple */[
+                                      c_uid$10,
+                                      /* :: */[
                                         c_uid$10,
                                         /* [] */0
                                       ]
-                                    },
-                                    /* :: */[
-                                      {
-                                        left: en_uid$8,
-                                        right: /* :: */[
-                                          en_uid$8,
-                                          /* [] */0
-                                        ]
-                                      },
+                                    ],
+                                    /* tuple */[
+                                      en_uid$8,
                                       /* :: */[
-                                        {
-                                          left: s_uid$10,
-                                          right: /* :: */[
-                                            s_uid$10,
-                                            /* [] */0
-                                          ]
-                                        },
+                                        en_uid$8,
+                                        /* [] */0
+                                      ]
+                                    ],
+                                    /* tuple */[
+                                      s_uid$10,
+                                      /* :: */[
+                                        s_uid$10,
                                         /* [] */0
                                       ]
                                     ]
-                                  ]
-                                ]
-                              ]
+                                  ])
                             ]
                           ];
                   }
@@ -1238,49 +1127,40 @@ function step(c) {
                             ], c$12), env2$1, s$10),
                     /* tuple */[
                       "app_exit",
-                      /* :: */[
-                        {
-                          left: v_uid$4,
-                          right: /* :: */[
-                            v_uid$4,
-                            /* [] */0
-                          ]
-                        },
-                        /* :: */[
-                          {
-                            left: c.env_uid[0],
-                            right: /* [] */0
-                          },
-                          /* :: */[
-                            {
-                              left: c_uid$11,
-                              right: /* :: */[
+                      Belt_MapString.fromArray([
+                            /* tuple */[
+                              v_uid$4,
+                              /* :: */[
+                                v_uid$4,
+                                /* [] */0
+                              ]
+                            ],
+                            /* tuple */[
+                              c.env_uid[0],
+                              /* [] */0
+                            ],
+                            /* tuple */[
+                              c_uid$11,
+                              /* :: */[
                                 c_uid$11,
                                 /* [] */0
                               ]
-                            },
-                            /* :: */[
-                              {
-                                left: en2_uid$1,
-                                right: /* :: */[
-                                  en2_uid$1,
-                                  /* [] */0
-                                ]
-                              },
+                            ],
+                            /* tuple */[
+                              en2_uid$1,
                               /* :: */[
-                                {
-                                  left: s_uid$11,
-                                  right: /* :: */[
-                                    s_uid$11,
-                                    /* [] */0
-                                  ]
-                                },
+                                en2_uid$1,
+                                /* [] */0
+                              ]
+                            ],
+                            /* tuple */[
+                              s_uid$11,
+                              /* :: */[
+                                s_uid$11,
                                 /* [] */0
                               ]
                             ]
-                          ]
-                        ]
-                      ]
+                          ])
                     ]
                   ];
           } else {
@@ -1788,6 +1668,8 @@ function interpret(p) {
 
 var loading = inject(/* Lift */Block.__(0, [/* Var */Block.__(0, ["loading..."])]));
 
+var MS = /* alias */0;
+
 var advance = step;
 
 exports.counter = counter;
@@ -1808,7 +1690,9 @@ exports.zipper = zipper;
 exports.frame = frame;
 exports.stack_uid = stack_uid;
 exports.config = config;
+exports.MS = MS;
 exports.lookup = lookup;
+exports.mapUnion = mapUnion;
 exports.step = step;
 exports.vidToUID = vidToUID;
 exports.intToUID = intToUID;
