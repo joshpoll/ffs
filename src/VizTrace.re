@@ -1,21 +1,6 @@
 let leftButtonStyle = ReactDOMRe.Style.make(~borderRadius="4px 0px 0px 4px", ~width="48px", ());
 let rightButtonStyle = ReactDOMRe.Style.make(~borderRadius="0px 4px 4px 0px", ~width="48px", ());
 
-let render = (~debug=false, n) =>
-  Sidewinder.(
-    n
-    |> (
-      if (debug) {
-        Debug.transform;
-      } else {
-        x => x;
-      }
-    )
-    |> LCA.fromKernel
-    |> Layout.computeBBoxes
-    |> RenderLinks.renderLinks
-    |> Render.render
-  );
 /*
  type traceProgress =
    | LoadingTrace
@@ -24,16 +9,16 @@ let render = (~debug=false, n) =>
 
 type state = {
   pos: int,
-  trace: list(FFS4.config),
+  trace: list(FFS4Delta.config),
 };
 
 type action =
   | Increment
   | Decrement
-  | Trace(list(FFS4.config))
+  | Trace(list(FFS4Delta.config))
   | Error;
 
-let initialState = {pos: 0, trace: [FFS4.loading] /* , traceProgress: LoadingTrace */};
+let initialState = {pos: 0, trace: [FFS4Delta.loading] /* , traceProgress: LoadingTrace */};
 
 let reducer = (state, action) => {
   switch (action) {
@@ -45,13 +30,13 @@ let reducer = (state, action) => {
 };
 
 [@react.component]
-let make = (~padding=10., ~program) => {
+let make = (~padding=10., ~transition=false, ~program) => {
   let (state, dispatch) = React.useReducer(reducer, initialState);
 
   // Notice that instead of `useEffect`, we have `useEffect0`. See
   // reasonml.github.io/reason-react/docs/en/components#hooks for more info
   React.useEffect0(() => {
-    dispatch(Trace(FFS4.interpretTrace(program)));
+    dispatch(Trace(FFS4Delta.interpretTrace(program)));
 
     // Returning None, instead of Some(() => ...), means we don't have any
     // cleanup to do before unmounting. That's not 100% true. We should
@@ -65,11 +50,21 @@ let make = (~padding=10., ~program) => {
 
   switch (state.trace) {
   | trace =>
-    let swTrace = trace |> List.map(FFS4Viz.vizMachineState);
+    let swTrace = trace |> List.map(FFS4DeltaViz.vizMachineState);
     /* |> List.map(Sidewinder.Transform.hide("idStatus"))
        |> List.map((Some(x)) => x)
        |> List.map(Sidewinder.Transform.denest("::", "::")); */
-    let initState = List.nth(swTrace, state.pos /* 150 */) |> render(~debug=false);
+    let initState =
+      if (transition) {
+        let nextPos = min(state.pos + 1, List.length(state.trace) - 1);
+        Sidewinder.Main.renderTransition(
+          ~debug=false,
+          List.nth(swTrace, nextPos),
+          List.nth(swTrace, state.pos),
+        );
+      } else {
+        List.nth(swTrace, state.pos) |> Sidewinder.Main.render(~debug=false);
+      };
     let width = 1000.;
     let height = 300.;
     let xOffset = 0.;

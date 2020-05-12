@@ -41,6 +41,7 @@ ReactDOMRe.render(<ReasonUsingJSUsingReason />, makeContainer("Reason Using JS U
 
 let id = x => FFS4.Lam({vid: x, exp: Lift(Var(x))});
 
+/* TODO: this program crashes */
 ReactDOMRe.render(
   <VizTrace program={FFS4.Lift(App(id("x"), id("y")))} />,
   makeContainer("FFS"),
@@ -57,4 +58,12 @@ ReactDOMRe.render(
     program={FFS4.Let("x", Num(5), Let("y", Num(6), Lift(Add(Var("x"), Var("y")))))}
   />,
   makeContainer("let add"),
+);
+
+ReactDOMRe.render(
+  <VizTrace
+    program={FFS4.Let("x", Num(5), Let("y", Num(6), Lift(Add(Var("x"), Var("y")))))}
+    transition=true
+  />,
+  makeContainer("let add transition"),
 );
