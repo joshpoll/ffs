@@ -7,28 +7,24 @@ var Pervasives = require("bs-platform/lib/js/pervasives.js");
 var Theia$Sidewinder = require("sidewinder/src/Theia.bs.js");
 var Rectangle$Sidewinder = require("sidewinder/src/Rectangle.bs.js");
 
-function hSeq(uid, $staropt$star, $staropt$star$1, nodes) {
-  var flow = $staropt$star !== undefined ? $staropt$star : /* [] */0;
-  var gap = $staropt$star$1 !== undefined ? $staropt$star$1 : 0;
+function hSeq(uid, flow, $staropt$star, nodes) {
+  var gap = $staropt$star !== undefined ? $staropt$star : 0;
   return Theia$Sidewinder.seq(uid, flow, undefined, nodes, undefined, gap, /* LeftRight */2, /* () */0);
 }
 
-function vSeq(uid, $staropt$star, $staropt$star$1, nodes) {
-  var flow = $staropt$star !== undefined ? $staropt$star : /* [] */0;
-  var gap = $staropt$star$1 !== undefined ? $staropt$star$1 : 0;
+function vSeq(uid, flow, $staropt$star, nodes) {
+  var gap = $staropt$star !== undefined ? $staropt$star : 0;
   return Theia$Sidewinder.seq(uid, flow, undefined, nodes, undefined, gap, /* UpDown */0, /* () */0);
 }
 
-function value(uid, $staropt$star, name, node) {
-  var flow = $staropt$star !== undefined ? $staropt$star : /* [] */0;
+function value(uid, flow, name, node) {
   return Theia$Sidewinder.box(uid, flow, /* :: */[
               name,
               /* [] */0
             ], 5, 5, node, /* [] */0, /* () */0);
 }
 
-function cell(uid, $staropt$star, name, node) {
-  var flow = $staropt$star !== undefined ? $staropt$star : /* [] */0;
+function cell(uid, flow, name, node) {
   return Theia$Sidewinder.box(uid, flow, /* :: */[
               name,
               /* [] */0

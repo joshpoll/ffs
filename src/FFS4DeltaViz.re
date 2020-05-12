@@ -4,14 +4,16 @@ open Sidewinder.Theia;
 /* TODO: maybe instead of a single uid, nodes can have multiple uids. but then they wouldn't be UIDs
    but some other construct instead */
 
-let hSeq = (~uid=?, ~flow=[], ~gap=0., nodes) =>
-  seq(~uid?, ~flow, ~nodes, ~linkRender=None, ~gap, ~direction=LeftRight, ());
-let vSeq = (~uid=?, ~flow=[], ~gap=0., nodes) =>
-  seq(~uid?, ~flow, ~nodes, ~linkRender=None, ~gap, ~direction=UpDown, ());
-let value = (~uid=?, ~flow=[], name, node) =>
-  box(~uid?, ~flow, ~tags=[name], ~dx=5., ~dy=5., node, [], ());
-let cell = (~uid=?, ~flow=[], name, node) =>
-  box(~uid?, ~flow, ~tags=[name], ~dx=5., ~dy=5., node, [], ());
+/* TODO: ADD FLOW!!!! */
+
+let hSeq = (~uid=?, ~flow=?, ~gap=0., nodes) =>
+  seq(~uid?, ~flow?, ~nodes, ~linkRender=None, ~gap, ~direction=LeftRight, ());
+let vSeq = (~uid=?, ~flow=?, ~gap=0., nodes) =>
+  seq(~uid?, ~flow?, ~nodes, ~linkRender=None, ~gap, ~direction=UpDown, ());
+let value = (~uid=?, ~flow=?, name, node) =>
+  box(~uid?, ~flow?, ~tags=[name], ~dx=5., ~dy=5., node, [], ());
+let cell = (~uid=?, ~flow=?, name, node) =>
+  box(~uid?, ~flow?, ~tags=[name], ~dx=5., ~dy=5., node, [], ());
 let split = (list, n) => {
   let rec aux = (i, acc) =>
     fun

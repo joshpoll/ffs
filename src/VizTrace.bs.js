@@ -71,7 +71,7 @@ function VizTrace(Props) {
   var initState;
   if (transition) {
     var nextPos = Caml_primitive.caml_int_min(state.pos + 1 | 0, List.length(state.trace) - 1 | 0);
-    initState = Main$Sidewinder.renderTransition(false, List.nth(swTrace, nextPos), List.nth(swTrace, state.pos));
+    initState = Main$Sidewinder.renderTransition(false, List.nth(swTrace, state.pos), List.nth(swTrace, nextPos));
   } else {
     initState = Main$Sidewinder.render(false, List.nth(swTrace, state.pos));
   }

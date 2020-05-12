@@ -59,8 +59,8 @@ let make = (~padding=10., ~transition=false, ~program) => {
         let nextPos = min(state.pos + 1, List.length(state.trace) - 1);
         Sidewinder.Main.renderTransition(
           ~debug=false,
-          List.nth(swTrace, nextPos),
           List.nth(swTrace, state.pos),
+          List.nth(swTrace, nextPos),
         );
       } else {
         List.nth(swTrace, state.pos) |> Sidewinder.Main.render(~debug=false);
