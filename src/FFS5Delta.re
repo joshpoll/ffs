@@ -84,11 +84,11 @@ let rauc = () => readAndUpdateCounter() |> string_of_int;
 
 type vid = (uid, string);
 
-let vid = x => (rauc(), x);
+let vid = x => ("vid_" ++ rauc(), x);
 
 type int_uid = (uid, int);
 
-let int_uid = n => (rauc(), n);
+let int_uid = n => ("int_" ++ rauc(), n);
 
 type lambda = {
   uid,
@@ -131,10 +131,10 @@ and env =
 and env_uid = (uid, env);
 
 /* lambda */
-let lambda = (~vid, ~exp_uid) => {uid: rauc(), vid, exp_uid};
+let lambda = (~vid, ~exp_uid) => {uid: "lambda_" ++ rauc(), vid, exp_uid};
 
 /* aexp */
-let aexp_uid = (ae): aexp_uid => (rauc(), ae);
+let aexp_uid = (ae): aexp_uid => ("aexp_" ++ rauc(), ae);
 /* let var = vid => Var(rauc(), vid);
    let app = (f, x) => App(rauc(), f, x);
    let lam = l => Lam(rauc(), l);
@@ -143,20 +143,20 @@ let aexp_uid = (ae): aexp_uid => (rauc(), ae);
    let bracket = e => Bracket(rauc(), e); */
 
 /* exp */
-let exp_uid = (e): exp_uid => (rauc(), e);
+let exp_uid = (e): exp_uid => ("exp_" ++ rauc(), e);
 /* let lift = ae => Lift(rauc(), ae);
    let elet = (x, ae1, e2) => Let(rauc(), x, ae1, e2); */
 
 /* value */
-let value_uid = (v): value_uid => (rauc(), v);
+let value_uid = (v): value_uid => ("value_" ++ rauc(), v);
 /* let vnum = n => VNum(rauc(), n);
    let clo = (l, e) => Clo(rauc(), l, e); */
 
 /* binding */
-let binding = (~vid, ~value_uid) => {uid: rauc(), vid, value_uid};
+let binding = (~vid, ~value_uid) => {uid: "binding_" ++ rauc(), vid, value_uid};
 
 /* env */
-let env_uid = (bs): env_uid => (rauc(), bs);
+let env_uid = (bs): env_uid => ("env_" ++ rauc(), bs);
 
 type hole = unit;
 
@@ -169,7 +169,7 @@ type ctxt =
 
 type ctxt_uid = (uid, ctxt);
 
-let ctxt_uid = (c): ctxt_uid => (rauc(), c);
+let ctxt_uid = (c): ctxt_uid => ("ctxt_" ++ rauc(), c);
 
 /* let appL = ((), ae) => AppL(rauc(), (), ae);
    let appR = (v, ()) => AppR(rauc(), v, ());
@@ -184,7 +184,7 @@ type focus =
 
 type focus_uid = (uid, focus);
 
-let focus_uid = (f): focus_uid => (rauc(), f);
+let focus_uid = (f): focus_uid => ("focus_" ++ rauc(), f);
 
 /* let aexp = ae => AExp(rauc(), ae);
    let exp = e => Exp(rauc(), e);
@@ -198,7 +198,7 @@ type ctxts =
 
 and ctxts_uid = (uid, ctxts);
 
-let ctxts_uid = (cs): ctxts_uid => (rauc(), cs);
+let ctxts_uid = (cs): ctxts_uid => ("ctxts_" ++ rauc(), cs);
 
 type zipper = {
   uid,
@@ -206,7 +206,7 @@ type zipper = {
   ctxts_uid,
 };
 
-let zipper = (~focus_uid, ~ctxts_uid) => {uid: rauc(), focus_uid, ctxts_uid};
+let zipper = (~focus_uid, ~ctxts_uid) => {uid: "zipper_" ++ rauc(), focus_uid, ctxts_uid};
 
 type frame = {
   uid,
@@ -214,7 +214,7 @@ type frame = {
   env_uid,
 };
 
-let frame = (~ctxts_uid, ~env_uid) => {uid: rauc(), ctxts_uid, env_uid};
+let frame = (~ctxts_uid, ~env_uid) => {uid: "frame_" ++ rauc(), ctxts_uid, env_uid};
 
 type stack =
   | Empty
@@ -222,7 +222,7 @@ type stack =
 
 and stack_uid = (uid, stack);
 
-let stack_uid = (fs): stack_uid => (rauc(), fs);
+let stack_uid = (fs): stack_uid => ("stack_" ++ rauc(), fs);
 
 type config = {
   uid,
@@ -231,7 +231,12 @@ type config = {
   stack_uid,
 };
 
-let config = (~zipper, ~env_uid, ~stack_uid) => {uid: rauc(), zipper, env_uid, stack_uid};
+let config = (~zipper, ~env_uid, ~stack_uid) => {
+  uid: "config_" ++ rauc(),
+  zipper,
+  env_uid,
+  stack_uid,
+};
 
 /* TODO: pick a name for this*/
 /* TODO: !!!add mutation flag?!!! */
@@ -262,7 +267,7 @@ let rec lookup = (x: vid, env: env_uid): option((value_uid, flow)) => {
   | Env({vid: y, value_uid: (v_uid, v_val)}, (_, env_val)) =>
     let (y_uid, y_val) = y;
     if (x_val == y_val) {
-      let fresh = rauc();
+      let fresh = "valLookup_" ++ rauc();
       Some(((fresh, v_val), MS.fromArray([|(x_uid, [fresh]), (env_uid, [fresh])|])));
     } else {
       lookup(x, (env_uid, env_val));
@@ -329,7 +334,7 @@ let step = (c: config): option((config, (string, flow))) =>
       env_uid: (env_uid, env_val),
       stack_uid: (stack_uid, stack_val),
     } =>
-    let env_uid2 = rauc();
+    let env_uid2 = "envCopy_" ++ rauc();
     Some((
       config(
         ~zipper=
@@ -679,7 +684,7 @@ let step = (c: config): option((config, (string, flow))) =>
     } =>
     let (x_uid, x_val) = x;
     let (y_uid, y_val) = y;
-    let (z_uid, z_val) = (rauc(), x_val + y_val);
+    let (z_uid, z_val) = ("sum_" ++ rauc(), x_val + y_val);
     let (c_uid, _) = c;
     let (en_uid, _) = en;
     let (s_uid, _) = s;
@@ -711,7 +716,7 @@ let step = (c: config): option((config, (string, flow))) =>
     let (e_uid, _) = e;
     let (c_uid, _) = c;
     let (en_uid, en_val) = en;
-    let en_uid2 = rauc();
+    let en_uid2 = "envCopy_" ++ rauc();
     let (s_uid, _) = s;
     Some((
       config(
