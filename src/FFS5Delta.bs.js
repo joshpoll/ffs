@@ -1647,21 +1647,26 @@ function iterateMaybeSideEffect(f, x) {
 
 function interpretTrace(p) {
   var match = iterateMaybeSideEffect(step, inject(p));
-  console.log("rules", $$Array.of_list(match[1]));
-  return takeWhileInclusive((function (c) {
-                return !isFinal(c);
-              }), match[0]);
+  var rules = match[1];
+  console.log("rules", $$Array.of_list(rules));
+  var match$1 = List.split(rules);
+  return List.combine(Pervasives.$at(match$1[1], /* :: */[
+                  Belt_MapString.empty,
+                  /* [] */0
+                ]), takeWhileInclusive((function (c) {
+                    return !isFinal(c);
+                  }), match[0]));
 }
 
 function interpret(p) {
-  var s = List.hd(List.rev(interpretTrace(p)));
-  var match = s.zipper.focus_uid[1];
-  switch (match.tag | 0) {
+  var match = List.hd(List.rev(interpretTrace(p)));
+  var match$1 = match[1].zipper.focus_uid[1];
+  switch (match$1.tag | 0) {
     case /* AExp */0 :
     case /* Exp */1 :
         throw Pervasives.failwith("expected a value");
     case /* Value */2 :
-        return valueFromUID(match[0]);
+        return valueFromUID(match$1[0]);
     
   }
 }

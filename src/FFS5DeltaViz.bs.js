@@ -452,20 +452,22 @@ function vizStack(flow, param) {
   }
 }
 
-function vizMachineState(flow, param) {
-  var match = param.zipper;
-  var z_uid = match.uid;
-  var uid = param.uid;
+function vizMachineState(param) {
+  var match = param[1];
+  var match$1 = match.zipper;
+  var z_uid = match$1.uid;
+  var uid = match.uid;
+  var flow = param[0];
   return hSeq(uid, Belt_MapString.get(flow, uid), 20, /* :: */[
               vSeq(undefined, undefined, 5, /* :: */[
-                    cell(undefined, undefined, "env", vizEnv(flow, param.env_uid)),
+                    cell(undefined, undefined, "env", vizEnv(flow, match.env_uid)),
                     /* :: */[
-                      zipper(z_uid, Belt_MapString.get(flow, z_uid), vizFocus(flow, match.focus_uid), vizCtxts(flow, match.ctxts_uid)),
+                      zipper(z_uid, Belt_MapString.get(flow, z_uid), vizFocus(flow, match$1.focus_uid), vizCtxts(flow, match$1.ctxts_uid)),
                       /* [] */0
                     ]
                   ]),
               /* :: */[
-                cell(undefined, undefined, "stack", vizStack(flow, param.stack_uid)),
+                cell(undefined, undefined, "stack", vizStack(flow, match.stack_uid)),
                 /* [] */0
               ]
             ]);

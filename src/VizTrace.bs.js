@@ -5,8 +5,8 @@ var Curry = require("bs-platform/lib/js/curry.js");
 var React = require("react");
 var Caml_primitive = require("bs-platform/lib/js/caml_primitive.js");
 var Main$Sidewinder = require("sidewinder/src/Main.bs.js");
-var FFS4Delta$ReasonReactExamples = require("./FFS4Delta.bs.js");
-var FFS4DeltaViz$ReasonReactExamples = require("./FFS4DeltaViz.bs.js");
+var FFS5Delta$ReasonReactExamples = require("./FFS5Delta.bs.js");
+var FFS5DeltaViz$ReasonReactExamples = require("./FFS5DeltaViz.bs.js");
 
 var leftButtonStyle = {
   width: "48px",
@@ -18,14 +18,9 @@ var rightButtonStyle = {
   borderRadius: "0px 4px 4px 0px"
 };
 
-var initialState_trace = /* :: */[
-  FFS4Delta$ReasonReactExamples.loading,
-  /* [] */0
-];
-
 var initialState = {
   pos: 0,
-  trace: initialState_trace
+  length: 1
 };
 
 function reducer(state, action) {
@@ -33,13 +28,13 @@ function reducer(state, action) {
     switch (action) {
       case /* Increment */0 :
           return {
-                  pos: Caml_primitive.caml_int_min(List.length(state.trace) - 1 | 0, state.pos + 1 | 0),
-                  trace: state.trace
+                  pos: Caml_primitive.caml_int_min(state.length - 1 | 0, state.pos + 1 | 0),
+                  length: state.length
                 };
       case /* Decrement */1 :
           return {
                   pos: Caml_primitive.caml_int_max(0, state.pos - 1 | 0),
-                  trace: state.trace
+                  length: state.length
                 };
       case /* Error */2 :
           return state;
@@ -48,7 +43,7 @@ function reducer(state, action) {
   } else {
     return {
             pos: state.pos,
-            trace: action[0]
+            length: action[0]
           };
   }
 }
@@ -59,18 +54,18 @@ function VizTrace(Props) {
   var match$1 = Props.transition;
   var transition = match$1 !== undefined ? match$1 : false;
   var program = Props.program;
+  var trace = FFS5Delta$ReasonReactExamples.interpretTrace(program);
   var match$2 = React.useReducer(reducer, initialState);
   var dispatch = match$2[1];
   var state = match$2[0];
   React.useEffect((function () {
-          Curry._1(dispatch, /* Trace */[FFS4Delta$ReasonReactExamples.interpretTrace(program)]);
+          Curry._1(dispatch, /* Length */[List.length(trace)]);
           return ;
         }), ([]));
-  var trace = state.trace;
-  var swTrace = List.map(FFS4DeltaViz$ReasonReactExamples.vizMachineState, trace);
+  var swTrace = List.map(FFS5DeltaViz$ReasonReactExamples.vizMachineState, trace);
   var initState;
   if (transition) {
-    var nextPos = Caml_primitive.caml_int_min(state.pos + 1 | 0, List.length(state.trace) - 1 | 0);
+    var nextPos = Caml_primitive.caml_int_min(state.pos + 1 | 0, state.length - 1 | 0);
     initState = Main$Sidewinder.renderTransition(false, List.nth(swTrace, state.pos), List.nth(swTrace, nextPos));
   } else {
     initState = Main$Sidewinder.render(false, List.nth(swTrace, state.pos));

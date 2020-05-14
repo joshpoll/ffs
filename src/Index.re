@@ -39,30 +39,30 @@ ReactDOMRe.render(<FetchedDogPictures />, makeContainer("Fetched Dog Pictures"))
 
 ReactDOMRe.render(<ReasonUsingJSUsingReason />, makeContainer("Reason Using JS Using Reason"));
 
-let id = x => FFS4.Lam({vid: x, exp: Lift(Var(x))});
+let id = x => FFS5.Lam({vid: x, exp: Lift(Var(x))});
 
 /* TODO: this program crashes */
 ReactDOMRe.render(
-  <VizTrace program={FFS4.Lift(App(id("x"), id("y")))} />,
+  <VizTrace program={FFS5.Lift(App(id("x"), id("y")))} />,
   makeContainer("FFS"),
 );
 
 /* TODO: moves numbers around for some reason */
 ReactDOMRe.render(
-  <VizTrace program={FFS4.Lift(Add(Num(1), Add(Num(2), Num(3))))} />,
+  <VizTrace program={FFS5.Lift(Add(Num(1), Add(Num(2), Num(3))))} />,
   makeContainer("1 + (2 + 3)"),
 );
 
 ReactDOMRe.render(
   <VizTrace
-    program={FFS4.Let("x", Num(5), Let("y", Num(6), Lift(Add(Var("x"), Var("y")))))}
+    program={FFS5.Let("x", Num(5), Let("y", Num(6), Lift(Add(Var("x"), Var("y")))))}
   />,
   makeContainer("let add"),
 );
 
 ReactDOMRe.render(
   <VizTrace
-    program={FFS4.Let("x", Num(5), Let("y", Num(6), Lift(Add(Var("x"), Var("y")))))}
+    program={FFS5.Let("x", Num(5), Let("y", Num(6), Lift(Add(Var("x"), Var("y")))))}
     transition=true
   />,
   makeContainer("let add transition"),

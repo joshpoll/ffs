@@ -1004,14 +1004,15 @@ let rec iterateMaybeSideEffect = (f: 'a => option(('a, 'b)), x: 'a): (list('a), 
     ([x, ...als], [b, ...bls]);
   };
 
-let interpretTrace = p => {
+let interpretTrace = (p: FFS5.exp): list((flow, config)) => {
   let (states, rules) = iterateMaybeSideEffect(step, inject(p));
   Js.log2("rules", rules |> Array.of_list);
-  takeWhileInclusive(c => !isFinal(c), states);
+  let (_, flow) = rules |> List.split;
+  List.combine(flow @ [MS.empty], takeWhileInclusive(c => !isFinal(c), states));
 };
 
 let interpret = p => {
-  let s = interpretTrace(p) |> List.rev |> List.hd;
+  let (_, s) = interpretTrace(p) |> List.rev |> List.hd;
   switch (s) {
   | {zipper: {focus_uid: (_, Value(v)), ctxts_uid: _}, env_uid: _, stack_uid: _} =>
     valueFromUID(v)

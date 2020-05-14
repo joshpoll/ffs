@@ -270,8 +270,10 @@ let vizStack = (flow, (s_uid, fs)) =>
 
 let vizMachineState =
     (
-      flow: FFS5Delta.flow,
-      {uid, zipper: {uid: z_uid, focus_uid, ctxts_uid}, env_uid, stack_uid},
+      (
+        flow: FFS5Delta.flow,
+        {uid, zipper: {uid: z_uid, focus_uid, ctxts_uid}, env_uid, stack_uid},
+      ),
     ) => {
   hSeq(
     ~uid,
