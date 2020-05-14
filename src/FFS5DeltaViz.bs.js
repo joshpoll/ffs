@@ -111,18 +111,6 @@ function vizInt(flow, param) {
   return Theia$Sidewinder.str(n_uid, Belt_MapString.get(flow, n_uid), undefined, String(param[1]), /* () */0);
 }
 
-function envToList(param) {
-  var e = param[1];
-  if (e) {
-    return /* :: */[
-            e[0],
-            envToList(e[1])
-          ];
-  } else {
-    return /* [] */0;
-  }
-}
-
 function ctxtsToList(param) {
   var c = param[1];
   if (c) {
@@ -228,45 +216,31 @@ function vizValue(flow, param) {
   }
 }
 
-function vizEnv(flow, param) {
-  var e_uid = param[0];
-  return Theia$Sidewinder.table(e_uid, Belt_MapString.get(flow, e_uid), undefined, /* :: */[
+function vizBinding(flow, param) {
+  var uid = param.uid;
+  return hSeq(uid, Belt_MapString.get(flow, uid), undefined, /* :: */[
+              vizVid(flow, param.vid),
               /* :: */[
-                Theia$Sidewinder.str(undefined, undefined, undefined, "Id", /* () */0),
+                vizValue(flow, param.value_uid),
+                /* [] */0
+              ]
+            ]);
+}
+
+function vizEnv(flow, param) {
+  var e = param[1];
+  var e_uid = param[0];
+  if (e) {
+    return vSeq(e_uid, Belt_MapString.get(flow, e_uid), undefined, /* :: */[
+                vizBinding(flow, e[0]),
                 /* :: */[
-                  Theia$Sidewinder.str(undefined, undefined, undefined, "Val", /* () */0),
+                  vizEnv(flow, e[1]),
                   /* [] */0
                 ]
-              ],
-              List.rev(List.map((function (param) {
-                          return /* :: */[
-                                  vizVid(flow, param.vid),
-                                  /* :: */[
-                                    vizValue(flow, param.value_uid),
-                                    /* [] */0
-                                  ]
-                                ];
-                        }), envToList(/* tuple */[
-                            e_uid,
-                            param[1]
-                          ])))
-            ], (function (source, target) {
-                return React.createElement("line", {
-                            stroke: "black",
-                            x1: ((Rectangle$Sidewinder.x2(source) + Rectangle$Sidewinder.x1(target)) / 2).toString(),
-                            x2: ((Rectangle$Sidewinder.x2(source) + Rectangle$Sidewinder.x1(target)) / 2).toString(),
-                            y1: ((Rectangle$Sidewinder.y1(source) + Rectangle$Sidewinder.y1(target)) / 2).toString(),
-                            y2: ((Rectangle$Sidewinder.y2(source) + Rectangle$Sidewinder.y2(target)) / 2).toString()
-                          });
-              }), (function (source, target) {
-                return React.createElement("line", {
-                            stroke: "black",
-                            x1: ((Rectangle$Sidewinder.x1(source) + Rectangle$Sidewinder.x1(target)) / 2).toString(),
-                            x2: ((Rectangle$Sidewinder.x2(source) + Rectangle$Sidewinder.x2(target)) / 2).toString(),
-                            y1: ((Rectangle$Sidewinder.y2(source) + Rectangle$Sidewinder.y1(target)) / 2).toString(),
-                            y2: ((Rectangle$Sidewinder.y2(source) + Rectangle$Sidewinder.y1(target)) / 2).toString()
-                          });
-              }), 0, 0, /* LeftRight */2, /* UpDown */0, /* () */0);
+              ]);
+  } else {
+    return Theia$Sidewinder.str(e_uid, Belt_MapString.get(flow, e_uid), undefined, "empty env", /* () */0);
+  }
 }
 
 function vizLambda(flow, param) {
@@ -488,11 +462,11 @@ exports.zipper = zipper;
 exports.paren = paren;
 exports.vizVid = vizVid;
 exports.vizInt = vizInt;
-exports.envToList = envToList;
 exports.ctxtsToList = ctxtsToList;
 exports.vizAExp = vizAExp;
 exports.vizExp = vizExp;
 exports.vizValue = vizValue;
+exports.vizBinding = vizBinding;
 exports.vizEnv = vizEnv;
 exports.vizLambda = vizLambda;
 exports.vizCtxt = vizCtxt;

@@ -53,11 +53,14 @@ let vizInt = (flow, (n_uid, n)) =>
   str(~uid=n_uid, ~flow=?MS.get(flow, n_uid), string_of_int(n), ());
 
 /* TODO: this strips away some of the values which are important to the visualization */
-let rec envToList = ((e_uid, e): env_uid): list(binding) =>
-  switch (e) {
-  | Empty => []
-  | Env(b, e) => [b, ...envToList(e)]
-  };
+/* the visualization actually crashes, because it expects a value that isn't there!!!! */
+/* need to make a row-based table layout. for now can fake with a vseq of hseqs. the only downside
+   will be the table will be jagged. that's why a new primitive is necessary */
+/* let rec envToList = ((e_uid, e): env_uid): list(binding) =>
+   switch (e) {
+   | Empty => []
+   | Env(b, e) => [b, ...envToList(e)]
+   }; */
 
 /* TODO: this also strips things away */
 let rec ctxtsToList = ((c_uid, c): ctxts_uid): list(ctxt_uid) =>
@@ -123,60 +126,69 @@ and vizValue = (flow, (v_uid, v)) =>
     )
   }
 
+/* TODO: this visualization is hacky, but it should allow for more continuity */
+and vizBinding = (flow, {uid, vid, value_uid}) =>
+  hSeq(~uid, ~flow=?MS.get(flow, uid), [vizVid(flow, vid), vizValue(flow, value_uid)])
+
 and vizEnv = (flow, (e_uid, e)) =>
-  table(
-    ~uid=e_uid,
-    ~flow=?MS.get(flow, e_uid),
-    ~nodes=[
-      [str("Id", ()), str("Val", ())],
-      ...envToList((e_uid, e))
-         |> List.map(({vid, value_uid}) => [vizVid(flow, vid), vizValue(flow, value_uid)])
-         |> List.rev,
-    ],
-    ~xLinkRender=
-      Some(
-        (~source, ~target) =>
-          <line
-            x1={Js.Float.toString(
-              (source->Sidewinder.Rectangle.x2 +. target->Sidewinder.Rectangle.x1) /. 2.,
-            )}
-            x2={Js.Float.toString(
-              (source->Sidewinder.Rectangle.x2 +. target->Sidewinder.Rectangle.x1) /. 2.,
-            )}
-            y1={Js.Float.toString(
-              (source->Sidewinder.Rectangle.y1 +. target->Sidewinder.Rectangle.y1) /. 2.,
-            )}
-            y2={Js.Float.toString(
-              (source->Sidewinder.Rectangle.y2 +. target->Sidewinder.Rectangle.y2) /. 2.,
-            )}
-            stroke="black"
-          />,
-      ),
-    ~yLinkRender=
-      Some(
-        (~source, ~target) =>
-          <line
-            x1={Js.Float.toString(
-              (source->Sidewinder.Rectangle.x1 +. target->Sidewinder.Rectangle.x1) /. 2.,
-            )}
-            x2={Js.Float.toString(
-              (source->Sidewinder.Rectangle.x2 +. target->Sidewinder.Rectangle.x2) /. 2.,
-            )}
-            y1={Js.Float.toString(
-              (source->Sidewinder.Rectangle.y2 +. target->Sidewinder.Rectangle.y1) /. 2.,
-            )}
-            y2={Js.Float.toString(
-              (source->Sidewinder.Rectangle.y2 +. target->Sidewinder.Rectangle.y1) /. 2.,
-            )}
-            stroke="black"
-          />,
-      ),
-    ~xGap=0.,
-    ~yGap=0.,
-    ~xDirection=LeftRight,
-    ~yDirection=UpDown,
-    (),
-  )
+  switch (e) {
+  | Empty => str(~uid=e_uid, ~flow=?MS.get(flow, e_uid), "empty env", ())
+  | Env(b, e) =>
+    vSeq(~uid=e_uid, ~flow=?MS.get(flow, e_uid), [vizBinding(flow, b), vizEnv(flow, e)])
+  }
+/* table(
+     ~uid=e_uid,
+     ~flow=?MS.get(flow, e_uid),
+     ~nodes=[
+       [str("Id", ()), str("Val", ())],
+       ...envToList((e_uid, e))
+          |> List.map(({vid, value_uid}) => [vizVid(flow, vid), vizValue(flow, value_uid)])
+          |> List.rev,
+     ],
+     ~xLinkRender=
+       Some(
+         (~source, ~target) =>
+           <line
+             x1={Js.Float.toString(
+               (source->Sidewinder.Rectangle.x2 +. target->Sidewinder.Rectangle.x1) /. 2.,
+             )}
+             x2={Js.Float.toString(
+               (source->Sidewinder.Rectangle.x2 +. target->Sidewinder.Rectangle.x1) /. 2.,
+             )}
+             y1={Js.Float.toString(
+               (source->Sidewinder.Rectangle.y1 +. target->Sidewinder.Rectangle.y1) /. 2.,
+             )}
+             y2={Js.Float.toString(
+               (source->Sidewinder.Rectangle.y2 +. target->Sidewinder.Rectangle.y2) /. 2.,
+             )}
+             stroke="black"
+           />,
+       ),
+     ~yLinkRender=
+       Some(
+         (~source, ~target) =>
+           <line
+             x1={Js.Float.toString(
+               (source->Sidewinder.Rectangle.x1 +. target->Sidewinder.Rectangle.x1) /. 2.,
+             )}
+             x2={Js.Float.toString(
+               (source->Sidewinder.Rectangle.x2 +. target->Sidewinder.Rectangle.x2) /. 2.,
+             )}
+             y1={Js.Float.toString(
+               (source->Sidewinder.Rectangle.y2 +. target->Sidewinder.Rectangle.y1) /. 2.,
+             )}
+             y2={Js.Float.toString(
+               (source->Sidewinder.Rectangle.y2 +. target->Sidewinder.Rectangle.y1) /. 2.,
+             )}
+             stroke="black"
+           />,
+       ),
+     ~xGap=0.,
+     ~yGap=0.,
+     ~xDirection=LeftRight,
+     ~yDirection=UpDown,
+     (),
+   ) */
 
 and vizLambda = (flow, {uid, vid, exp_uid}) =>
   hSeq(
