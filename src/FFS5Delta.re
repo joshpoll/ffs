@@ -271,13 +271,25 @@ let rec lookup = (x: vid, env: env_uid): option((value_uid, flow)) => {
     let (y_uid, y_val) = y;
     if (x_val == y_val) {
       let fresh = "valLookup_" ++ rauc();
-      Some((
-        (fresh, v_val),
-        MS.fromArray([|
-          /* [|(x_uid, [fresh]), (env_uid, [fresh])|] */
-          (v_uid, [v_uid, fresh]),
-        |]),
-      ));
+      switch (v_val) {
+      | VNum((_, n)) =>
+        Some((
+          (fresh, VNum(("valLookup_int_" ++ rauc(), n))), /* hack special-casing so we get a fresh
+          uid for num to avoid duplicated uids later. */
+          MS.fromArray([|
+            /* [|(x_uid, [fresh]), (env_uid, [fresh])|] */
+            (v_uid, [v_uid, fresh]),
+          |]),
+        ))
+      | _ =>
+        Some((
+          (fresh, v_val),
+          MS.fromArray([|
+            /* [|(x_uid, [fresh]), (env_uid, [fresh])|] */
+            (v_uid, [v_uid, fresh]),
+          |]),
+        ))
+      };
     } else {
       lookup(x, (env_uid, env_val));
     };
@@ -1027,8 +1039,9 @@ let rec iterateMaybeSideEffect = (f: 'a => option(('a, 'b)), x: 'a): (list('a), 
 
 let interpretTrace = (p: FFS5.exp): list(((string, flow), config)) => {
   let (states, rules) = iterateMaybeSideEffect(step, inject(p));
-  Js.log2("rules", rules |> Array.of_list);
-  // let (_, flow) = rules |> List.split;
+  // Js.log2("rules", rules |> Array.of_list);
+  let (actualRules, flow) = rules |> List.split;
+  // Js.log2("rules", List.combine(actualRules, List.map(MS.toArray, flow)) |> Array.of_list);
   List.combine(rules @ [("", MS.empty)], takeWhileInclusive(c => !isFinal(c), states));
 };
 

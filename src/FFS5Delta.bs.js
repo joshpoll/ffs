@@ -1,7 +1,6 @@
 'use strict';
 
 var List = require("bs-platform/lib/js/list.js");
-var $$Array = require("bs-platform/lib/js/array.js");
 var Block = require("bs-platform/lib/js/block.js");
 var Curry = require("bs-platform/lib/js/curry.js");
 var Pervasives = require("bs-platform/lib/js/pervasives.js");
@@ -139,25 +138,48 @@ function lookup(x, _env) {
     if (env_val) {
       var match = env_val[0];
       var match$1 = match.value_uid;
+      var v_val = match$1[1];
       var v_uid = match$1[0];
       if (x[1] === match.vid[1]) {
         var fresh = "valLookup_" + String(readAndUpdateCounter(/* () */0));
-        return /* tuple */[
-                /* tuple */[
-                  fresh,
-                  match$1[1]
-                ],
-                Belt_MapString.fromArray([/* tuple */[
-                        v_uid,
-                        /* :: */[
+        if (v_val.tag) {
+          return /* tuple */[
+                  /* tuple */[
+                    fresh,
+                    v_val
+                  ],
+                  Belt_MapString.fromArray([/* tuple */[
                           v_uid,
                           /* :: */[
-                            fresh,
-                            /* [] */0
+                            v_uid,
+                            /* :: */[
+                              fresh,
+                              /* [] */0
+                            ]
                           ]
-                        ]
-                      ]])
-              ];
+                        ]])
+                ];
+        } else {
+          return /* tuple */[
+                  /* tuple */[
+                    fresh,
+                    /* VNum */Block.__(0, [/* tuple */[
+                          "valLookup_int_" + String(readAndUpdateCounter(/* () */0)),
+                          v_val[0][1]
+                        ]])
+                  ],
+                  Belt_MapString.fromArray([/* tuple */[
+                          v_uid,
+                          /* :: */[
+                            v_uid,
+                            /* :: */[
+                              fresh,
+                              /* [] */0
+                            ]
+                          ]
+                        ]])
+                ];
+        }
       } else {
         _env = /* tuple */[
           env[0],
@@ -1478,7 +1500,7 @@ function iterateMaybeSideEffect(f, x) {
 function interpretTrace(p) {
   var match = iterateMaybeSideEffect(step, inject(p));
   var rules = match[1];
-  console.log("rules", $$Array.of_list(rules));
+  List.split(rules);
   return List.combine(Pervasives.$at(rules, /* :: */[
                   /* tuple */[
                     "",
