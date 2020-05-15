@@ -259,6 +259,7 @@ let vizCtxt = (flow, (c_uid, c)) =>
             hSeq(
               ~gap=2.,
               insert(
+                /* TODO: this extra use of highlight hints that insert should be responsible for highlighting */
                 highlight(~fill="hsla(240, 100%, 80%, 33%)", hole, [], ()),
                 [str("let", ()), vizVid(flow, x), str("=", ()), str("in", ())],
                 3,

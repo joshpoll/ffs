@@ -271,7 +271,13 @@ let rec lookup = (x: vid, env: env_uid): option((value_uid, flow)) => {
     let (y_uid, y_val) = y;
     if (x_val == y_val) {
       let fresh = "valLookup_" ++ rauc();
-      Some(((fresh, v_val), MS.fromArray([|(x_uid, [fresh]), (env_uid, [fresh])|])));
+      Some((
+        (fresh, v_val),
+        MS.fromArray([|
+          /* [|(x_uid, [fresh]), (env_uid, [fresh])|] */
+          (v_uid, [v_uid, fresh]),
+        |]),
+      ));
     } else {
       lookup(x, (env_uid, env_val));
     };

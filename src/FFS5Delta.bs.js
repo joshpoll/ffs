@@ -138,34 +138,29 @@ function lookup(x, _env) {
     var env_val = env[1];
     if (env_val) {
       var match = env_val[0];
-      var env_uid = env[0];
+      var match$1 = match.value_uid;
+      var v_uid = match$1[0];
       if (x[1] === match.vid[1]) {
         var fresh = "valLookup_" + String(readAndUpdateCounter(/* () */0));
         return /* tuple */[
                 /* tuple */[
                   fresh,
-                  match.value_uid[1]
+                  match$1[1]
                 ],
-                Belt_MapString.fromArray([
-                      /* tuple */[
-                        x[0],
+                Belt_MapString.fromArray([/* tuple */[
+                        v_uid,
                         /* :: */[
-                          fresh,
-                          /* [] */0
+                          v_uid,
+                          /* :: */[
+                            fresh,
+                            /* [] */0
+                          ]
                         ]
-                      ],
-                      /* tuple */[
-                        env_uid,
-                        /* :: */[
-                          fresh,
-                          /* [] */0
-                        ]
-                      ]
-                    ])
+                      ]])
               ];
       } else {
         _env = /* tuple */[
-          env_uid,
+          env[0],
           env_val[1][1]
         ];
         continue ;
