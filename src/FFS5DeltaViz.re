@@ -16,6 +16,16 @@ let value = (~uid=?, ~flow=?, name, node) =>
   box(~uid?, ~flow?, ~tags=[name], ~dx=5., ~dy=5., node, [], ());
 let cell = (~uid=?, ~flow=?, name, node) =>
   box(~uid?, ~flow?, ~tags=[name], ~dx=5., ~dy=5., node, [], ());
+
+let empty = (~uid=?, ~flow=?, ()) =>
+  atom(
+    ~uid?,
+    ~flow?,
+    <> </>,
+    Sidewinder.Rectangle.fromCenterPointSize(~cx=0., ~cy=0., ~width=0., ~height=0.),
+    (),
+  );
+
 let split = (list, n) => {
   let rec aux = (i, acc) =>
     fun
@@ -130,12 +140,19 @@ and vizValue = (flow, (v_uid, v)) =>
 and vizBinding = (flow, {uid, vid, value_uid}) =>
   hSeq(~uid, ~flow=?MS.get(flow, uid), [vizVid(flow, vid), vizValue(flow, value_uid)])
 
+and vizEnvAux = (flow, (e_uid, e: env)) =>
+  switch (e) {
+  | Empty => empty(~uid=e_uid, ~flow=?MS.get(flow, e_uid), ())
+  | Env(b, e) =>
+    vSeq(~uid=e_uid, ~flow=?MS.get(flow, e_uid), [vizEnvAux(flow, e), vizBinding(flow, b)])
+  }
+
 and vizEnv = (flow, (e_uid, e)) =>
   switch (e) {
   | Empty => str(~uid=e_uid, ~flow=?MS.get(flow, e_uid), "empty env", ())
-  | Env(b, e) =>
-    vSeq(~uid=e_uid, ~flow=?MS.get(flow, e_uid), [vizBinding(flow, b), vizEnv(flow, e)])
+  | _ => vizEnvAux(flow, (e_uid, e))
   }
+
 /* table(
      ~uid=e_uid,
      ~flow=?MS.get(flow, e_uid),
@@ -263,21 +280,23 @@ let vizFrame = (flow, {uid, ctxts_uid, env_uid}) =>
   );
 
 /* TODO: strips info */
-let rec stackToList = ((s_uid, s): stack_uid): list(frame) =>
-  switch (s) {
-  | Empty => []
-  | Stack(f, s) => [f, ...stackToList(s)]
+/* let rec stackToList = ((s_uid, s): stack_uid): list(frame) =>
+   switch (s) {
+   | Empty => []
+   | Stack(f, s) => [f, ...stackToList(s)]
+   }; */
+
+let rec vizStackAux = (flow, (s_uid, fs)) =>
+  switch (fs) {
+  | Empty => empty(~uid=s_uid, ~flow=?MS.get(flow, s_uid), ())
+  | Stack(f, fs) =>
+    vSeq(~uid=s_uid, ~flow=?MS.get(flow, s_uid), [vizStackAux(flow, fs), vizFrame(flow, f)])
   };
 
 let vizStack = (flow, (s_uid, fs)) =>
   switch (fs) {
-  | Empty => str(~uid=s_uid, ~flow=?MS.get(flow, s_uid), " ", ())
-  | _ =>
-    vSeq(
-      ~uid=s_uid,
-      ~flow=?MS.get(flow, s_uid),
-      stackToList((s_uid, fs)) |> List.map(vizFrame(flow)),
-    )
+  | Empty => str(~uid=s_uid, ~flow=?MS.get(flow, s_uid), "empty stack", ())
+  | _ => vizStackAux(flow, (s_uid, fs))
   };
 
 let vizMachineState =

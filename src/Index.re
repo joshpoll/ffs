@@ -67,3 +67,8 @@ ReactDOMRe.render(
   />,
   makeContainer("let add transition"),
 );
+
+ReactDOMRe.render(
+  <VizTrace program={FFS5.Lift(App(id("x"), id("y")))} transition=true />,
+  makeContainer("id id transition"),
+);

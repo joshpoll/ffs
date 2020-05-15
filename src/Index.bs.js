@@ -101,6 +101,20 @@ ReactDom.render(React.createElement(VizTrace$ReasonReactExamples.make, {
             ])
         }), makeContainer("let add transition"));
 
+ReactDom.render(React.createElement(VizTrace$ReasonReactExamples.make, {
+          transition: true,
+          program: /* Lift */Block.__(0, [/* App */Block.__(1, [
+                  /* Lam */Block.__(2, [{
+                        vid: "x",
+                        exp: /* Lift */Block.__(0, [/* Var */Block.__(0, ["x"])])
+                      }]),
+                  /* Lam */Block.__(2, [{
+                        vid: "y",
+                        exp: /* Lift */Block.__(0, [/* Var */Block.__(0, ["y"])])
+                      }])
+                ])])
+        }), makeContainer("id id transition"));
+
 exports.style = style;
 exports.makeContainer = makeContainer;
 exports.id = id;
