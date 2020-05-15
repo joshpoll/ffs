@@ -10,22 +10,37 @@ let rightButtonStyle = ReactDOMRe.Style.make(~borderRadius="0px 4px 4px 0px", ~w
 type state = {
   pos: int,
   length: int,
+  prevState: Sidewinder.TransitionNode.state,
+  currState: Sidewinder.TransitionNode.state,
 };
 
 type action =
   | Increment
   | Decrement
   | Length(int)
+  | Toggle
   | Error;
 
-let initialState = {pos: 0, length: 1};
+let initialState = {pos: 0, length: 1, prevState: Before, currState: Before};
+
+let toggle = (s: Sidewinder.TransitionNode.state): Sidewinder.TransitionNode.state =>
+  switch (s) {
+  | Before => After
+  | After => Before
+  };
 
 let reducer = (state, action) => {
   switch (action) {
-  | Increment => {...state, pos: min(state.length - 1, state.pos + 1)}
-  | Decrement => {...state, pos: max(0, state.pos - 1)}
+  | Increment => {
+      ...state,
+      pos: min(state.length - 1, state.pos + 1),
+      prevState: Before,
+      currState: Before,
+    }
+  | Decrement => {...state, pos: max(0, state.pos - 1), prevState: Before, currState: Before}
   | Length(length) => {...state, length}
-  | _ => state
+  | Toggle => {...state, prevState: state.currState, currState: toggle(state.currState)}
+  | Error => state
   };
 };
 
@@ -59,6 +74,8 @@ let make = (~padding=10., ~transition=false, ~program) => {
       let nextPos = min(state.pos + 1, state.length - 1);
       Sidewinder.Main.renderTransition(
         ~debug=false,
+        ~prevState=state.prevState,
+        ~currState=state.currState,
         List.nth(swTrace, state.pos),
         List.nth(swTrace, nextPos),
       );
@@ -82,6 +99,16 @@ let make = (~padding=10., ~transition=false, ~program) => {
     <button style=leftButtonStyle onClick={_event => dispatch(Decrement)}>
       {React.string("<-")}
     </button>
+    {if (transition) {
+       <button onClick={_event => dispatch(Toggle)}>
+         {switch (state.currState) {
+          | Before => React.string("To After")
+          | After => React.string("To Before")
+          }}
+       </button>;
+     } else {
+       <> </>;
+     }}
     <button style=rightButtonStyle onClick={_event => dispatch(Increment)}>
       {React.string("->")}
     </button>

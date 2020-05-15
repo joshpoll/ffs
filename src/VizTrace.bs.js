@@ -20,8 +20,18 @@ var rightButtonStyle = {
 
 var initialState = {
   pos: 0,
-  length: 1
+  length: 1,
+  prevState: /* Before */0,
+  currState: /* Before */0
 };
+
+function toggle(s) {
+  if (s) {
+    return /* Before */0;
+  } else {
+    return /* After */1;
+  }
+}
 
 function reducer(state, action) {
   if (typeof action === "number") {
@@ -29,21 +39,34 @@ function reducer(state, action) {
       case /* Increment */0 :
           return {
                   pos: Caml_primitive.caml_int_min(state.length - 1 | 0, state.pos + 1 | 0),
-                  length: state.length
+                  length: state.length,
+                  prevState: /* Before */0,
+                  currState: /* Before */0
                 };
       case /* Decrement */1 :
           return {
                   pos: Caml_primitive.caml_int_max(0, state.pos - 1 | 0),
-                  length: state.length
+                  length: state.length,
+                  prevState: /* Before */0,
+                  currState: /* Before */0
                 };
-      case /* Error */2 :
+      case /* Toggle */2 :
+          return {
+                  pos: state.pos,
+                  length: state.length,
+                  prevState: state.currState,
+                  currState: state.currState ? /* Before */0 : /* After */1
+                };
+      case /* Error */3 :
           return state;
       
     }
   } else {
     return {
             pos: state.pos,
-            length: action[0]
+            length: action[0],
+            prevState: state.prevState,
+            currState: state.currState
           };
   }
 }
@@ -66,16 +89,27 @@ function VizTrace(Props) {
   var initState;
   if (transition) {
     var nextPos = Caml_primitive.caml_int_min(state.pos + 1 | 0, state.length - 1 | 0);
-    initState = Main$Sidewinder.renderTransition(false, List.nth(swTrace, state.pos), List.nth(swTrace, nextPos));
+    initState = Main$Sidewinder.renderTransition(false, state.prevState, state.currState, List.nth(swTrace, state.pos), List.nth(swTrace, nextPos));
   } else {
     initState = Main$Sidewinder.render(false, List.nth(swTrace, state.pos));
+  }
+  var tmp;
+  if (transition) {
+    var match$3 = state.currState;
+    tmp = React.createElement("button", {
+          onClick: (function (_event) {
+              return Curry._1(dispatch, /* Toggle */2);
+            })
+        }, match$3 ? "To Before" : "To After");
+  } else {
+    tmp = React.createElement(React.Fragment, undefined);
   }
   return React.createElement("div", undefined, React.createElement("div", undefined, "state: ", String(state.pos)), React.createElement("button", {
                   style: leftButtonStyle,
                   onClick: (function (_event) {
                       return Curry._1(dispatch, /* Decrement */1);
                     })
-                }, "<-"), React.createElement("button", {
+                }, "<-"), tmp, React.createElement("button", {
                   style: rightButtonStyle,
                   onClick: (function (_event) {
                       return Curry._1(dispatch, /* Increment */0);
@@ -94,6 +128,7 @@ var make = VizTrace;
 exports.leftButtonStyle = leftButtonStyle;
 exports.rightButtonStyle = rightButtonStyle;
 exports.initialState = initialState;
+exports.toggle = toggle;
 exports.reducer = reducer;
 exports.make = make;
 /* react Not a pure module */
