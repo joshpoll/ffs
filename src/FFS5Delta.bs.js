@@ -1,6 +1,7 @@
 'use strict';
 
 var List = require("bs-platform/lib/js/list.js");
+var $$Array = require("bs-platform/lib/js/array.js");
 var Block = require("bs-platform/lib/js/block.js");
 var Curry = require("bs-platform/lib/js/curry.js");
 var Pervasives = require("bs-platform/lib/js/pervasives.js");
@@ -225,17 +226,22 @@ function step(c) {
               var env_uid$1 = match$4[0];
               var match$5 = match.ctxts_uid;
               var ctxts_uid$1 = match$5[0];
-              var match$6 = lookup(match$2[0], /* tuple */[
+              var match$6 = match$2[0];
+              var x_uid = match$6[0];
+              var match$7 = lookup(/* tuple */[
+                    x_uid,
+                    match$6[1]
+                  ], /* tuple */[
                     env_uid$1,
                     env_val
                   ]);
-              if (match$6 !== undefined) {
-                var match$7 = match$6;
-                var match$8 = match$7[0];
+              if (match$7 !== undefined) {
+                var match$8 = match$7;
+                var match$9 = match$8[0];
                 return /* tuple */[
                         config(zipper(focus_uid(/* Value */Block.__(2, [/* tuple */[
-                                          match$8[0],
-                                          match$8[1]
+                                          match$9[0],
+                                          match$9[1]
                                         ]])), /* tuple */[
                                   ctxts_uid$1,
                                   match$5[1]
@@ -249,6 +255,10 @@ function step(c) {
                         /* tuple */[
                           "var",
                           flowMerge(Belt_MapString.fromArray([
+                                    /* tuple */[
+                                      x_uid,
+                                      /* [] */0
+                                    ],
                                     /* tuple */[
                                       ctxts_uid$1,
                                       /* :: */[
@@ -270,7 +280,7 @@ function step(c) {
                                         /* [] */0
                                       ]
                                     ]
-                                  ]), match$7[1])
+                                  ]), match$8[1])
                         ]
                       ];
               } else {
@@ -284,7 +294,7 @@ function step(c) {
               var c$1 = match.ctxts_uid;
               var c_uid = c$1[0];
               var x = match$2[1];
-              var x_uid = x[0];
+              var x_uid$1 = x[0];
               var f = match$2[0];
               var f_uid = f[0];
               return /* tuple */[
@@ -309,9 +319,9 @@ function step(c) {
                                 ]
                               ],
                               /* tuple */[
-                                x_uid,
+                                x_uid$1,
                                 /* :: */[
-                                  x_uid,
+                                  x_uid$1,
                                   /* [] */0
                                 ]
                               ],
@@ -340,13 +350,13 @@ function step(c) {
                       ]
                     ];
           case /* Lam */2 :
-              var match$9 = c.stack_uid;
-              var stack_uid$2 = match$9[0];
-              var match$10 = c.env_uid;
-              var env_val$1 = match$10[1];
-              var env_uid$3 = match$10[0];
-              var match$11 = match.ctxts_uid;
-              var ctxts_uid$2 = match$11[0];
+              var match$10 = c.stack_uid;
+              var stack_uid$2 = match$10[0];
+              var match$11 = c.env_uid;
+              var env_val$1 = match$11[1];
+              var env_uid$3 = match$11[0];
+              var match$12 = match.ctxts_uid;
+              var ctxts_uid$2 = match$12[0];
               var l = match$2[0];
               var l_uid = l.uid;
               var env_uid2 = "envCopy_" + String(readAndUpdateCounter(/* () */0));
@@ -365,13 +375,13 @@ function step(c) {
                                     ]])
                               ], /* tuple */[
                                 ctxts_uid$2,
-                                match$11[1]
+                                match$12[1]
                               ]), /* tuple */[
                             env_uid$3,
                             env_val$1
                           ], /* tuple */[
                             stack_uid$2,
-                            match$9[1]
+                            match$10[1]
                           ]),
                       /* tuple */[
                         "lam",
@@ -465,7 +475,7 @@ function step(c) {
               var y = match$2[1];
               var y_uid = y[0];
               var x$1 = match$2[0];
-              var x_uid$1 = x$1[0];
+              var x_uid$2 = x$1[0];
               return /* tuple */[
                       config(zipper(focus_uid(/* AExp */Block.__(0, [x$1])), ctxts_uid(/* Ctxt */[
                                     ctxt_uid(/* AddL */Block.__(3, [
@@ -478,9 +488,9 @@ function step(c) {
                         "add_begin",
                         Belt_MapString.fromArray([
                               /* tuple */[
-                                x_uid$1,
+                                x_uid$2,
                                 /* :: */[
-                                  x_uid$1,
+                                  x_uid$2,
                                   /* [] */0
                                 ]
                               ],
@@ -573,20 +583,20 @@ function step(c) {
           
         }
     case /* Exp */1 :
-        var match$12 = match$1[0][1];
-        if (match$12.tag) {
+        var match$13 = match$1[0][1];
+        if (match$13.tag) {
           var stack_uid$3 = c.stack_uid;
           var s_uid$4 = stack_uid$3[0];
           var env_uid$4 = c.env_uid;
           var en_uid$3 = env_uid$4[0];
           var c$5 = match.ctxts_uid;
           var c_uid$4 = c$5[0];
-          var e2 = match$12[2];
+          var e2 = match$13[2];
           var e2_uid = e2[0];
-          var ae1 = match$12[1];
+          var ae1 = match$13[1];
           var ae1_uid = ae1[0];
-          var x$2 = match$12[0];
-          var x_uid$2 = x$2[0];
+          var x$2 = match$13[0];
+          var x_uid$3 = x$2[0];
           return /* tuple */[
                   config(zipper(focus_uid(/* AExp */Block.__(0, [ae1])), ctxts_uid(/* Ctxt */[
                                 ctxt_uid(/* LetL */Block.__(2, [
@@ -600,9 +610,9 @@ function step(c) {
                     "let_begin",
                     Belt_MapString.fromArray([
                           /* tuple */[
-                            x_uid$2,
+                            x_uid$3,
                             /* :: */[
-                              x_uid$2,
+                              x_uid$3,
                               /* [] */0
                             ]
                           ],
@@ -651,7 +661,7 @@ function step(c) {
           var en_uid$4 = en$3[0];
           var c$6 = match.ctxts_uid;
           var c_uid$5 = c$6[0];
-          var a = match$12[0];
+          var a = match$13[0];
           var a_uid = a[0];
           return /* tuple */[
                   config(zipper(focus_uid(/* AExp */Block.__(0, [a])), c$6), en$3, s$4),
@@ -692,20 +702,20 @@ function step(c) {
         }
     case /* Value */2 :
         var v = match$1[0];
-        var match$13 = v[1];
-        var match$14 = match.ctxts_uid[1];
-        if (match$14) {
-          var match$15 = match$14[0][1];
-          switch (match$15.tag | 0) {
+        var match$14 = v[1];
+        var match$15 = match.ctxts_uid[1];
+        if (match$15) {
+          var match$16 = match$15[0][1];
+          switch (match$16.tag | 0) {
             case /* AppL */0 :
                 var s$5 = c.stack_uid;
                 var s_uid$6 = s$5[0];
                 var env$1 = c.env_uid;
                 var env_uid$5 = env$1[0];
-                var c$7 = match$14[1];
+                var c$7 = match$15[1];
                 var c_uid$6 = c$7[0];
-                var x$3 = match$15[1];
-                var x_uid$3 = x$3[0];
+                var x$3 = match$16[1];
+                var x_uid$4 = x$3[0];
                 var v_uid = v[0];
                 return /* tuple */[
                         config(zipper(focus_uid(/* AExp */Block.__(0, [x$3])), ctxts_uid(/* Ctxt */[
@@ -729,9 +739,9 @@ function step(c) {
                                   ]
                                 ],
                                 /* tuple */[
-                                  x_uid$3,
+                                  x_uid$4,
                                   /* :: */[
-                                    x_uid$3,
+                                    x_uid$4,
                                     /* [] */0
                                   ]
                                 ],
@@ -760,21 +770,21 @@ function step(c) {
                         ]
                       ];
             case /* AppR */1 :
-                var match$16 = match$15[0][1];
-                if (match$16.tag) {
+                var match$17 = match$16[0][1];
+                if (match$17.tag) {
                   var s$6 = c.stack_uid;
                   var s_uid$7 = s$6[0];
                   var env2 = c.env_uid;
                   var en2_uid = env2[0];
-                  var c$8 = match$14[1];
+                  var c$8 = match$15[1];
                   var c_uid$7 = c$8[0];
-                  var env$2 = match$16[1];
+                  var env$2 = match$17[1];
                   var en_uid$5 = env$2[0];
-                  var match$17 = match$16[0];
-                  var e$1 = match$17.exp_uid;
+                  var match$18 = match$17[0];
+                  var e$1 = match$18.exp_uid;
                   var e_uid$1 = e$1[0];
-                  var x$4 = match$17.vid;
-                  var x_uid$4 = x$4[0];
+                  var x$4 = match$18.vid;
+                  var x_uid$5 = x$4[0];
                   var v_uid$1 = v[0];
                   return /* tuple */[
                           config(zipper(focus_uid(/* Exp */Block.__(1, [e$1])), ctxts_uid(/* Empty */0)), env_uid(/* Env */[
@@ -795,9 +805,9 @@ function step(c) {
                                     ]
                                   ],
                                   /* tuple */[
-                                    x_uid$4,
+                                    x_uid$5,
                                     /* :: */[
-                                      x_uid$4,
+                                      x_uid$5,
                                       /* [] */0
                                     ]
                                   ],
@@ -847,12 +857,12 @@ function step(c) {
                 var s_uid$8 = s$7[0];
                 var en$4 = c.env_uid;
                 var en_uid$6 = en$4[0];
-                var c$9 = match$14[1];
+                var c$9 = match$15[1];
                 var c_uid$8 = c$9[0];
-                var e2$1 = match$15[2];
+                var e2$1 = match$16[2];
                 var e2_uid$1 = e2$1[0];
-                var x$5 = match$15[0];
-                var x_uid$5 = x$5[0];
+                var x$5 = match$16[0];
+                var x_uid$6 = x$5[0];
                 var v_uid$2 = v[0];
                 return /* tuple */[
                         config(zipper(focus_uid(/* Exp */Block.__(1, [e2$1])), c$9), env_uid(/* Env */[
@@ -870,9 +880,9 @@ function step(c) {
                                   ]
                                 ],
                                 /* tuple */[
-                                  x_uid$5,
+                                  x_uid$6,
                                   /* :: */[
-                                    x_uid$5,
+                                    x_uid$6,
                                     /* [] */0
                                   ]
                                 ],
@@ -912,9 +922,9 @@ function step(c) {
                 var s_uid$9 = s$8[0];
                 var en$5 = c.env_uid;
                 var en_uid$7 = en$5[0];
-                var c$10 = match$14[1];
+                var c$10 = match$15[1];
                 var c_uid$9 = c$10[0];
-                var y$1 = match$15[1];
+                var y$1 = match$16[1];
                 var y_uid$1 = y$1[0];
                 var v_uid$3 = v[0];
                 return /* tuple */[
@@ -967,19 +977,19 @@ function step(c) {
                         ]
                       ];
             case /* AddR */4 :
-                if (match$13.tag) {
+                if (match$14.tag) {
                   return ;
                 } else {
-                  var match$18 = match.ctxts_uid[1];
-                  var match$19 = match$18[0][1][0][1];
-                  var y$2 = match$13[0];
-                  if (match$19.tag) {
+                  var match$19 = match.ctxts_uid[1];
+                  var match$20 = match$19[0][1][0][1];
+                  var y$2 = match$14[0];
+                  if (match$20.tag) {
                     return ;
                   } else {
-                    var x$6 = match$19[0];
+                    var x$6 = match$20[0];
                     var s$9 = c.stack_uid;
                     var en$6 = c.env_uid;
-                    var c$11 = match$18[1];
+                    var c$11 = match$19[1];
                     var z_uid = "sum_" + String(readAndUpdateCounter(/* () */0));
                     var z_val = x$6[1] + y$2[1] | 0;
                     var s_uid$10 = s$9[0];
@@ -1036,14 +1046,14 @@ function step(c) {
             
           }
         } else {
-          var match$20 = c.stack_uid[1];
-          if (match$20) {
-            var s$10 = match$20[1];
+          var match$21 = c.stack_uid[1];
+          if (match$21) {
+            var s$10 = match$21[1];
             var s_uid$11 = s$10[0];
-            var match$21 = match$20[0];
-            var env2$1 = match$21.env_uid;
+            var match$22 = match$21[0];
+            var env2$1 = match$22.env_uid;
             var en2_uid$1 = env2$1[0];
-            var c$12 = match$21.ctxts_uid;
+            var c$12 = match$22.ctxts_uid;
             var c_uid$11 = c$12[0];
             var v_uid$4 = v[0];
             return /* tuple */[
@@ -1500,7 +1510,8 @@ function iterateMaybeSideEffect(f, x) {
 function interpretTrace(p) {
   var match = iterateMaybeSideEffect(step, inject(p));
   var rules = match[1];
-  List.split(rules);
+  var match$1 = List.split(rules);
+  console.log("rules", $$Array.of_list(List.combine(match$1[0], List.map(Belt_MapString.toArray, match$1[1]))));
   return List.combine(Pervasives.$at(rules, /* :: */[
                   /* tuple */[
                     "",

@@ -319,11 +319,14 @@ let step = (c: config): option((config, (string, flow))) =>
     small_step ⟨⟨focus.aexp (aexp.var x), c⟩, env, fs⟩ ⟨⟨focus.val v, c⟩, env, fs⟩
    */
   | {
-      zipper: {focus_uid: (_, AExp((_, Var(x)))), ctxts_uid: (ctxts_uid, ctxts_val)},
+      zipper: {
+        focus_uid: (_, AExp((_, Var((x_uid, x_val))))),
+        ctxts_uid: (ctxts_uid, ctxts_val),
+      },
       env_uid: (env_uid, env_val),
       stack_uid: (stack_uid, stack_val),
     } =>
-    switch (lookup(x, (env_uid, env_val))) {
+    switch (lookup((x_uid, x_val), (env_uid, env_val))) {
     | Some(((v_uid, v_val), lookup_ribbon)) =>
       Some((
         config(
@@ -339,6 +342,7 @@ let step = (c: config): option((config, (string, flow))) =>
           "var",
           flowMerge(
             MS.fromArray([|
+              (x_uid, []),
               (ctxts_uid, [ctxts_uid]),
               (env_uid, [env_uid]),
               (stack_uid, [stack_uid]),
@@ -1041,7 +1045,7 @@ let interpretTrace = (p: FFS5.exp): list(((string, flow), config)) => {
   let (states, rules) = iterateMaybeSideEffect(step, inject(p));
   // Js.log2("rules", rules |> Array.of_list);
   let (actualRules, flow) = rules |> List.split;
-  // Js.log2("rules", List.combine(actualRules, List.map(MS.toArray, flow)) |> Array.of_list);
+  Js.log2("rules", List.combine(actualRules, List.map(MS.toArray, flow)) |> Array.of_list);
   List.combine(rules @ [("", MS.empty)], takeWhileInclusive(c => !isFinal(c), states));
 };
 
