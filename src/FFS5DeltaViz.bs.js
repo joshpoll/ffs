@@ -1,12 +1,15 @@
 'use strict';
 
 var List = require("bs-platform/lib/js/list.js");
+var $$Array = require("bs-platform/lib/js/array.js");
 var Curry = require("bs-platform/lib/js/curry.js");
 var React = require("react");
 var Pervasives = require("bs-platform/lib/js/pervasives.js");
 var Belt_MapString = require("bs-platform/lib/js/belt_MapString.js");
+var Main$Sidewinder = require("sidewinder/src/Main.bs.js");
 var Theia$Sidewinder = require("sidewinder/src/Theia.bs.js");
 var Rectangle$Sidewinder = require("sidewinder/src/Rectangle.bs.js");
+var Transform$Sidewinder = require("sidewinder/src/Transform.bs.js");
 
 function hSeq(uid, flow, $staropt$star, nodes) {
   var gap = $staropt$star !== undefined ? $staropt$star : 0;
@@ -34,6 +37,32 @@ function cell(uid, flow, name, node) {
 
 function empty(uid, flow, param) {
   return Theia$Sidewinder.atom(uid, flow, undefined, undefined, React.createElement(React.Fragment, undefined), Rectangle$Sidewinder.fromCenterPointSize(0, 0, 0, 0), /* () */0);
+}
+
+function highlight(uid, flow, $staropt$star, fill, node, links, param) {
+  var tags = $staropt$star !== undefined ? $staropt$star : /* [] */0;
+  var render = function (nodes, bbox, links) {
+    return React.createElement(React.Fragment, undefined, React.createElement("rect", {
+                    height: Rectangle$Sidewinder.height(bbox).toString(),
+                    width: Rectangle$Sidewinder.width(bbox).toString(),
+                    fill: fill,
+                    x: Rectangle$Sidewinder.x1(bbox).toString(),
+                    y: Rectangle$Sidewinder.y1(bbox).toString()
+                  }), Theia$Sidewinder.defaultRender(nodes, links));
+  };
+  return Main$Sidewinder.make(/* :: */[
+              "highlight",
+              tags
+            ], /* :: */[
+              node,
+              /* [] */0
+            ], links, (function (param, bboxes, param$1) {
+                return Belt_MapString.map(bboxes, (function (param) {
+                              return Transform$Sidewinder.ident;
+                            }));
+              }), (function (bs) {
+                return Rectangle$Sidewinder.union_list($$Array.to_list(Belt_MapString.valuesToArray(bs)));
+              }), render, uid, flow, /* () */0);
 }
 
 function split(list, n) {
@@ -77,7 +106,7 @@ function insert(x, xs, i) {
 }
 
 function kont(nodeBuilder, nodes, holePos, hole) {
-  return Curry._1(nodeBuilder, insert(hole, nodes, holePos));
+  return Curry._1(nodeBuilder, insert(highlight(undefined, undefined, undefined, "hsla(240, 100%, 80%, 33%)", hole, /* [] */0, /* () */0), nodes, holePos));
 }
 
 function zipper_aux(focus, konts) {
@@ -316,7 +345,7 @@ function vizCtxt(flow, param) {
         var x = c[0];
         return (function (hole) {
             return vSeq(c_uid, Belt_MapString.get(flow, c_uid), undefined, /* :: */[
-                        hSeq(undefined, undefined, 2, insert(hole, /* :: */[
+                        hSeq(undefined, undefined, 2, insert(highlight(undefined, undefined, undefined, "hsla(240, 100%, 80%, 33%)", hole, /* [] */0, /* () */0), /* :: */[
                                   Theia$Sidewinder.str(undefined, undefined, undefined, "let", /* () */0),
                                   /* :: */[
                                     vizVid(flow, x),
@@ -450,17 +479,24 @@ function vizMachineState(param) {
   var match$1 = match.zipper;
   var z_uid = match$1.uid;
   var uid = match.uid;
-  var flow = param[0];
-  return hSeq(uid, Belt_MapString.get(flow, uid), 20, /* :: */[
-              vSeq(undefined, undefined, 5, /* :: */[
-                    cell(undefined, undefined, "env", vizEnv(flow, match.env_uid)),
-                    /* :: */[
-                      zipper(z_uid, Belt_MapString.get(flow, z_uid), vizFocus(flow, match$1.focus_uid), vizCtxts(flow, match$1.ctxts_uid)),
-                      /* [] */0
-                    ]
-                  ]),
+  var match$2 = param[0];
+  var flow = match$2[1];
+  return vSeq(undefined, undefined, 30, /* :: */[
+              Theia$Sidewinder.str(undefined, undefined, undefined, "rule: " + match$2[0], /* () */0),
               /* :: */[
-                cell(undefined, undefined, "stack", vizStack(flow, match.stack_uid)),
+                hSeq(uid, Belt_MapString.get(flow, uid), 20, /* :: */[
+                      vSeq(undefined, undefined, 5, /* :: */[
+                            cell(undefined, undefined, "env", vizEnv(flow, match.env_uid)),
+                            /* :: */[
+                              zipper(z_uid, Belt_MapString.get(flow, z_uid), vizFocus(flow, match$1.focus_uid), vizCtxts(flow, match$1.ctxts_uid)),
+                              /* [] */0
+                            ]
+                          ]),
+                      /* :: */[
+                        cell(undefined, undefined, "stack", vizStack(flow, match.stack_uid)),
+                        /* [] */0
+                      ]
+                    ]),
                 /* [] */0
               ]
             ]);
@@ -474,6 +510,7 @@ exports.vSeq = vSeq;
 exports.value = value;
 exports.cell = cell;
 exports.empty = empty;
+exports.highlight = highlight;
 exports.split = split;
 exports.insert = insert;
 exports.kont = kont;

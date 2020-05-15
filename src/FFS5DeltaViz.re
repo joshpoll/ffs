@@ -26,6 +26,33 @@ let empty = (~uid=?, ~flow=?, ()) =>
     (),
   );
 
+let highlight = (~uid=?, ~flow=?, ~tags=[], ~fill, node, links, ()) => {
+  open Sidewinder;
+  let render = (nodes, bbox, links) => {
+    <>
+      <rect
+        x={Js.Float.toString(bbox->Rectangle.x1)}
+        y={Js.Float.toString(bbox->Rectangle.y1)}
+        width={Js.Float.toString(bbox->Rectangle.width)}
+        height={Js.Float.toString(bbox->Rectangle.height)}
+        fill
+      />
+      {defaultRender(nodes, links)}
+    </>;
+  };
+  Main.make(
+    ~uid?,
+    ~flow?,
+    ~tags=["highlight", ...tags],
+    ~nodes=[node],
+    ~links,
+    ~layout=(_, bboxes, _) => MS.map(bboxes, _ => Transform.ident),
+    ~computeBBox=bs => bs->MS.valuesToArray->Array.to_list->Rectangle.union_list,
+    ~render,
+    (),
+  );
+};
+
 let split = (list, n) => {
   let rec aux = (i, acc) =>
     fun
@@ -44,7 +71,9 @@ let insert = (x, xs, i) => {
 };
 
 let kont = (nodeBuilder, nodes, holePos, hole): Sidewinder.Kernel.node =>
-  nodeBuilder(insert(hole, nodes, holePos));
+  nodeBuilder(
+    insert(highlight(~fill="hsla(240, 100%, 80%, 33%)", hole, [], ()), nodes, holePos),
+  );
 
 let rec zipper_aux = (focus, konts) =>
   switch (konts) {
@@ -230,7 +259,7 @@ let vizCtxt = (flow, (c_uid, c)) =>
             hSeq(
               ~gap=2.,
               insert(
-                hole,
+                highlight(~fill="hsla(240, 100%, 80%, 33%)", hole, [], ()),
                 [str("let", ()), vizVid(flow, x), str("=", ()), str("in", ())],
                 3,
               ),
@@ -302,28 +331,34 @@ let vizStack = (flow, (s_uid, fs)) =>
 let vizMachineState =
     (
       (
-        flow: FFS5Delta.flow,
+        (rule: string, flow: FFS5Delta.flow),
         {uid, zipper: {uid: z_uid, focus_uid, ctxts_uid}, env_uid, stack_uid},
       ),
     ) => {
-  hSeq(
-    ~uid,
-    ~flow=?MS.get(flow, uid),
-    ~gap=20.,
+  vSeq(
+    ~gap=30.,
     [
-      vSeq(
-        ~gap=5.,
+      str("rule: " ++ rule, ()),
+      hSeq(
+        ~uid,
+        ~flow=?MS.get(flow, uid),
+        ~gap=20.,
         [
-          cell("env", vizEnv(flow, env_uid)),
-          zipper(
-            ~uid=z_uid,
-            ~flow=?MS.get(flow, z_uid),
-            vizFocus(flow, focus_uid),
-            vizCtxts(flow, ctxts_uid),
+          vSeq(
+            ~gap=5.,
+            [
+              cell("env", vizEnv(flow, env_uid)),
+              zipper(
+                ~uid=z_uid,
+                ~flow=?MS.get(flow, z_uid),
+                vizFocus(flow, focus_uid),
+                vizCtxts(flow, ctxts_uid),
+              ),
+            ],
           ),
+          cell("stack", vizStack(flow, stack_uid)),
         ],
       ),
-      cell("stack", vizStack(flow, stack_uid)),
     ],
   );
 };

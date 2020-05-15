@@ -17,6 +17,9 @@
     - the "flow" implementation is considered an unfinished sketch that gets the job done
     */
 
+/* TODO: need to figure out a different way so that UIDs aren't shared by multiple transitions.
+   Leads to bugs in e.g. `let` visualization. */
+
 /* def vid : Type := string
 
    mutual inductive lambda, aexp, exp, val, binding, env
@@ -277,8 +280,15 @@ let rec lookup = (x: vid, env: env_uid): option((value_uid, flow)) => {
 
 // let sorry = raise(failwith("TODO"));
 
-let mapUnion = (m1: MS.t('a), m2: MS.t('a)) => {
-  MS.reduce(m2, m1, (m, k, v) => m->MS.set(k, v));
+let flowMerge = (m1: MS.t(list('a)), m2: MS.t(list('a))) => {
+  MS.merge(m1, m2, (_, mv1, mv2) =>
+    switch (mv1, mv2) {
+    | (None, None) => None
+    | (Some(v1), None) => Some(v1)
+    | (None, Some(v2)) => Some(v2)
+    | (Some(v1), Some(v2)) => Some(v1 @ v2)
+    }
+  );
 };
 
 /* TODO: should really be a monad, but OCaml/ReasonML lack good support at the moment. Janestreet
@@ -309,7 +319,7 @@ let step = (c: config): option((config, (string, flow))) =>
         ),
         (
           "var",
-          mapUnion(
+          flowMerge(
             MS.fromArray([|
               (ctxts_uid, [ctxts_uid]),
               (env_uid, [env_uid]),
@@ -1009,11 +1019,11 @@ let rec iterateMaybeSideEffect = (f: 'a => option(('a, 'b)), x: 'a): (list('a), 
     ([x, ...als], [b, ...bls]);
   };
 
-let interpretTrace = (p: FFS5.exp): list((flow, config)) => {
+let interpretTrace = (p: FFS5.exp): list(((string, flow), config)) => {
   let (states, rules) = iterateMaybeSideEffect(step, inject(p));
   Js.log2("rules", rules |> Array.of_list);
-  let (_, flow) = rules |> List.split;
-  List.combine(flow @ [MS.empty], takeWhileInclusive(c => !isFinal(c), states));
+  // let (_, flow) = rules |> List.split;
+  List.combine(rules @ [("", MS.empty)], takeWhileInclusive(c => !isFinal(c), states));
 };
 
 let interpret = p => {

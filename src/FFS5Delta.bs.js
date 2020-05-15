@@ -176,8 +176,21 @@ function lookup(x, _env) {
   };
 }
 
-function mapUnion(m1, m2) {
-  return Belt_MapString.reduce(m2, m1, Belt_MapString.set);
+function flowMerge(m1, m2) {
+  return Belt_MapString.merge(m1, m2, (function (param, mv1, mv2) {
+                if (mv1 !== undefined) {
+                  var v1 = mv1;
+                  if (mv2 !== undefined) {
+                    return Pervasives.$at(v1, mv2);
+                  } else {
+                    return v1;
+                  }
+                } else if (mv2 !== undefined) {
+                  return mv2;
+                } else {
+                  return ;
+                }
+              }));
 }
 
 function step(c) {
@@ -218,7 +231,7 @@ function step(c) {
                             ]),
                         /* tuple */[
                           "var",
-                          mapUnion(Belt_MapString.fromArray([
+                          flowMerge(Belt_MapString.fromArray([
                                     /* tuple */[
                                       ctxts_uid$1,
                                       /* :: */[
@@ -1471,9 +1484,11 @@ function interpretTrace(p) {
   var match = iterateMaybeSideEffect(step, inject(p));
   var rules = match[1];
   console.log("rules", $$Array.of_list(rules));
-  var match$1 = List.split(rules);
-  return List.combine(Pervasives.$at(match$1[1], /* :: */[
-                  Belt_MapString.empty,
+  return List.combine(Pervasives.$at(rules, /* :: */[
+                  /* tuple */[
+                    "",
+                    Belt_MapString.empty
+                  ],
                   /* [] */0
                 ]), takeWhileInclusive((function (c) {
                     return !isFinal(c);
@@ -1519,7 +1534,7 @@ exports.stack_uid = stack_uid;
 exports.config = config;
 exports.MS = MS;
 exports.lookup = lookup;
-exports.mapUnion = mapUnion;
+exports.flowMerge = flowMerge;
 exports.step = step;
 exports.vidToUID = vidToUID;
 exports.intToUID = intToUID;
