@@ -73,6 +73,21 @@ console.log("interpret trace: 1 + (2 + 3)", $$Array.of_list(FFS6$ReasonReactExam
                           ])
                       ])])))));
 
+ReactDom.render(React.createElement(VizTrace$ReasonReactExamples.make, {
+          program: /* Let */Block.__(1, [
+              "x",
+              /* Num */Block.__(3, [5]),
+              /* Let */Block.__(1, [
+                  "y",
+                  /* Num */Block.__(3, [6]),
+                  /* Lift */Block.__(0, [/* Add */Block.__(4, [
+                          /* Var */Block.__(0, ["x"]),
+                          /* Var */Block.__(0, ["y"])
+                        ])])
+                ])
+            ])
+        }), makeContainer("let add"));
+
 exports.style = style;
 exports.makeContainer = makeContainer;
 exports.id = id;

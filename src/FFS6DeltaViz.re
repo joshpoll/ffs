@@ -52,13 +52,7 @@ and vizAExpOp = (flow, (uid, aexp_op): aexp_op, inputs: list(Sidewinder.Kernel.n
   | (Add, [x, y]) =>
     hSeq(~uid, ~flow=?Flow.get(flow, uid), ~gap=2., [paren(x), str("+", ()), paren(y)])
   | (Add, _) =>
-    str(
-      ~uid,
-      ~flow=?Flow.get(flow, uid),
-      "op Add expected input arity 2, but got " ++ string_of_int(List.length(inputs)),
-      (),
-    )
-  // failwith("op Add expected input arity 2, but got " ++ string_of_int(List.length(inputs)));
+    failwith("op Add expected input arity 2, but got " ++ string_of_int(List.length(inputs)))
   | (Bracket(exp), []) =>
     hSeq(
       ~uid,

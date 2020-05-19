@@ -266,7 +266,7 @@ function vizAExpOp(flow, param, inputs) {
         }
         
       }
-      return Theia$Sidewinder.str(uid, Flow$ReasonReactExamples.get(flow, uid), undefined, "op Add expected input arity 2, but got " + String(List.length(inputs)), /* () */0);
+      return Pervasives.failwith("op Add expected input arity 2, but got " + String(List.length(inputs)));
     }
   } else {
     switch (aexp_op.tag | 0) {
