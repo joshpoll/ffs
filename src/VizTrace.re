@@ -47,7 +47,6 @@ let reducer = (state, action) => {
 [@react.component]
 let make = (~padding=10., ~transition=false, ~program) => {
   let liftedProgram = FFS6.expFromFFS5(program);
-  Js.log2("liftedProgram", liftedProgram);
   let trace = FFS6Delta.interpretTrace(liftedProgram);
 
   let (state, dispatch) = React.useReducer(reducer, initialState);

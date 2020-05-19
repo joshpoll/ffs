@@ -156,7 +156,7 @@ let step = (c: config): option(config) =>
   | {zipper: {focus: Value(v), ctxts: [{op, args: [], values}, ...ctxts]}, env, stack} =>
     Some({
       zipper: {
-        focus: ZPreVal({op, values: List.rev(values)}),
+        focus: ZPreVal({op, values: List.rev([v, ...values])}),
         ctxts,
       },
       env,

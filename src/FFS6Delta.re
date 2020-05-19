@@ -380,14 +380,19 @@ let step = ((_, c): config): option((config, (string, Flow.t))) =>
       env,
       stack,
     } =>
+    Js.log2("values at zipper end:", values);
     Some((
       mkConfig({
-        zipper: mkZipper({focus: mkFocus(ZPreVal(mkZPreVal({op, values}))), ctxts}),
+        zipper:
+          mkZipper({
+            focus: mkFocus(ZPreVal(mkZPreVal({op, values: mkValues(Cons(v, values))}))),
+            ctxts,
+          }),
         env,
         stack,
       }),
       ("zipper end", Flow.fromArray([||])),
-    ))
+    ));
   /* app enter */
   /* | {
        zipper: {

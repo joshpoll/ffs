@@ -19,7 +19,7 @@ and vizZCtxt = (vizOp, flow, (uid, {op, args, values}): zctxt('a), hole) =>
   noop(
     ~uid,
     ~flow=?Flow.get(flow, uid),
-    vizOp(flow, op, vizAExps(flow, args) @ [hole, ...vizValues(flow, values)]),
+    vizOp(flow, op, vizValues(flow, values) @ [hole, ...vizAExps(flow, args)]),
     [],
     (),
   )
@@ -52,7 +52,13 @@ and vizAExpOp = (flow, (uid, aexp_op): aexp_op, inputs: list(Sidewinder.Kernel.n
   | (Add, [x, y]) =>
     hSeq(~uid, ~flow=?Flow.get(flow, uid), ~gap=2., [paren(x), str("+", ()), paren(y)])
   | (Add, _) =>
-    failwith("op Add expected input arity 2, but got " ++ string_of_int(List.length(inputs)))
+    str(
+      ~uid,
+      ~flow=?Flow.get(flow, uid),
+      "op Add expected input arity 2, but got " ++ string_of_int(List.length(inputs)),
+      (),
+    )
+  // failwith("op Add expected input arity 2, but got " ++ string_of_int(List.length(inputs)));
   | (Bracket(exp), []) =>
     hSeq(
       ~uid,
@@ -151,7 +157,13 @@ and vizFocus = (flow, (uid, focus): focus) =>
 and vizCtxts = (flow, (uid, ctxts): ctxts) =>
   switch (ctxts) {
   | Empty => (x => x)
-  | Cons(ctxt, ctxts) => (hole => vizCtxts(flow, ctxts, vizZCtxt(vizOp, flow, ctxt, hole)))
+  | Cons(ctxt, ctxts) => (
+      hole => {
+        /* TODO: uid for the highlight? */
+        let highlightHole = highlight(~fill="hsla(240, 100%, 80%, 33%)", hole, [], ());
+        vizCtxts(flow, ctxts, vizZCtxt(vizOp, flow, ctxt, highlightHole));
+      }
+    )
   }
 
 and vizZipper = (flow, (uid, {focus, ctxts}): zipper) =>

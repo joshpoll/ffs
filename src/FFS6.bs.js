@@ -284,7 +284,10 @@ function step(c) {
                     zipper: {
                       focus: /* ZPreVal */Block.__(1, [{
                             op: op$1,
-                            values: List.rev(match$20.values)
+                            values: List.rev(/* :: */[
+                                  v,
+                                  match$20.values
+                                ])
                           }]),
                       ctxts: match$19[1]
                     },

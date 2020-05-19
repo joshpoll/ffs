@@ -622,10 +622,17 @@ function step(param) {
                     ]
                   ];
           } else {
-            var f$4 = /* ZPreVal */Block.__(1, [UID$ReasonReactExamples.makeUIDConstructor("zpreval", {
-                      op: op$1,
-                      values: match$22.values
-                    })]);
+            var values = match$22.values;
+            console.log("values at zipper end:", values);
+            var zp_values$1 = UID$ReasonReactExamples.makeUIDConstructor("values", /* Cons */[
+                  v$1,
+                  values
+                ]);
+            var zp$1 = {
+              op: op$1,
+              values: zp_values$1
+            };
+            var f$4 = /* ZPreVal */Block.__(1, [UID$ReasonReactExamples.makeUIDConstructor("zpreval", zp$1)]);
             var z_focus$11 = UID$ReasonReactExamples.makeUIDConstructor("focus", f$4);
             var z_ctxts$10 = match$21[1];
             var z$11 = {

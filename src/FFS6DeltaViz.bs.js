@@ -59,9 +59,9 @@ function vizValues(flow, values) {
 function vizZCtxt(vizOp, flow, param, hole) {
   var match = param[1];
   var uid = param[0];
-  return Theia$Sidewinder.noop(uid, Flow$ReasonReactExamples.get(flow, uid), undefined, Curry._3(vizOp, flow, match.op, Pervasives.$at(vizAExps(flow, match.args), /* :: */[
+  return Theia$Sidewinder.noop(uid, Flow$ReasonReactExamples.get(flow, uid), undefined, Curry._3(vizOp, flow, match.op, Pervasives.$at(vizValues(flow, match.values), /* :: */[
                       hole,
-                      vizValues(flow, match.values)
+                      vizAExps(flow, match.args)
                     ])), /* [] */0, /* () */0);
 }
 
@@ -71,7 +71,8 @@ function vizCtxts(flow, param) {
     var ctxts$1 = ctxts[1];
     var ctxt = ctxts[0];
     return (function (hole) {
-        return vizCtxts(flow, ctxts$1)(vizZCtxt(vizOp, flow, ctxt, hole));
+        var highlightHole = TheiaExtensions$ReasonReactExamples.highlight(undefined, undefined, undefined, "hsla(240, 100%, 80%, 33%)", hole, /* [] */0, /* () */0);
+        return vizCtxts(flow, ctxts$1)(vizZCtxt(vizOp, flow, ctxt, highlightHole));
       });
   } else {
     return (function (x) {
@@ -265,7 +266,7 @@ function vizAExpOp(flow, param, inputs) {
         }
         
       }
-      return Pervasives.failwith("op Add expected input arity 2, but got " + String(List.length(inputs)));
+      return Theia$Sidewinder.str(uid, Flow$ReasonReactExamples.get(flow, uid), undefined, "op Add expected input arity 2, but got " + String(List.length(inputs)), /* () */0);
     }
   } else {
     switch (aexp_op.tag | 0) {

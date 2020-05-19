@@ -1,8 +1,10 @@
 'use strict';
 
+var $$Array = require("bs-platform/lib/js/array.js");
 var Block = require("bs-platform/lib/js/block.js");
 var React = require("react");
 var ReactDom = require("react-dom");
+var FFS6$ReasonReactExamples = require("./FFS6.bs.js");
 var VizTrace$ReasonReactExamples = require("./VizTrace.bs.js");
 var ExampleStyles$ReasonReactExamples = require("./ExampleStyles.bs.js");
 var BlinkingGreeting$ReasonReactExamples = require("./BlinkingGreeting/BlinkingGreeting.bs.js");
@@ -51,6 +53,8 @@ ReactDom.render(React.createElement(VizTrace$ReasonReactExamples.make, {
           program: /* Lift */Block.__(0, [/* Num */Block.__(3, [5])])
         }), makeContainer("5"));
 
+console.log("interpret trace: 5", $$Array.of_list(FFS6$ReasonReactExamples.interpretTrace(FFS6$ReasonReactExamples.expFromFFS5(/* Lift */Block.__(0, [/* Num */Block.__(3, [5])])))));
+
 ReactDom.render(React.createElement(VizTrace$ReasonReactExamples.make, {
           program: /* Lift */Block.__(0, [/* Add */Block.__(4, [
                   /* Num */Block.__(3, [1]),
@@ -60,6 +64,14 @@ ReactDom.render(React.createElement(VizTrace$ReasonReactExamples.make, {
                     ])
                 ])])
         }), makeContainer("1 + (2 + 3)"));
+
+console.log("interpret trace: 1 + (2 + 3)", $$Array.of_list(FFS6$ReasonReactExamples.interpretTrace(FFS6$ReasonReactExamples.expFromFFS5(/* Lift */Block.__(0, [/* Add */Block.__(4, [
+                        /* Num */Block.__(3, [1]),
+                        /* Add */Block.__(4, [
+                            /* Num */Block.__(3, [2]),
+                            /* Num */Block.__(3, [3])
+                          ])
+                      ])])))));
 
 exports.style = style;
 exports.makeContainer = makeContainer;

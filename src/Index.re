@@ -42,10 +42,10 @@ ReactDOMRe.render(<ReasonUsingJSUsingReason />, makeContainer("Reason Using JS U
 let id = x => FFS5.Lam({vid: x, exp: Lift(Var(x))});
 
 ReactDOMRe.render(<VizTrace program={FFS5.Lift(Num(5))} />, makeContainer("5"));
-/* Js.log2(
-     "interpret trace: 5",
-     FFS6.interpretTrace(FFS5.Lift(Num(5)) |> FFS6.expFromFFS5) |> Array.of_list,
-   ); */
+Js.log2(
+  "interpret trace: 5",
+  FFS6.interpretTrace(FFS5.Lift(Num(5)) |> FFS6.expFromFFS5) |> Array.of_list,
+);
 
 /* ReactDOMRe.render(
      <VizTrace program={FFS5.Lift(App(id("x"), id("y")))} />,
@@ -56,6 +56,11 @@ ReactDOMRe.render(<VizTrace program={FFS5.Lift(Num(5))} />, makeContainer("5"));
 ReactDOMRe.render(
   <VizTrace program={FFS5.Lift(Add(Num(1), Add(Num(2), Num(3))))} />,
   makeContainer("1 + (2 + 3)"),
+);
+Js.log2(
+  "interpret trace: 1 + (2 + 3)",
+  FFS6.interpretTrace(FFS5.Lift(Add(Num(1), Add(Num(2), Num(3)))) |> FFS6.expFromFFS5)
+  |> Array.of_list,
 );
 
 /* ReactDOMRe.render(
