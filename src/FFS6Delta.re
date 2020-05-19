@@ -258,12 +258,12 @@ let step = ((_, c): config): option((config, (string, Flow.t))) =>
         _,
         {focus: (_, ZExp((_, {op: (_, AExp((_, Lam(l)))), args: (_, Empty)}))), ctxts},
       ),
-      env,
+      env: (_, env_val) as env,
       stack,
     } =>
     Some((
       mkConfig({
-        zipper: mkZipper({focus: mkFocus(Value(mkValue(Clo(l, env)))), ctxts}),
+        zipper: mkZipper({focus: mkFocus(Value(mkValue(Clo(l, mkEnv(env_val))))), ctxts}),
         env,
         stack,
       }),
