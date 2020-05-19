@@ -79,6 +79,7 @@ function VizTrace(Props) {
   var transition = match$1 !== undefined ? match$1 : false;
   var program = Props.program;
   var liftedProgram = FFS6$ReasonReactExamples.expFromFFS5(program);
+  console.log("liftedProgram", liftedProgram);
   var trace = FFS6Delta$ReasonReactExamples.interpretTrace(liftedProgram);
   var match$2 = React.useReducer(reducer, initialState);
   var dispatch = match$2[1];

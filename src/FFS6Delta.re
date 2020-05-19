@@ -269,6 +269,29 @@ let step = ((_, c): config): option((config, (string, Flow.t))) =>
       }),
       ("lam", Flow.fromArray([||])),
     ))
+  /* zipper skip */
+  /* | {zipper: {focus: ZExp({op, args: []}), ctxts}, env, stack} =>
+     Some({
+       zipper: {
+         focus: ZPreVal({op, values: []}),
+         ctxts,
+       },
+       env,
+       stack,
+     }) */
+  | {zipper: (_, {focus: (_, ZExp((_, {op, args: (_, Empty)}))), ctxts}), env, stack} =>
+    Some((
+      mkConfig({
+        zipper:
+          mkZipper({
+            focus: mkFocus(ZPreVal(mkZPreVal({op, values: mkValues(Empty)}))),
+            ctxts,
+          }),
+        env,
+        stack,
+      }),
+      ("zipper skip", Flow.fromArray([||])),
+    ))
   /* zipper begin */
   /* | {zipper: {focus: ZExp({op, args: [a, ...args]}), ctxts}, env, stack} =>
      Some({
@@ -453,7 +476,7 @@ let step = ((_, c): config): option((config, (string, Flow.t))) =>
   | {
       zipper: (
         _,
-        {focus: (_, ZExp((_, {op: (_, AExp((_, Num(n)))), args: (_, Empty)}))), ctxts},
+        {focus: (_, ZPreVal((_, {op: (_, AExp((_, Num(n)))), values: (_, Empty)}))), ctxts},
       ),
       env,
       stack,

@@ -41,11 +41,16 @@ ReactDOMRe.render(<ReasonUsingJSUsingReason />, makeContainer("Reason Using JS U
 
 let id = x => FFS5.Lam({vid: x, exp: Lift(Var(x))});
 
-/* TODO: this program crashes */
-ReactDOMRe.render(
-  <VizTrace program={FFS5.Lift(App(id("x"), id("y")))} />,
-  makeContainer("FFS"),
-);
+ReactDOMRe.render(<VizTrace program={FFS5.Lift(Num(5))} />, makeContainer("5"));
+/* Js.log2(
+     "interpret trace: 5",
+     FFS6.interpretTrace(FFS5.Lift(Num(5)) |> FFS6.expFromFFS5) |> Array.of_list,
+   ); */
+
+/* ReactDOMRe.render(
+     <VizTrace program={FFS5.Lift(App(id("x"), id("y")))} />,
+     makeContainer("FFS"),
+   ); */
 
 /* TODO: moves numbers around for some reason */
 ReactDOMRe.render(
@@ -53,22 +58,22 @@ ReactDOMRe.render(
   makeContainer("1 + (2 + 3)"),
 );
 
-ReactDOMRe.render(
-  <VizTrace
-    program={FFS5.Let("x", Num(5), Let("y", Num(6), Lift(Add(Var("x"), Var("y")))))}
-  />,
-  makeContainer("let add"),
-);
+/* ReactDOMRe.render(
+     <VizTrace
+       program={FFS5.Let("x", Num(5), Let("y", Num(6), Lift(Add(Var("x"), Var("y")))))}
+     />,
+     makeContainer("let add"),
+   );
 
-ReactDOMRe.render(
-  <VizTrace
-    program={FFS5.Let("x", Num(5), Let("y", Num(6), Lift(Add(Var("x"), Var("y")))))}
-    transition=true
-  />,
-  makeContainer("let add transition"),
-);
+   ReactDOMRe.render(
+     <VizTrace
+       program={FFS5.Let("x", Num(5), Let("y", Num(6), Lift(Add(Var("x"), Var("y")))))}
+       transition=true
+     />,
+     makeContainer("let add transition"),
+   );
 
-ReactDOMRe.render(
-  <VizTrace program={FFS5.Lift(App(id("x"), id("y")))} transition=true />,
-  makeContainer("id id transition"),
-);
+   ReactDOMRe.render(
+     <VizTrace program={FFS5.Lift(App(id("x"), id("y")))} transition=true />,
+     makeContainer("id id transition"),
+   ); */

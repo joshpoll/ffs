@@ -48,17 +48,8 @@ function id(x) {
 }
 
 ReactDom.render(React.createElement(VizTrace$ReasonReactExamples.make, {
-          program: /* Lift */Block.__(0, [/* App */Block.__(1, [
-                  /* Lam */Block.__(2, [{
-                        vid: "x",
-                        exp: /* Lift */Block.__(0, [/* Var */Block.__(0, ["x"])])
-                      }]),
-                  /* Lam */Block.__(2, [{
-                        vid: "y",
-                        exp: /* Lift */Block.__(0, [/* Var */Block.__(0, ["y"])])
-                      }])
-                ])])
-        }), makeContainer("FFS"));
+          program: /* Lift */Block.__(0, [/* Num */Block.__(3, [5])])
+        }), makeContainer("5"));
 
 ReactDom.render(React.createElement(VizTrace$ReasonReactExamples.make, {
           program: /* Lift */Block.__(0, [/* Add */Block.__(4, [
@@ -69,51 +60,6 @@ ReactDom.render(React.createElement(VizTrace$ReasonReactExamples.make, {
                     ])
                 ])])
         }), makeContainer("1 + (2 + 3)"));
-
-ReactDom.render(React.createElement(VizTrace$ReasonReactExamples.make, {
-          program: /* Let */Block.__(1, [
-              "x",
-              /* Num */Block.__(3, [5]),
-              /* Let */Block.__(1, [
-                  "y",
-                  /* Num */Block.__(3, [6]),
-                  /* Lift */Block.__(0, [/* Add */Block.__(4, [
-                          /* Var */Block.__(0, ["x"]),
-                          /* Var */Block.__(0, ["y"])
-                        ])])
-                ])
-            ])
-        }), makeContainer("let add"));
-
-ReactDom.render(React.createElement(VizTrace$ReasonReactExamples.make, {
-          transition: true,
-          program: /* Let */Block.__(1, [
-              "x",
-              /* Num */Block.__(3, [5]),
-              /* Let */Block.__(1, [
-                  "y",
-                  /* Num */Block.__(3, [6]),
-                  /* Lift */Block.__(0, [/* Add */Block.__(4, [
-                          /* Var */Block.__(0, ["x"]),
-                          /* Var */Block.__(0, ["y"])
-                        ])])
-                ])
-            ])
-        }), makeContainer("let add transition"));
-
-ReactDom.render(React.createElement(VizTrace$ReasonReactExamples.make, {
-          transition: true,
-          program: /* Lift */Block.__(0, [/* App */Block.__(1, [
-                  /* Lam */Block.__(2, [{
-                        vid: "x",
-                        exp: /* Lift */Block.__(0, [/* Var */Block.__(0, ["x"])])
-                      }]),
-                  /* Lam */Block.__(2, [{
-                        vid: "y",
-                        exp: /* Lift */Block.__(0, [/* Var */Block.__(0, ["y"])])
-                      }])
-                ])])
-        }), makeContainer("id id transition"));
 
 exports.style = style;
 exports.makeContainer = makeContainer;

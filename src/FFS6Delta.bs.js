@@ -262,32 +262,6 @@ function step(param) {
                           ];
                   }
                   break;
-              case /* Num */2 :
-                  if (!match$2.args[1]) {
-                    var f$1 = /* Value */Block.__(2, [UID$ReasonReactExamples.makeUIDConstructor("value", /* VNum */Block.__(0, [match$4[0]]))]);
-                    var z_focus$2 = UID$ReasonReactExamples.makeUIDConstructor("focus", f$1);
-                    var z_ctxts$1 = match.ctxts;
-                    var z$2 = {
-                      focus: z_focus$2,
-                      ctxts: z_ctxts$1
-                    };
-                    var c_zipper$2 = UID$ReasonReactExamples.makeUIDConstructor("zipper", z$2);
-                    var c_env = c.env;
-                    var c_stack$1 = c.stack;
-                    var c$3 = {
-                      zipper: c_zipper$2,
-                      env: c_env,
-                      stack: c_stack$1
-                    };
-                    return /* tuple */[
-                            UID$ReasonReactExamples.makeUIDConstructor("config", c$3),
-                            /* tuple */[
-                              "num",
-                              Flow$ReasonReactExamples.fromArray([])
-                            ]
-                          ];
-                  }
-                  break;
               default:
                 
             }
@@ -309,8 +283,36 @@ function step(param) {
             cs_000,
             cs_001
           ];
-          var z_focus$3 = UID$ReasonReactExamples.makeUIDConstructor("focus", /* ZExp */Block.__(0, [match$7[0]]));
-          var z_ctxts$2 = UID$ReasonReactExamples.makeUIDConstructor("ctxts", cs);
+          var z_focus$2 = UID$ReasonReactExamples.makeUIDConstructor("focus", /* ZExp */Block.__(0, [match$7[0]]));
+          var z_ctxts$1 = UID$ReasonReactExamples.makeUIDConstructor("ctxts", cs);
+          var z$2 = {
+            focus: z_focus$2,
+            ctxts: z_ctxts$1
+          };
+          var c_zipper$2 = UID$ReasonReactExamples.makeUIDConstructor("zipper", z$2);
+          var c_env = c.env;
+          var c_stack$1 = c.stack;
+          var c$3 = {
+            zipper: c_zipper$2,
+            env: c_env,
+            stack: c_stack$1
+          };
+          return /* tuple */[
+                  UID$ReasonReactExamples.makeUIDConstructor("config", c$3),
+                  /* tuple */[
+                    "zipper begin",
+                    Flow$ReasonReactExamples.fromArray([])
+                  ]
+                ];
+        } else {
+          var zp_values = UID$ReasonReactExamples.makeUIDConstructor("values", /* Empty */0);
+          var zp = {
+            op: op,
+            values: zp_values
+          };
+          var f$1 = /* ZPreVal */Block.__(1, [UID$ReasonReactExamples.makeUIDConstructor("zpreval", zp)]);
+          var z_focus$3 = UID$ReasonReactExamples.makeUIDConstructor("focus", f$1);
+          var z_ctxts$2 = match.ctxts;
           var z$3 = {
             focus: z_focus$3,
             ctxts: z_ctxts$2
@@ -326,12 +328,10 @@ function step(param) {
           return /* tuple */[
                   UID$ReasonReactExamples.makeUIDConstructor("config", c$4),
                   /* tuple */[
-                    "zipper begin",
+                    "zipper skip",
                     Flow$ReasonReactExamples.fromArray([])
                   ]
                 ];
-        } else {
-          return ;
         }
         break;
     case /* ZPreVal */1 :
@@ -442,50 +442,86 @@ function step(param) {
                 return ;
               }
             }
-          } else if (match$10.tag === /* Bracket */3 && !match$8.values[1]) {
-            var env$2 = c.env;
-            var z_focus$6 = UID$ReasonReactExamples.makeUIDConstructor("focus", /* ZExp */Block.__(0, [match$10[0]]));
-            var z_ctxts$5 = UID$ReasonReactExamples.makeUIDConstructor("ctxts", /* Empty */0);
-            var z$6 = {
-              focus: z_focus$6,
-              ctxts: z_ctxts$5
-            };
-            var s_000$1 = UID$ReasonReactExamples.makeUIDConstructor("frame", {
-                  ctxts: match.ctxts,
-                  env: env$2
-                });
-            var s_001$1 = c.stack;
-            var s$1 = /* Cons */[
-              s_000$1,
-              s_001$1
-            ];
-            var c_zipper$6 = UID$ReasonReactExamples.makeUIDConstructor("zipper", z$6);
-            var c_stack$5 = UID$ReasonReactExamples.makeUIDConstructor("stack", s$1);
-            var c$7 = {
-              zipper: c_zipper$6,
-              env: env$2,
-              stack: c_stack$5
-            };
-            return /* tuple */[
-                    UID$ReasonReactExamples.makeUIDConstructor("config", c$7),
-                    /* tuple */[
-                      "bracket",
-                      Flow$ReasonReactExamples.fromArray([])
-                    ]
-                  ];
           } else {
-            return ;
+            switch (match$10.tag | 0) {
+              case /* Var */0 :
+              case /* Lam */1 :
+                  return ;
+              case /* Num */2 :
+                  if (match$8.values[1]) {
+                    return ;
+                  } else {
+                    var f$3 = /* Value */Block.__(2, [UID$ReasonReactExamples.makeUIDConstructor("value", /* VNum */Block.__(0, [match$10[0]]))]);
+                    var z_focus$6 = UID$ReasonReactExamples.makeUIDConstructor("focus", f$3);
+                    var z_ctxts$5 = match.ctxts;
+                    var z$6 = {
+                      focus: z_focus$6,
+                      ctxts: z_ctxts$5
+                    };
+                    var c_zipper$6 = UID$ReasonReactExamples.makeUIDConstructor("zipper", z$6);
+                    var c_env$4 = c.env;
+                    var c_stack$5 = c.stack;
+                    var c$7 = {
+                      zipper: c_zipper$6,
+                      env: c_env$4,
+                      stack: c_stack$5
+                    };
+                    return /* tuple */[
+                            UID$ReasonReactExamples.makeUIDConstructor("config", c$7),
+                            /* tuple */[
+                              "num",
+                              Flow$ReasonReactExamples.fromArray([])
+                            ]
+                          ];
+                  }
+              case /* Bracket */3 :
+                  if (match$8.values[1]) {
+                    return ;
+                  } else {
+                    var env$2 = c.env;
+                    var z_focus$7 = UID$ReasonReactExamples.makeUIDConstructor("focus", /* ZExp */Block.__(0, [match$10[0]]));
+                    var z_ctxts$6 = UID$ReasonReactExamples.makeUIDConstructor("ctxts", /* Empty */0);
+                    var z$7 = {
+                      focus: z_focus$7,
+                      ctxts: z_ctxts$6
+                    };
+                    var s_000$1 = UID$ReasonReactExamples.makeUIDConstructor("frame", {
+                          ctxts: match.ctxts,
+                          env: env$2
+                        });
+                    var s_001$1 = c.stack;
+                    var s$1 = /* Cons */[
+                      s_000$1,
+                      s_001$1
+                    ];
+                    var c_zipper$7 = UID$ReasonReactExamples.makeUIDConstructor("zipper", z$7);
+                    var c_stack$6 = UID$ReasonReactExamples.makeUIDConstructor("stack", s$1);
+                    var c$8 = {
+                      zipper: c_zipper$7,
+                      env: env$2,
+                      stack: c_stack$6
+                    };
+                    return /* tuple */[
+                            UID$ReasonReactExamples.makeUIDConstructor("config", c$8),
+                            /* tuple */[
+                              "bracket",
+                              Flow$ReasonReactExamples.fromArray([])
+                            ]
+                          ];
+                  }
+              
+            }
           }
         } else {
           var match$19 = match$9[0][1];
           if (match$19.tag) {
             var match$20 = match$8.values[1];
             if (match$20 && !match$20[1][1]) {
-              var z_focus$7 = UID$ReasonReactExamples.makeUIDConstructor("focus", /* ZExp */Block.__(0, [match$19[1]]));
-              var z_ctxts$6 = match.ctxts;
-              var z$7 = {
-                focus: z_focus$7,
-                ctxts: z_ctxts$6
+              var z_focus$8 = UID$ReasonReactExamples.makeUIDConstructor("focus", /* ZExp */Block.__(0, [match$19[1]]));
+              var z_ctxts$7 = match.ctxts;
+              var z$8 = {
+                focus: z_focus$8,
+                ctxts: z_ctxts$7
               };
               var e_000$1 = UID$ReasonReactExamples.makeUIDConstructor("binding", {
                     vid: match$19[0],
@@ -496,16 +532,16 @@ function step(param) {
                 e_000$1,
                 e_001$1
               ];
-              var c_zipper$7 = UID$ReasonReactExamples.makeUIDConstructor("zipper", z$7);
-              var c_env$4 = UID$ReasonReactExamples.makeUIDConstructor("env", e$1);
-              var c_stack$6 = c.stack;
-              var c$8 = {
-                zipper: c_zipper$7,
-                env: c_env$4,
-                stack: c_stack$6
+              var c_zipper$8 = UID$ReasonReactExamples.makeUIDConstructor("zipper", z$8);
+              var c_env$5 = UID$ReasonReactExamples.makeUIDConstructor("env", e$1);
+              var c_stack$7 = c.stack;
+              var c$9 = {
+                zipper: c_zipper$8,
+                env: c_env$5,
+                stack: c_stack$7
               };
               return /* tuple */[
-                      UID$ReasonReactExamples.makeUIDConstructor("config", c$8),
+                      UID$ReasonReactExamples.makeUIDConstructor("config", c$9),
                       /* tuple */[
                         "let",
                         Flow$ReasonReactExamples.fromArray([])
@@ -517,22 +553,22 @@ function step(param) {
           } else if (match$8.values[1]) {
             return ;
           } else {
-            var z_focus$8 = UID$ReasonReactExamples.makeUIDConstructor("focus", /* ZExp */Block.__(0, [match$19[0]]));
-            var z_ctxts$7 = match.ctxts;
-            var z$8 = {
-              focus: z_focus$8,
-              ctxts: z_ctxts$7
+            var z_focus$9 = UID$ReasonReactExamples.makeUIDConstructor("focus", /* ZExp */Block.__(0, [match$19[0]]));
+            var z_ctxts$8 = match.ctxts;
+            var z$9 = {
+              focus: z_focus$9,
+              ctxts: z_ctxts$8
             };
-            var c_zipper$8 = UID$ReasonReactExamples.makeUIDConstructor("zipper", z$8);
-            var c_env$5 = c.env;
-            var c_stack$7 = c.stack;
-            var c$9 = {
-              zipper: c_zipper$8,
-              env: c_env$5,
-              stack: c_stack$7
+            var c_zipper$9 = UID$ReasonReactExamples.makeUIDConstructor("zipper", z$9);
+            var c_env$6 = c.env;
+            var c_stack$8 = c.stack;
+            var c$10 = {
+              zipper: c_zipper$9,
+              env: c_env$6,
+              stack: c_stack$8
             };
             return /* tuple */[
-                    UID$ReasonReactExamples.makeUIDConstructor("config", c$9),
+                    UID$ReasonReactExamples.makeUIDConstructor("config", c$10),
                     /* tuple */[
                       "lift",
                       Flow$ReasonReactExamples.fromArray([])
@@ -564,34 +600,8 @@ function step(param) {
               cs_000$1,
               cs_001$1
             ];
-            var z_focus$9 = UID$ReasonReactExamples.makeUIDConstructor("focus", /* ZExp */Block.__(0, [match$23[0]]));
-            var z_ctxts$8 = UID$ReasonReactExamples.makeUIDConstructor("ctxts", cs$1);
-            var z$9 = {
-              focus: z_focus$9,
-              ctxts: z_ctxts$8
-            };
-            var c_zipper$9 = UID$ReasonReactExamples.makeUIDConstructor("zipper", z$9);
-            var c_env$6 = c.env;
-            var c_stack$8 = c.stack;
-            var c$10 = {
-              zipper: c_zipper$9,
-              env: c_env$6,
-              stack: c_stack$8
-            };
-            return /* tuple */[
-                    UID$ReasonReactExamples.makeUIDConstructor("config", c$10),
-                    /* tuple */[
-                      "zipper continue",
-                      Flow$ReasonReactExamples.fromArray([])
-                    ]
-                  ];
-          } else {
-            var f$3 = /* ZPreVal */Block.__(1, [UID$ReasonReactExamples.makeUIDConstructor("zpreval", {
-                      op: op$1,
-                      values: match$22.values
-                    })]);
-            var z_focus$10 = UID$ReasonReactExamples.makeUIDConstructor("focus", f$3);
-            var z_ctxts$9 = match$21[1];
+            var z_focus$10 = UID$ReasonReactExamples.makeUIDConstructor("focus", /* ZExp */Block.__(0, [match$23[0]]));
+            var z_ctxts$9 = UID$ReasonReactExamples.makeUIDConstructor("ctxts", cs$1);
             var z$10 = {
               focus: z_focus$10,
               ctxts: z_ctxts$9
@@ -607,6 +617,32 @@ function step(param) {
             return /* tuple */[
                     UID$ReasonReactExamples.makeUIDConstructor("config", c$11),
                     /* tuple */[
+                      "zipper continue",
+                      Flow$ReasonReactExamples.fromArray([])
+                    ]
+                  ];
+          } else {
+            var f$4 = /* ZPreVal */Block.__(1, [UID$ReasonReactExamples.makeUIDConstructor("zpreval", {
+                      op: op$1,
+                      values: match$22.values
+                    })]);
+            var z_focus$11 = UID$ReasonReactExamples.makeUIDConstructor("focus", f$4);
+            var z_ctxts$10 = match$21[1];
+            var z$11 = {
+              focus: z_focus$11,
+              ctxts: z_ctxts$10
+            };
+            var c_zipper$11 = UID$ReasonReactExamples.makeUIDConstructor("zipper", z$11);
+            var c_env$8 = c.env;
+            var c_stack$10 = c.stack;
+            var c$12 = {
+              zipper: c_zipper$11,
+              env: c_env$8,
+              stack: c_stack$10
+            };
+            return /* tuple */[
+                    UID$ReasonReactExamples.makeUIDConstructor("config", c$12),
+                    /* tuple */[
                       "zipper end",
                       Flow$ReasonReactExamples.fromArray([])
                     ]
@@ -616,22 +652,22 @@ function step(param) {
           var match$24 = c.stack[1];
           if (match$24) {
             var match$25 = match$24[0][1];
-            var z_focus$11 = UID$ReasonReactExamples.makeUIDConstructor("focus", /* Value */Block.__(2, [v$1]));
-            var z_ctxts$10 = match$25.ctxts;
-            var z$11 = {
-              focus: z_focus$11,
-              ctxts: z_ctxts$10
+            var z_focus$12 = UID$ReasonReactExamples.makeUIDConstructor("focus", /* Value */Block.__(2, [v$1]));
+            var z_ctxts$11 = match$25.ctxts;
+            var z$12 = {
+              focus: z_focus$12,
+              ctxts: z_ctxts$11
             };
-            var c_zipper$11 = UID$ReasonReactExamples.makeUIDConstructor("zipper", z$11);
-            var c_env$8 = match$25.env;
-            var c_stack$10 = match$24[1];
-            var c$12 = {
-              zipper: c_zipper$11,
-              env: c_env$8,
-              stack: c_stack$10
+            var c_zipper$12 = UID$ReasonReactExamples.makeUIDConstructor("zipper", z$12);
+            var c_env$9 = match$25.env;
+            var c_stack$11 = match$24[1];
+            var c$13 = {
+              zipper: c_zipper$12,
+              env: c_env$9,
+              stack: c_stack$11
             };
             return /* tuple */[
-                    UID$ReasonReactExamples.makeUIDConstructor("config", c$12),
+                    UID$ReasonReactExamples.makeUIDConstructor("config", c$13),
                     /* tuple */[
                       "app exit",
                       Flow$ReasonReactExamples.fromArray([])
@@ -663,12 +699,38 @@ function zexpToUID(opToUID, param) {
   return UID$ReasonReactExamples.makeUIDConstructor("zexp", ze);
 }
 
-function valuesToUID(vs) {
-  var vs$1 = vs ? /* Cons */[
-      valueToUID(vs[0]),
-      valuesToUID(vs[1])
+function aexpsToUID(aes) {
+  var aes$1 = aes ? /* Cons */[
+      zexpToUID(opToUID, aes[0]),
+      aexpsToUID(aes[1])
     ] : /* Empty */0;
-  return UID$ReasonReactExamples.makeUIDConstructor("values", vs$1);
+  return UID$ReasonReactExamples.makeUIDConstructor("aexps", aes$1);
+}
+
+function ctxtsToUID(cs) {
+  var cs$1 = cs ? /* Cons */[
+      zctxtToUID(opToUID, cs[0]),
+      ctxtsToUID(cs[1])
+    ] : /* Empty */0;
+  return UID$ReasonReactExamples.makeUIDConstructor("ctxts", cs$1);
+}
+
+function zctxtToUID(opToUID, param) {
+  var zc_op = Curry._1(opToUID, param.op);
+  var zc_args = aexpsToUID(param.args);
+  var zc_values = valuesToUID(param.values);
+  var zc = {
+    op: zc_op,
+    args: zc_args,
+    values: zc_values
+  };
+  return UID$ReasonReactExamples.makeUIDConstructor("zctxt", zc);
+}
+
+function opToUID(o) {
+  var o$1;
+  o$1 = o.tag ? /* AExp */Block.__(1, [aexp_opToUID(o[0])]) : /* Exp */Block.__(0, [exp_opToUID(o[0])]);
+  return UID$ReasonReactExamples.makeUIDConstructor("op", o$1);
 }
 
 function valueToUID(v) {
@@ -680,46 +742,14 @@ function valueToUID(v) {
   return UID$ReasonReactExamples.makeUIDConstructor("value", v$1);
 }
 
-function envToUID(e) {
-  var e$1 = e ? /* Cons */[
-      bindingToUID(e[0]),
-      envToUID(e[1])
-    ] : /* Empty */0;
-  return UID$ReasonReactExamples.makeUIDConstructor("env", e$1);
-}
-
-function lambdaToUID(param) {
-  var l_vid = UID$ReasonReactExamples.makeUIDConstructor("vid", param.vid);
-  var l_exp = zexpToUID(opToUID, param.exp);
-  var l = {
-    vid: l_vid,
-    exp: l_exp
+function zprevalToUID(opToUID, param) {
+  var zp_op = Curry._1(opToUID, param.op);
+  var zp_values = valuesToUID(param.values);
+  var zp = {
+    op: zp_op,
+    values: zp_values
   };
-  return UID$ReasonReactExamples.makeUIDConstructor("lambda", l);
-}
-
-function opToUID(o) {
-  var o$1;
-  o$1 = o.tag ? /* AExp */Block.__(1, [aexp_opToUID(o[0])]) : /* Exp */Block.__(0, [exp_opToUID(o[0])]);
-  return UID$ReasonReactExamples.makeUIDConstructor("op", o$1);
-}
-
-function bindingToUID(param) {
-  var b_vid = UID$ReasonReactExamples.makeUIDConstructor("vid", param.vid);
-  var b_value = valueToUID(param.value);
-  var b = {
-    vid: b_vid,
-    value: b_value
-  };
-  return UID$ReasonReactExamples.makeUIDConstructor("binding", b);
-}
-
-function aexpsToUID(aes) {
-  var aes$1 = aes ? /* Cons */[
-      zexpToUID(opToUID, aes[0]),
-      aexpsToUID(aes[1])
-    ] : /* Empty */0;
-  return UID$ReasonReactExamples.makeUIDConstructor("aexps", aes$1);
+  return UID$ReasonReactExamples.makeUIDConstructor("zpreval", zp);
 }
 
 function stackToUID(s) {
@@ -740,51 +770,13 @@ function frameToUID(param) {
   return UID$ReasonReactExamples.makeUIDConstructor("frame", f);
 }
 
-function zctxtToUID(opToUID, param) {
-  var zc_op = Curry._1(opToUID, param.op);
-  var zc_args = aexpsToUID(param.args);
-  var zc_values = valuesToUID(param.values);
-  var zc = {
-    op: zc_op,
-    args: zc_args,
-    values: zc_values
-  };
-  return UID$ReasonReactExamples.makeUIDConstructor("zctxt", zc);
-}
-
-function ctxtsToUID(cs) {
-  var cs$1 = cs ? /* Cons */[
-      zctxtToUID(opToUID, cs[0]),
-      ctxtsToUID(cs[1])
-    ] : /* Empty */0;
-  return UID$ReasonReactExamples.makeUIDConstructor("ctxts", cs$1);
-}
-
-function zprevalToUID(opToUID, param) {
-  var zp_op = Curry._1(opToUID, param.op);
-  var zp_values = valuesToUID(param.values);
-  var zp = {
-    op: zp_op,
-    values: zp_values
-  };
-  return UID$ReasonReactExamples.makeUIDConstructor("zpreval", zp);
-}
-
-function focusToUID(f) {
-  var f$1;
-  switch (f.tag | 0) {
-    case /* ZExp */0 :
-        f$1 = /* ZExp */Block.__(0, [zexpToUID(opToUID, f[0])]);
-        break;
-    case /* ZPreVal */1 :
-        f$1 = /* ZPreVal */Block.__(1, [zprevalToUID(opToUID, f[0])]);
-        break;
-    case /* Value */2 :
-        f$1 = /* Value */Block.__(2, [valueToUID(f[0])]);
-        break;
-    
-  }
-  return UID$ReasonReactExamples.makeUIDConstructor("focus", f$1);
+function exp_opToUID(eo) {
+  var eo$1;
+  eo$1 = eo.tag ? /* Let */Block.__(1, [
+        UID$ReasonReactExamples.makeUIDConstructor("vid", eo[0]),
+        zexpToUID(opToUID, eo[1])
+      ]) : /* Lift */Block.__(0, [zexpToUID(opToUID, eo[0])]);
+  return UID$ReasonReactExamples.makeUIDConstructor("exp_op", eo$1);
 }
 
 function aexp_opToUID(aeo) {
@@ -811,13 +803,57 @@ function aexp_opToUID(aeo) {
   return UID$ReasonReactExamples.makeUIDConstructor("aexp_op", aeo$1);
 }
 
-function exp_opToUID(eo) {
-  var eo$1;
-  eo$1 = eo.tag ? /* Let */Block.__(1, [
-        UID$ReasonReactExamples.makeUIDConstructor("vid", eo[0]),
-        zexpToUID(opToUID, eo[1])
-      ]) : /* Lift */Block.__(0, [zexpToUID(opToUID, eo[0])]);
-  return UID$ReasonReactExamples.makeUIDConstructor("exp_op", eo$1);
+function valuesToUID(vs) {
+  var vs$1 = vs ? /* Cons */[
+      valueToUID(vs[0]),
+      valuesToUID(vs[1])
+    ] : /* Empty */0;
+  return UID$ReasonReactExamples.makeUIDConstructor("values", vs$1);
+}
+
+function envToUID(e) {
+  var e$1 = e ? /* Cons */[
+      bindingToUID(e[0]),
+      envToUID(e[1])
+    ] : /* Empty */0;
+  return UID$ReasonReactExamples.makeUIDConstructor("env", e$1);
+}
+
+function lambdaToUID(param) {
+  var l_vid = UID$ReasonReactExamples.makeUIDConstructor("vid", param.vid);
+  var l_exp = zexpToUID(opToUID, param.exp);
+  var l = {
+    vid: l_vid,
+    exp: l_exp
+  };
+  return UID$ReasonReactExamples.makeUIDConstructor("lambda", l);
+}
+
+function bindingToUID(param) {
+  var b_vid = UID$ReasonReactExamples.makeUIDConstructor("vid", param.vid);
+  var b_value = valueToUID(param.value);
+  var b = {
+    vid: b_vid,
+    value: b_value
+  };
+  return UID$ReasonReactExamples.makeUIDConstructor("binding", b);
+}
+
+function focusToUID(f) {
+  var f$1;
+  switch (f.tag | 0) {
+    case /* ZExp */0 :
+        f$1 = /* ZExp */Block.__(0, [zexpToUID(opToUID, f[0])]);
+        break;
+    case /* ZPreVal */1 :
+        f$1 = /* ZPreVal */Block.__(1, [zprevalToUID(opToUID, f[0])]);
+        break;
+    case /* Value */2 :
+        f$1 = /* Value */Block.__(2, [valueToUID(f[0])]);
+        break;
+    
+  }
+  return UID$ReasonReactExamples.makeUIDConstructor("focus", f$1);
 }
 
 function expToUID(e) {
@@ -866,43 +902,6 @@ function zexpFromUID(opFromUID, param) {
         };
 }
 
-function opFromUID(param) {
-  var op = param[1];
-  if (op.tag) {
-    return /* AExp */Block.__(1, [aexp_opFromUID(op[0])]);
-  } else {
-    return /* Exp */Block.__(0, [exp_opFromUID(op[0])]);
-  }
-}
-
-function envFromUID(param) {
-  var env = param[1];
-  if (env) {
-    return /* :: */[
-            bindingFromUID(env[0]),
-            envFromUID(env[1])
-          ];
-  } else {
-    return /* [] */0;
-  }
-}
-
-function bindingFromUID(param) {
-  var match = param[1];
-  return {
-          vid: vidFromUID(match.vid),
-          value: valueFromUID(match.value)
-        };
-}
-
-function lambdaFromUID(param) {
-  var match = param[1];
-  return {
-          vid: vidFromUID(match.vid),
-          exp: zexpFromUID(opFromUID, match.exp)
-        };
-}
-
 function valuesFromUID(param) {
   var values = param[1];
   if (values) {
@@ -927,24 +926,78 @@ function valueFromUID(param) {
   }
 }
 
-function stackFromUID(param) {
-  var stack = param[1];
-  if (stack) {
+function lambdaFromUID(param) {
+  var match = param[1];
+  return {
+          vid: vidFromUID(match.vid),
+          exp: zexpFromUID(opFromUID, match.exp)
+        };
+}
+
+function envFromUID(param) {
+  var env = param[1];
+  if (env) {
     return /* :: */[
-            frameFromUID(stack[0]),
-            stackFromUID(stack[1])
+            bindingFromUID(env[0]),
+            envFromUID(env[1])
           ];
   } else {
     return /* [] */0;
   }
 }
 
-function frameFromUID(param) {
+function opFromUID(param) {
+  var op = param[1];
+  if (op.tag) {
+    return /* AExp */Block.__(1, [aexp_opFromUID(op[0])]);
+  } else {
+    return /* Exp */Block.__(0, [exp_opFromUID(op[0])]);
+  }
+}
+
+function aexpsFromUID(param) {
+  var aexps = param[1];
+  if (aexps) {
+    return /* :: */[
+            zexpFromUID(opFromUID, aexps[0]),
+            aexpsFromUID(aexps[1])
+          ];
+  } else {
+    return /* [] */0;
+  }
+}
+
+function zctxtFromUID(opFromUID, param) {
   var match = param[1];
   return {
-          ctxts: ctxtsFromUID(match.ctxts),
-          env: envFromUID(match.env)
+          op: Curry._1(opFromUID, match.op),
+          args: aexpsFromUID(match.args),
+          values: valuesFromUID(match.values)
         };
+}
+
+function ctxtsFromUID(param) {
+  var ctxts = param[1];
+  if (ctxts) {
+    return /* :: */[
+            zctxtFromUID(opFromUID, ctxts[0]),
+            ctxtsFromUID(ctxts[1])
+          ];
+  } else {
+    return /* [] */0;
+  }
+}
+
+function exp_opFromUID(param) {
+  var exp_op = param[1];
+  if (exp_op.tag) {
+    return /* Let */Block.__(1, [
+              vidFromUID(exp_op[0]),
+              zexpFromUID(opFromUID, exp_op[1])
+            ]);
+  } else {
+    return /* Lift */Block.__(0, [zexpFromUID(opFromUID, exp_op[0])]);
+  }
 }
 
 function aexp_opFromUID(param) {
@@ -970,30 +1023,6 @@ function aexp_opFromUID(param) {
   }
 }
 
-function exp_opFromUID(param) {
-  var exp_op = param[1];
-  if (exp_op.tag) {
-    return /* Let */Block.__(1, [
-              vidFromUID(exp_op[0]),
-              zexpFromUID(opFromUID, exp_op[1])
-            ]);
-  } else {
-    return /* Lift */Block.__(0, [zexpFromUID(opFromUID, exp_op[0])]);
-  }
-}
-
-function ctxtsFromUID(param) {
-  var ctxts = param[1];
-  if (ctxts) {
-    return /* :: */[
-            zctxtFromUID(opFromUID, ctxts[0]),
-            ctxtsFromUID(ctxts[1])
-          ];
-  } else {
-    return /* [] */0;
-  }
-}
-
 function focusFromUID(param) {
   var focus = param[1];
   switch (focus.tag | 0) {
@@ -1007,6 +1036,34 @@ function focusFromUID(param) {
   }
 }
 
+function stackFromUID(param) {
+  var stack = param[1];
+  if (stack) {
+    return /* :: */[
+            frameFromUID(stack[0]),
+            stackFromUID(stack[1])
+          ];
+  } else {
+    return /* [] */0;
+  }
+}
+
+function frameFromUID(param) {
+  var match = param[1];
+  return {
+          ctxts: ctxtsFromUID(match.ctxts),
+          env: envFromUID(match.env)
+        };
+}
+
+function bindingFromUID(param) {
+  var match = param[1];
+  return {
+          vid: vidFromUID(match.vid),
+          value: valueFromUID(match.value)
+        };
+}
+
 function zprevalFromUID(opFromUID, param) {
   var match = param[1];
   return {
@@ -1015,29 +1072,12 @@ function zprevalFromUID(opFromUID, param) {
         };
 }
 
-function zctxtFromUID(opFromUID, param) {
-  var match = param[1];
-  return {
-          op: Curry._1(opFromUID, match.op),
-          args: aexpsFromUID(match.args),
-          values: valuesFromUID(match.values)
-        };
-}
-
-function aexpsFromUID(param) {
-  var aexps = param[1];
-  if (aexps) {
-    return /* :: */[
-            zexpFromUID(opFromUID, aexps[0]),
-            aexpsFromUID(aexps[1])
-          ];
-  } else {
-    return /* [] */0;
-  }
-}
-
 function expFromUID(exp) {
   return zexpFromUID(opFromUID, exp);
+}
+
+function aexpFromUID(aexp) {
+  return zexpFromUID(opFromUID, aexp);
 }
 
 function zipperFromUID(param) {
@@ -1046,10 +1086,6 @@ function zipperFromUID(param) {
           focus: focusFromUID(match.focus),
           ctxts: ctxtsFromUID(match.ctxts)
         };
-}
-
-function aexpFromUID(aexp) {
-  return zexpFromUID(opFromUID, aexp);
 }
 
 function configFromUID(param) {

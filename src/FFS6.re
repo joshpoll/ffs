@@ -118,6 +118,16 @@ let step = (c: config): option(config) =>
       env,
       stack,
     })
+  /* zipper skip */
+  | {zipper: {focus: ZExp({op, args: []}), ctxts}, env, stack} =>
+    Some({
+      zipper: {
+        focus: ZPreVal({op, values: []}),
+        ctxts,
+      },
+      env,
+      stack,
+    })
   /* zipper begin */
   | {zipper: {focus: ZExp({op, args: [a, ...args]}), ctxts}, env, stack} =>
     Some({
@@ -190,7 +200,7 @@ let step = (c: config): option(config) =>
       stack,
     })
   /* num */
-  | {zipper: {focus: ZExp({op: AExp(Num(n)), args: []}), ctxts}, env, stack} =>
+  | {zipper: {focus: ZPreVal({op: AExp(Num(n)), values: []}), ctxts}, env, stack} =>
     Some({
       zipper: {
         focus: Value(VNum(n)),
@@ -264,3 +274,53 @@ and expFromFFS5 = (exp: FFS5.exp): exp =>
       args: List.map(aexpFromFFS5, [aexp]),
     }
   };
+
+/* def inject (e : exp) : state := ⟨sum.inl e, ⟨option.none, env.emp⟩, []⟩ */
+let inject = (e: exp): config => {
+  zipper: {
+    focus: ZExp(e),
+    ctxts: [],
+  },
+  env: [],
+  stack: [],
+};
+
+/* def is_final : state -> Prop
+   | ⟨sum.inr v, ⟨option.none, env⟩, []⟩ := true
+   | _ := false */
+
+let isFinal = (c: config): bool =>
+  switch (c) {
+  | {zipper: {focus: Value(_), ctxts: []}, env: _, stack: []} => true
+  | _ => false
+  };
+
+let rec iterateMaybeAux = (f, x) =>
+  switch (x) {
+  | None => []
+  | Some(x) =>
+    let fx = f(x);
+    [x, ...iterateMaybeAux(f, fx)];
+  };
+
+let advance = step;
+
+let rec takeWhileInclusive = (p, l) =>
+  switch (l) {
+  | [] => []
+  | [x, ...xs] => [
+      x,
+      ...if (p(x)) {
+           takeWhileInclusive(p, xs);
+         } else {
+           [];
+         },
+    ]
+  };
+
+let iterateMaybe = (f: 'a => option('a), x: 'a): list('a) => iterateMaybeAux(f, Some(x));
+
+let interpretTrace = (p: exp): list(config) => {
+  let states = iterateMaybe(step, inject(p));
+  takeWhileInclusive(c => !isFinal(c), states);
+};
