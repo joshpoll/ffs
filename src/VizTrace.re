@@ -46,7 +46,8 @@ let reducer = (state, action) => {
 
 [@react.component]
 let make = (~padding=10., ~transition=false, ~program) => {
-  let trace = FFS5Delta.interpretTrace(program);
+  let liftedProgram = FFS6.expFromFFS5(program);
+  let trace = FFS6Delta.interpretTrace(liftedProgram);
 
   let (state, dispatch) = React.useReducer(reducer, initialState);
 
@@ -65,7 +66,7 @@ let make = (~padding=10., ~transition=false, ~program) => {
     None;
   });
 
-  let swTrace = trace |> List.map(FFS5DeltaViz.vizMachineState);
+  let swTrace = trace |> List.map(FFS6DeltaViz.vizConfig);
   /* |> List.map(Sidewinder.Transform.hide("idStatus"))
      |> List.map((Some(x)) => x)
      |> List.map(Sidewinder.Transform.denest("::", "::")); */

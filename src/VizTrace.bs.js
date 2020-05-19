@@ -5,8 +5,9 @@ var Curry = require("bs-platform/lib/js/curry.js");
 var React = require("react");
 var Caml_primitive = require("bs-platform/lib/js/caml_primitive.js");
 var Main$Sidewinder = require("sidewinder/src/Main.bs.js");
-var FFS5Delta$ReasonReactExamples = require("./FFS5Delta.bs.js");
-var FFS5DeltaViz$ReasonReactExamples = require("./FFS5DeltaViz.bs.js");
+var FFS6$ReasonReactExamples = require("./FFS6.bs.js");
+var FFS6Delta$ReasonReactExamples = require("./FFS6Delta.bs.js");
+var FFS6DeltaViz$ReasonReactExamples = require("./FFS6DeltaViz.bs.js");
 
 var leftButtonStyle = {
   width: "48px",
@@ -77,7 +78,8 @@ function VizTrace(Props) {
   var match$1 = Props.transition;
   var transition = match$1 !== undefined ? match$1 : false;
   var program = Props.program;
-  var trace = FFS5Delta$ReasonReactExamples.interpretTrace(program);
+  var liftedProgram = FFS6$ReasonReactExamples.expFromFFS5(program);
+  var trace = FFS6Delta$ReasonReactExamples.interpretTrace(liftedProgram);
   var match$2 = React.useReducer(reducer, initialState);
   var dispatch = match$2[1];
   var state = match$2[0];
@@ -85,11 +87,11 @@ function VizTrace(Props) {
           Curry._1(dispatch, /* Length */[List.length(trace)]);
           return ;
         }), ([]));
-  var swTrace = List.map(FFS5DeltaViz$ReasonReactExamples.vizMachineState, trace);
+  var swTrace = List.map(FFS6DeltaViz$ReasonReactExamples.vizConfig, trace);
   var initState;
   if (transition) {
     var nextPos = Caml_primitive.caml_int_min(state.pos + 1 | 0, state.length - 1 | 0);
-    initState = Main$Sidewinder.renderTransition(false, state.prevState, state.currState, List.nth(swTrace, state.pos), List.nth(swTrace, nextPos));
+    initState = Main$Sidewinder.renderTransition(false, undefined, state.prevState, state.currState, List.nth(swTrace, state.pos), List.nth(swTrace, nextPos));
   } else {
     initState = Main$Sidewinder.render(false, List.nth(swTrace, state.pos));
   }

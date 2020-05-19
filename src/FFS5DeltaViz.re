@@ -316,18 +316,25 @@ let vizFrame = (flow, {uid, ctxts_uid, env_uid}) =>
    | Stack(f, s) => [f, ...stackToList(s)]
    }; */
 
-let rec vizStackAux = (flow, (s_uid, fs)) =>
-  switch (fs) {
-  | Empty => empty(~uid=s_uid, ~flow=?MS.get(flow, s_uid), ())
-  | Stack(f, fs) =>
-    vSeq(~uid=s_uid, ~flow=?MS.get(flow, s_uid), [vizStackAux(flow, fs), vizFrame(flow, f)])
-  };
+let rec vizStack = (flow, (s_uid, fs)) =>
+  box(
+    ~uid=s_uid,
+    ~flow=?MS.get(flow, s_uid),
+    ~dx=5.,
+    ~dy=5.,
+    switch (fs) {
+    | Empty => str("empty stack", ())
+    | Stack(f, fs) => vSeq([vizStack(flow, fs), vizFrame(flow, f)])
+    },
+    [],
+    (),
+  );
 
-let vizStack = (flow, (s_uid, fs)) =>
-  switch (fs) {
-  | Empty => str(~uid=s_uid, ~flow=?MS.get(flow, s_uid), "empty stack", ())
-  | _ => vizStackAux(flow, (s_uid, fs))
-  };
+/* let vizStack = (flow, (s_uid, fs)) =>
+   switch (fs) {
+   | Empty => str(~uid=s_uid, ~flow=?MS.get(flow, s_uid), "empty stack", ())
+   | _ => vizStackAux(flow, (s_uid, fs))
+   }; */
 
 let vizMachineState =
     (
@@ -357,7 +364,7 @@ let vizMachineState =
               ),
             ],
           ),
-          cell("stack", vizStack(flow, stack_uid)),
+          vizStack(flow, stack_uid),
         ],
       ),
     ],

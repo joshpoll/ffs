@@ -1,0 +1,266 @@
+/* starting with delta-less FFS6 to get the semantics right */
+
+type hole = unit;
+
+type vid = string;
+
+type zexp('op) = {
+  op: 'op,
+  args: list(aexp),
+}
+
+and zctxt('op) = {
+  op: 'op,
+  args: list(aexp),
+  values: list(value),
+}
+
+and zpreval('op) = {
+  op: 'op,
+  values: list(value),
+}
+
+and lambda = {
+  vid,
+  exp,
+}
+
+and aexp_op =
+  | Var(vid)
+  | App /* (aexp, aexp) */
+  | Lam(lambda)
+  | Num(int)
+  | Add /* (aexp, aexp) */
+  | Bracket(exp)
+
+and aexp = zexp(op)
+
+and exp_op =
+  | Lift(aexp)
+  | Let(vid, /* aexp, */ exp)
+
+and exp = zexp(op)
+
+and op =
+  | Exp(exp_op)
+  | AExp(aexp_op)
+
+and value =
+  | VNum(int)
+  | Clo(lambda, env)
+
+and binding = {
+  vid,
+  value,
+}
+and env = list(binding);
+
+type focus =
+  /* | AExp(aexp)
+     | Exp(exp) */
+  | ZExp(zexp(op))
+  | ZPreVal(zpreval(op))
+  | Value(value);
+
+type ctxts = list(zctxt(op)); /* heterogeneous types are too hard :( */
+
+type zipper = {
+  focus,
+  ctxts,
+};
+
+type frame = {
+  ctxts,
+  env,
+};
+
+type stack = list(frame);
+
+type config = {
+  zipper,
+  env,
+  stack,
+};
+
+let rec lookup = (x: vid, env: env): option(value) =>
+  switch (env) {
+  | [] => None
+  | [{vid: y, value: v}, ...env] =>
+    if (x == y) {
+      Some(v);
+    } else {
+      lookup(x, env);
+    }
+  };
+
+let step = (c: config): option(config) =>
+  switch (c) {
+  /* val */
+  | {zipper: {focus: ZExp({op: AExp(Var(x)), args: []}), ctxts}, env, stack} =>
+    switch (lookup(x, env)) {
+    | None => None
+    | Some(v) => Some({
+                   zipper: {
+                     focus: Value(v),
+                     ctxts,
+                   },
+                   env,
+                   stack,
+                 })
+    }
+  /* lam */
+  | {zipper: {focus: ZExp({op: AExp(Lam(l)), args: []}), ctxts}, env, stack} =>
+    Some({
+      zipper: {
+        focus: Value(Clo(l, env)),
+        ctxts,
+      },
+      env,
+      stack,
+    })
+  /* zipper begin */
+  | {zipper: {focus: ZExp({op, args: [a, ...args]}), ctxts}, env, stack} =>
+    Some({
+      zipper: {
+        focus: ZExp(a),
+        ctxts: [{op, args, values: []}, ...ctxts],
+      },
+      env,
+      stack,
+    })
+  /* zipper continue */
+  | {
+      zipper: {focus: Value(v), ctxts: [{op, args: [a, ...args], values}, ...ctxts]},
+      env,
+      stack,
+    } =>
+    Some({
+      zipper: {
+        focus: ZExp(a),
+        ctxts: [{op, args, values: [v, ...values]}, ...ctxts],
+      },
+      env,
+      stack,
+    })
+  /* zipper end */
+  | {zipper: {focus: Value(v), ctxts: [{op, args: [], values}, ...ctxts]}, env, stack} =>
+    Some({
+      zipper: {
+        focus: ZPreVal({op, values: List.rev(values)}),
+        ctxts,
+      },
+      env,
+      stack,
+    })
+  /* app enter */
+  | {
+      zipper: {
+        focus: ZPreVal({op: AExp(App), values: [Clo({vid: x, exp: e}, env), v2]}),
+        ctxts,
+      },
+      env: env',
+      stack,
+    } =>
+    Some({
+      zipper: {
+        focus: ZExp(e),
+        ctxts: [],
+      },
+      env: [{vid: x, value: v2}, ...env],
+      stack: [{ctxts, env: env'}, ...stack],
+    })
+  /* app exit */
+  | {zipper: {focus: Value(v), ctxts: []}, env, stack: [{ctxts, env: env'}, ...stack]} =>
+    Some({
+      zipper: {
+        focus: Value(v),
+        ctxts,
+      },
+      env: env',
+      stack,
+    })
+  /* let */
+  | {zipper: {focus: ZPreVal({op: Exp(Let(x, e2)), values: [v1]}), ctxts}, env, stack} =>
+    Some({
+      zipper: {
+        focus: ZExp(e2),
+        ctxts,
+      },
+      env: [{vid: x, value: v1}, ...env],
+      stack,
+    })
+  /* num */
+  | {zipper: {focus: ZExp({op: AExp(Num(n)), args: []}), ctxts}, env, stack} =>
+    Some({
+      zipper: {
+        focus: Value(VNum(n)),
+        ctxts,
+      },
+      env,
+      stack,
+    })
+  /* add */
+  | {
+      zipper: {focus: ZPreVal({op: AExp(Add), values: [VNum(v1), VNum(v2)]}), ctxts},
+      env,
+      stack,
+    } =>
+    let v3 = v1 + v2;
+    Some({
+      zipper: {
+        focus: Value(VNum(v3)),
+        ctxts,
+      },
+      env,
+      stack,
+    });
+  /* bracket */
+  | {zipper: {focus: ZPreVal({op: AExp(Bracket(e)), values: []}), ctxts}, env, stack} =>
+    Some({
+      zipper: {
+        focus: ZExp(e),
+        ctxts: [],
+      },
+      env,
+      stack: [{ctxts, env}, ...stack],
+    })
+  /* lift */
+  | {zipper: {focus: ZPreVal({op: Exp(Lift(ae)), values: []}), ctxts}, env, stack} =>
+    Some({
+      zipper: {
+        focus: ZExp(ae),
+        ctxts,
+      },
+      env,
+      stack,
+    })
+  | _ => None
+  };
+
+let vidFromFFS5 = vid => vid;
+
+let intFromFFS5 = int => int;
+
+let rec lambdaFromFFS5 = ({vid, exp}: FFS5.lambda): lambda => {
+  vid: vidFromFFS5(vid),
+  exp: expFromFFS5(exp),
+}
+
+and aexpFromFFS5 = (aexp: FFS5.aexp): aexp =>
+  switch (aexp) {
+  | Var(vid) => {op: AExp(Var(vidFromFFS5(vid))), args: []}
+  | App(aexp1, aexp2) => {op: AExp(App), args: List.map(aexpFromFFS5, [aexp1, aexp2])}
+  | Lam(lambda) => {op: AExp(Lam(lambdaFromFFS5(lambda))), args: []}
+  | Num(int) => {op: AExp(Num(intFromFFS5(int))), args: []}
+  | Add(aexp1, aexp2) => {op: AExp(Add), args: List.map(aexpFromFFS5, [aexp1, aexp2])}
+  | Bracket(exp) => {op: AExp(Bracket(expFromFFS5(exp))), args: []}
+  }
+
+and expFromFFS5 = (exp: FFS5.exp): exp =>
+  switch (exp) {
+  | Lift(aexp) => {op: Exp(Lift(aexpFromFFS5(aexp))), args: []}
+  | Let(vid, aexp, exp) => {
+      op: Exp(Let(vidFromFFS5(vid), expFromFFS5(exp))),
+      args: List.map(aexpFromFFS5, [aexp]),
+    }
+  };

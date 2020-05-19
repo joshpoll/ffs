@@ -445,33 +445,16 @@ function vizFrame(flow, param) {
             ]);
 }
 
-function vizStackAux(flow, param) {
-  var fs = param[1];
-  var s_uid = param[0];
-  if (fs) {
-    return vSeq(s_uid, Belt_MapString.get(flow, s_uid), undefined, /* :: */[
-                vizStackAux(flow, fs[1]),
-                /* :: */[
-                  vizFrame(flow, fs[0]),
-                  /* [] */0
-                ]
-              ]);
-  } else {
-    return empty(s_uid, Belt_MapString.get(flow, s_uid), /* () */0);
-  }
-}
-
 function vizStack(flow, param) {
   var fs = param[1];
   var s_uid = param[0];
-  if (fs) {
-    return vizStackAux(flow, /* tuple */[
-                s_uid,
-                fs
-              ]);
-  } else {
-    return Theia$Sidewinder.str(s_uid, Belt_MapString.get(flow, s_uid), undefined, "empty stack", /* () */0);
-  }
+  return Theia$Sidewinder.box(s_uid, Belt_MapString.get(flow, s_uid), undefined, 5, 5, fs ? vSeq(undefined, undefined, undefined, /* :: */[
+                    vizStack(flow, fs[1]),
+                    /* :: */[
+                      vizFrame(flow, fs[0]),
+                      /* [] */0
+                    ]
+                  ]) : Theia$Sidewinder.str(undefined, undefined, undefined, "empty stack", /* () */0), /* [] */0, /* () */0);
 }
 
 function vizMachineState(param) {
@@ -493,7 +476,7 @@ function vizMachineState(param) {
                             ]
                           ]),
                       /* :: */[
-                        cell(undefined, undefined, "stack", vizStack(flow, match.stack_uid)),
+                        vizStack(flow, match.stack_uid),
                         /* [] */0
                       ]
                     ]),
@@ -532,7 +515,6 @@ exports.vizCtxts = vizCtxts;
 exports.hole = hole;
 exports.vizFocus = vizFocus;
 exports.vizFrame = vizFrame;
-exports.vizStackAux = vizStackAux;
 exports.vizStack = vizStack;
 exports.vizMachineState = vizMachineState;
 /* hole Not a pure module */
