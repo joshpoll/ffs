@@ -131,6 +131,58 @@ ReactDom.render(React.createElement(VizTrace$ReasonReactExamples.make, {
                 ])])
         }), makeContainer("id id transition"));
 
+ReactDom.render(React.createElement(VizTrace$ReasonReactExamples.make, {
+          transition: true,
+          program: /* Let */Block.__(1, [
+              "x",
+              /* Num */Block.__(3, [34]),
+              /* Let */Block.__(1, [
+                  "y",
+                  /* Num */Block.__(3, [17]),
+                  /* Let */Block.__(1, [
+                      "z",
+                      /* Add */Block.__(4, [
+                          /* Add */Block.__(4, [
+                              /* Var */Block.__(0, ["x"]),
+                              /* Var */Block.__(0, ["y"])
+                            ]),
+                          /* Add */Block.__(4, [
+                              /* Var */Block.__(0, ["y"]),
+                              /* Num */Block.__(3, [2])
+                            ])
+                        ]),
+                      /* Lift */Block.__(0, [/* Add */Block.__(4, [
+                              /* Var */Block.__(0, ["z"]),
+                              /* Num */Block.__(3, [1])
+                            ])])
+                    ])
+                ])
+            ])
+        }), makeContainer("lecture 1"));
+
+ReactDom.render(React.createElement(VizTrace$ReasonReactExamples.make, {
+          transition: true,
+          program: /* Let */Block.__(1, [
+              "a",
+              /* Num */Block.__(3, [1]),
+              /* Let */Block.__(1, [
+                  "b",
+                  /* Add */Block.__(4, [
+                      /* Num */Block.__(3, [2]),
+                      /* Var */Block.__(0, ["a"])
+                    ]),
+                  /* Let */Block.__(1, [
+                      "a",
+                      /* Num */Block.__(3, [3]),
+                      /* Lift */Block.__(0, [/* Add */Block.__(4, [
+                              /* Var */Block.__(0, ["a"]),
+                              /* Var */Block.__(0, ["b"])
+                            ])])
+                    ])
+                ])
+            ])
+        }), makeContainer("section 1"));
+
 exports.style = style;
 exports.makeContainer = makeContainer;
 exports.id = id;

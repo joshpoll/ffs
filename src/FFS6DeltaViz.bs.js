@@ -103,7 +103,7 @@ function vizEnv(flow, param) {
                 ]
               ]);
   } else {
-    return Theia$Sidewinder.str(uid, Flow$ReasonReactExamples.get(flow, uid), undefined, "empty env", /* () */0);
+    return Theia$Sidewinder.str(uid, Flow$ReasonReactExamples.get(flow, uid), undefined, "env", /* () */0);
   }
 }
 
@@ -155,7 +155,7 @@ function vizStack(flow, param) {
                 ]
               ]);
   } else {
-    return Theia$Sidewinder.str(uid, Flow$ReasonReactExamples.get(flow, uid), undefined, "empty stack", /* () */0);
+    return Theia$Sidewinder.str(uid, Flow$ReasonReactExamples.get(flow, uid), undefined, "stack", /* () */0);
   }
 }
 

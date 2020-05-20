@@ -132,7 +132,7 @@ and vizBinding = (flow, (uid, {vid, value}): binding) =>
 
 and vizEnv = (flow, (uid, env): env) =>
   switch (env) {
-  | Empty => str(~uid, ~flow=?Flow.get(flow, uid), "empty env", ())
+  | Empty => str(~uid, ~flow=?Flow.get(flow, uid), "env", ())
   | Cons(b, env) =>
     vSeq(~uid, ~flow=?Flow.get(flow, uid), [vizEnv(flow, env), vizBinding(flow, b)])
   }
@@ -168,7 +168,7 @@ and vizFrame = (flow, (uid, {ctxts, env}): frame) =>
 
 and vizStack = (flow, (uid, stack): stack) =>
   switch (stack) {
-  | Empty => str(~uid, ~flow=?Flow.get(flow, uid), "empty stack", ())
+  | Empty => str(~uid, ~flow=?Flow.get(flow, uid), "stack", ())
   | Cons(frame, stack) =>
     vSeq(~uid, ~flow=?Flow.get(flow, uid), [vizStack(flow, stack), vizFrame(flow, frame)])
   };

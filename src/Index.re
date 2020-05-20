@@ -82,3 +82,41 @@ ReactDOMRe.render(
   <VizTrace program={FFS5.Lift(App(id("x"), id("y")))} transition=true />,
   makeContainer("id id transition"),
 );
+
+/* Lecture 1 */
+ReactDOMRe.render(
+  <VizTrace
+    program={
+      FFS5.Let(
+        "x",
+        Num(34),
+        Let(
+          "y",
+          Num(17),
+          Let(
+            "z",
+            Add(Add(Var("x"), Var("y")), Add(Var("y"), Num(2))),
+            Lift(Add(Var("z"), Num(1))),
+          ),
+        ),
+      )
+    }
+    transition=true
+  />,
+  makeContainer("lecture 1"),
+);
+
+/* Section 1: Shadowing */
+ReactDOMRe.render(
+  <VizTrace
+    program={
+      FFS5.Let(
+        "a",
+        Num(1),
+        Let("b", Add(Num(2), Var("a")), Let("a", Num(3), Lift(Add(Var("a"), Var("b"))))),
+      )
+    }
+    transition=true
+  />,
+  makeContainer("section 1"),
+);

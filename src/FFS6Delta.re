@@ -256,19 +256,34 @@ let step = ((_, c): config): option((config, (string, Flow.t))) =>
   | {
       zipper: (
         _,
-        {focus: (_, ZExp((_, {op: (_, AExp((_, Lam(l)))), args: (_, Empty)}))), ctxts},
+        {
+          focus: (
+            _,
+            ZExp((_, {op: (_, AExp((_, Lam((l_uid, _) as l)))), args: (_, Empty)})),
+          ),
+          ctxts: (ctxts_uid, _) as ctxts,
+        },
       ),
-      env: (_, env_val) as env,
-      stack,
+      env: (env_uid, env_val) as env,
+      stack: (stack_uid, _) as stack,
     } =>
+    let (env2_uid, _) as env2 = mkEnv(env_val);
     Some((
       mkConfig({
-        zipper: mkZipper({focus: mkFocus(Value(mkValue(Clo(l, mkEnv(env_val))))), ctxts}),
+        zipper: mkZipper({focus: mkFocus(Value(mkValue(Clo(l, env2)))), ctxts}),
         env,
         stack,
       }),
-      ("lam", Flow.fromArray([||])),
-    ))
+      (
+        "lam",
+        Flow.fromArray([|
+          (l_uid, [l_uid]),
+          (env_uid, [env_uid, env2_uid]),
+          (ctxts_uid, [ctxts_uid]),
+          (stack_uid, [stack_uid]),
+        |]),
+      ),
+    ));
   /* zipper skip */
   /* | {zipper: {focus: ZExp({op, args: []}), ctxts}, env, stack} =>
      Some({
@@ -279,7 +294,17 @@ let step = ((_, c): config): option((config, (string, Flow.t))) =>
        env,
        stack,
      }) */
-  | {zipper: (_, {focus: (_, ZExp((_, {op, args: (_, Empty)}))), ctxts}), env, stack} =>
+  | {
+      zipper: (
+        _,
+        {
+          focus: (_, ZExp((_, {op: (op_uid, _) as op, args: (_, Empty)}))),
+          ctxts: (ctxts_uid, _) as ctxts,
+        },
+      ),
+      env: (env_uid, _) as env,
+      stack: (stack_uid, _) as stack,
+    } =>
     Some((
       mkConfig({
         zipper:
@@ -290,7 +315,15 @@ let step = ((_, c): config): option((config, (string, Flow.t))) =>
         env,
         stack,
       }),
-      ("zipper skip", Flow.fromArray([||])),
+      (
+        "zipper skip",
+        Flow.fromArray([|
+          (op_uid, [op_uid]),
+          (ctxts_uid, [ctxts_uid]),
+          (env_uid, [env_uid]),
+          (stack_uid, [stack_uid]),
+        |]),
+      ),
     ))
   /* zipper begin */
   /* | {zipper: {focus: ZExp({op, args: [a, ...args]}), ctxts}, env, stack} =>
@@ -303,9 +336,24 @@ let step = ((_, c): config): option((config, (string, Flow.t))) =>
        stack,
      }) */
   | {
-      zipper: (_, {focus: (_, ZExp((_, {op, args: (_, Cons(a, args))}))), ctxts}),
-      env,
-      stack,
+      zipper: (
+        _,
+        {
+          focus: (
+            _,
+            ZExp((
+              _,
+              {
+                op: (op_uid, _) as op,
+                args: (_, Cons((a_uid, _) as a, (args_uid, _) as args)),
+              },
+            )),
+          ),
+          ctxts: (ctxts_uid, _) as ctxts,
+        },
+      ),
+      env: (env_uid, _) as env,
+      stack: (stack_uid, _) as stack,
     } =>
     Some((
       mkConfig({
@@ -317,7 +365,17 @@ let step = ((_, c): config): option((config, (string, Flow.t))) =>
         env,
         stack,
       }),
-      ("zipper begin", Flow.fromArray([||])),
+      (
+        "zipper begin",
+        Flow.fromArray([|
+          (op_uid, [op_uid]),
+          (a_uid, [a_uid]),
+          (args_uid, [args_uid]),
+          (ctxts_uid, [ctxts_uid]),
+          (env_uid, [env_uid]),
+          (stack_uid, [stack_uid]),
+        |]),
+      ),
     ))
   /* zipper continue */
   /*  | {
@@ -337,12 +395,25 @@ let step = ((_, c): config): option((config, (string, Flow.t))) =>
       zipper: (
         _,
         {
-          focus: (_, Value(v)),
-          ctxts: (_, Cons((_, {op, args: (_, Cons(a, args)), values}), ctxts)),
+          focus: (_, Value((v_uid, _) as v)),
+          ctxts: (
+            _,
+            Cons(
+              (
+                _,
+                {
+                  op: (op_uid, _) as op,
+                  args: (_, Cons((a_uid, _) as a, (args_uid, _) as args)),
+                  values: (values_uid, _) as values,
+                },
+              ),
+              (ctxts_uid, _) as ctxts,
+            ),
+          ),
         },
       ),
-      env,
-      stack,
+      env: (env_uid, _) as env,
+      stack: (stack_uid, _) as stack,
     } =>
     Some((
       mkConfig({
@@ -355,7 +426,19 @@ let step = ((_, c): config): option((config, (string, Flow.t))) =>
         env,
         stack,
       }),
-      ("zipper continue", Flow.fromArray([||])),
+      (
+        "zipper continue",
+        Flow.fromArray([|
+          (v_uid, [v_uid]),
+          (op_uid, [op_uid]),
+          (a_uid, [a_uid]),
+          (args_uid, [args_uid]),
+          (values_uid, [values_uid]),
+          (ctxts_uid, [ctxts_uid]),
+          (env_uid, [env_uid]),
+          (stack_uid, [stack_uid]),
+        |]),
+      ),
     ))
 
   /* zipper end */
@@ -373,14 +456,22 @@ let step = ((_, c): config): option((config, (string, Flow.t))) =>
       zipper: (
         _,
         {
-          focus: (_, Value(v)),
-          ctxts: (_, Cons((_, {op, args: (_, Empty), values}), ctxts)),
+          focus: (_, Value((v_uid, _) as v)),
+          ctxts: (
+            _,
+            Cons(
+              (
+                _,
+                {op: (op_uid, _) as op, args: (_, Empty), values: (values_uid, _) as values},
+              ),
+              (ctxts_uid, _) as ctxts,
+            ),
+          ),
         },
       ),
-      env,
-      stack,
+      env: (env_uid, _) as env,
+      stack: (stack_uid, _) as stack,
     } =>
-    Js.log2("values at zipper end:", values);
     Some((
       mkConfig({
         zipper:
@@ -391,8 +482,18 @@ let step = ((_, c): config): option((config, (string, Flow.t))) =>
         env,
         stack,
       }),
-      ("zipper end", Flow.fromArray([||])),
-    ));
+      (
+        "zipper end",
+        Flow.fromArray([|
+          (v_uid, [v_uid]),
+          (op_uid, [op_uid]),
+          (values_uid, [values_uid]),
+          (ctxts_uid, [ctxts_uid]),
+          (env_uid, [env_uid]),
+          (stack_uid, [stack_uid]),
+        |]),
+      ),
+    ))
   /* app enter */
   /* | {
        zipper: {
@@ -422,16 +523,31 @@ let step = ((_, c): config): option((config, (string, Flow.t))) =>
                 op: (_, AExp((_, App))),
                 values: (
                   _,
-                  Cons(v2, (_, Cons((_, Clo((_, {vid: x, exp: e}), env)), (_, Empty)))),
+                  Cons(
+                    (v2_uid, _) as v2,
+                    (
+                      _,
+                      Cons(
+                        (
+                          _,
+                          Clo(
+                            (_, {vid: (x_uid, _) as x, exp: (e_uid, _) as e}),
+                            (env_uid, _) as env,
+                          ),
+                        ),
+                        (_, Empty),
+                      ),
+                    ),
+                  ),
                 ),
               },
             )),
           ),
-          ctxts,
+          ctxts: (ctxts_uid, _) as ctxts,
         },
       ),
-      env: env',
-      stack,
+      env: (env'_uid, _) as env',
+      stack: (stack_uid, _) as stack,
     } =>
     Some((
       mkConfig({
@@ -439,17 +555,43 @@ let step = ((_, c): config): option((config, (string, Flow.t))) =>
         env: mkEnv(Cons(mkBinding({vid: x, value: v2}), env)),
         stack: mkStack(Cons(mkFrame({ctxts, env: env'}), stack)),
       }),
-      ("app enter", Flow.fromArray([||])),
+      (
+        "app enter",
+        Flow.fromArray([|
+          (v2_uid, [v2_uid]),
+          (x_uid, [x_uid]),
+          (e_uid, [e_uid]),
+          (env_uid, [env_uid]),
+          (ctxts_uid, [ctxts_uid]),
+          (env'_uid, [env'_uid]),
+          (stack_uid, [stack_uid]),
+        |]),
+      ),
     ))
   /* app exit */
   | {
-      zipper: (_, {focus: (_, Value(v)), ctxts: (_, Empty)}),
-      env,
-      stack: (_, Cons((_, {ctxts, env: env'}), stack)),
+      zipper: (_, {focus: (_, Value((v_uid, _) as v)), ctxts: (_, Empty)}),
+      env: (env_uid, _) as env,
+      stack: (
+        _,
+        Cons(
+          (_, {ctxts: (ctxts_uid, _) as ctxts, env: (env'_uid, _) as env'}),
+          (stack_uid, _) as stack,
+        ),
+      ),
     } =>
     Some((
       mkConfig({zipper: mkZipper({focus: mkFocus(Value(v)), ctxts}), env: env', stack}),
-      ("app exit", Flow.fromArray([||])),
+      (
+        "app exit",
+        Flow.fromArray([|
+          (v_uid, [v_uid]),
+          (env_uid, []),
+          (ctxts_uid, [ctxts_uid]),
+          (env'_uid, [env'_uid]),
+          (stack_uid, [stack_uid]),
+        |]),
+      ),
     ))
   /* let */
   | {
@@ -460,14 +602,17 @@ let step = ((_, c): config): option((config, (string, Flow.t))) =>
             _,
             ZPreVal((
               _,
-              {op: (_, Exp((_, Let(x, e2)))), values: (_, Cons(v1, (_, Empty)))},
+              {
+                op: (_, Exp((_, Let((x_uid, _) as x, (e2_uid, _) as e2)))),
+                values: (_, Cons((v1_uid, _) as v1, (_, Empty))),
+              },
             )),
           ),
-          ctxts,
+          ctxts: (ctxts_uid, _) as ctxts,
         },
       ),
-      env,
-      stack,
+      env: (env_uid, _) as env,
+      stack: (stack_uid, _) as stack,
     } =>
     Some((
       mkConfig({
@@ -475,16 +620,32 @@ let step = ((_, c): config): option((config, (string, Flow.t))) =>
         env: mkEnv(Cons(mkBinding({vid: x, value: v1}), env)),
         stack,
       }),
-      ("let", Flow.fromArray([||])),
+      (
+        "let",
+        Flow.fromArray([|
+          (x_uid, [x_uid]),
+          (e2_uid, [e2_uid]),
+          (v1_uid, [v1_uid]),
+          (ctxts_uid, [ctxts_uid]),
+          (env_uid, [env_uid]),
+          (stack_uid, [stack_uid]),
+        |]),
+      ),
     ))
   /* num */
   | {
       zipper: (
         _,
-        {focus: (_, ZPreVal((_, {op: (_, AExp((_, Num(n)))), values: (_, Empty)}))), ctxts},
+        {
+          focus: (
+            _,
+            ZPreVal((_, {op: (_, AExp((_, Num((n_uid, _) as n)))), values: (_, Empty)})),
+          ),
+          ctxts: (ctxts_uid, _) as ctxts,
+        },
       ),
-      env,
-      stack,
+      env: (env_uid, _) as env,
+      stack: (stack_uid, _) as stack,
     } =>
     Some((
       mkConfig({
@@ -492,7 +653,15 @@ let step = ((_, c): config): option((config, (string, Flow.t))) =>
         env,
         stack,
       }),
-      ("num", Flow.fromArray([||])),
+      (
+        "num",
+        Flow.fromArray([|
+          (n_uid, [n_uid]),
+          (ctxts_uid, [ctxts_uid]),
+          (env_uid, [env_uid]),
+          (stack_uid, [stack_uid]),
+        |]),
+      ),
     ))
   /* add */
   | {
@@ -515,32 +684,47 @@ let step = ((_, c): config): option((config, (string, Flow.t))) =>
               },
             )),
           ),
-          ctxts,
+          ctxts: (ctxts_uid, _) as ctxts,
         },
       ),
-      env,
-      stack,
+      env: (env_uid, _) as env,
+      stack: (stack_uid, _) as stack,
     } =>
-    let v3_val = v1_val + v2_val;
+    let (v3_uid, _) as v3 = mkInt(v1_val + v2_val);
     Some((
       mkConfig({
-        zipper: mkZipper({focus: mkFocus(Value(mkValue(VNum(mkInt(v3_val))))), ctxts}),
+        zipper: mkZipper({focus: mkFocus(Value(mkValue(VNum(v3)))), ctxts}),
         env,
         stack,
       }),
-      ("add", Flow.fromArray([||])),
+      (
+        "add",
+        Flow.fromArray([|
+          (v1_uid, [v3_uid]),
+          (v2_uid, [v3_uid]),
+          (ctxts_uid, [ctxts_uid]),
+          (env_uid, [env_uid]),
+          (stack_uid, [stack_uid]),
+        |]),
+      ),
     ));
   /* bracket */
   | {
       zipper: (
         _,
         {
-          focus: (_, ZPreVal((_, {op: (_, AExp((_, Bracket(e)))), values: (_, Empty)}))),
-          ctxts,
+          focus: (
+            _,
+            ZPreVal((
+              _,
+              {op: (_, AExp((_, Bracket((e_uid, _) as e)))), values: (_, Empty)},
+            )),
+          ),
+          ctxts: (ctxts_uid, _) as ctxts,
         },
       ),
-      env,
-      stack,
+      env: (env_uid, _) as env,
+      stack: (stack_uid, _) as stack,
     } =>
     Some((
       mkConfig({
@@ -548,23 +732,42 @@ let step = ((_, c): config): option((config, (string, Flow.t))) =>
         env,
         stack: mkStack(Cons(mkFrame({ctxts, env}), stack)),
       }),
-      ("bracket", Flow.fromArray([||])),
+      (
+        "bracket",
+        Flow.fromArray([|
+          (e_uid, [e_uid]),
+          (ctxts_uid, [ctxts_uid]),
+          (env_uid, [env_uid]),
+          (stack_uid, [stack_uid]),
+        |]),
+      ),
     ))
   /* lift */
   | {
       zipper: (
         _,
         {
-          focus: (_, ZPreVal((_, {op: (_, Exp((_, Lift(ae)))), values: (_, Empty)}))),
-          ctxts,
+          focus: (
+            _,
+            ZPreVal((_, {op: (_, Exp((_, Lift((ae_uid, _) as ae)))), values: (_, Empty)})),
+          ),
+          ctxts: (ctxts_uid, _) as ctxts,
         },
       ),
-      env,
-      stack,
+      env: (env_uid, _) as env,
+      stack: (stack_uid, _) as stack,
     } =>
     Some((
       mkConfig({zipper: mkZipper({focus: mkFocus(ZExp(ae)), ctxts}), env, stack}),
-      ("lift", Flow.fromArray([||])),
+      (
+        "lift",
+        Flow.fromArray([|
+          (ae_uid, [ae_uid]),
+          (ctxts_uid, [ctxts_uid]),
+          (env_uid, [env_uid]),
+          (stack_uid, [stack_uid]),
+        |]),
+      ),
     ))
   | _ => None
   };
