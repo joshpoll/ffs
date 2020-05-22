@@ -10,6 +10,7 @@ var Main$Sidewinder = require("sidewinder/src/Main.bs.js");
 var Theia$Sidewinder = require("sidewinder/src/Theia.bs.js");
 var Rectangle$Sidewinder = require("sidewinder/src/Rectangle.bs.js");
 var Transform$Sidewinder = require("sidewinder/src/Transform.bs.js");
+var Flow$ReasonReactExamples = require("./Flow.bs.js");
 
 function hSeq(uid, flow, $staropt$star, nodes) {
   var gap = $staropt$star !== undefined ? $staropt$star : 0;
@@ -136,12 +137,12 @@ function paren(x) {
 
 function vizVid(flow, param) {
   var x_uid = param[0];
-  return Theia$Sidewinder.str(x_uid, Belt_MapString.get(flow, x_uid), undefined, param[1], /* () */0);
+  return Theia$Sidewinder.str(x_uid, Flow$ReasonReactExamples.get(flow, x_uid), undefined, param[1], /* () */0);
 }
 
 function vizInt(flow, param) {
   var n_uid = param[0];
-  return Theia$Sidewinder.str(n_uid, Belt_MapString.get(flow, n_uid), undefined, String(param[1]), /* () */0);
+  return Theia$Sidewinder.str(n_uid, Flow$ReasonReactExamples.get(flow, n_uid), undefined, String(param[1]), /* () */0);
 }
 
 function ctxtsToList(param) {
@@ -161,9 +162,9 @@ function vizAExp(flow, param) {
   var ae_uid = param[0];
   switch (ae.tag | 0) {
     case /* Var */0 :
-        return Theia$Sidewinder.noop(ae_uid, Belt_MapString.get(flow, ae_uid), undefined, vizVid(flow, ae[0]), /* [] */0, /* () */0);
+        return Theia$Sidewinder.noop(ae_uid, Flow$ReasonReactExamples.get(flow, ae_uid), undefined, vizVid(flow, ae[0]), /* [] */0, /* () */0);
     case /* App */1 :
-        return hSeq(ae_uid, Belt_MapString.get(flow, ae_uid), 2, /* :: */[
+        return hSeq(ae_uid, Flow$ReasonReactExamples.get(flow, ae_uid), 2, /* :: */[
                     paren(vizAExp(flow, ae[0])),
                     /* :: */[
                       vizAExp(flow, ae[1]),
@@ -171,11 +172,11 @@ function vizAExp(flow, param) {
                     ]
                   ]);
     case /* Lam */2 :
-        return Theia$Sidewinder.noop(ae_uid, Belt_MapString.get(flow, ae_uid), undefined, vizLambda(flow, ae[0]), /* [] */0, /* () */0);
+        return Theia$Sidewinder.noop(ae_uid, Flow$ReasonReactExamples.get(flow, ae_uid), undefined, vizLambda(flow, ae[0]), /* [] */0, /* () */0);
     case /* Num */3 :
-        return Theia$Sidewinder.noop(ae_uid, Belt_MapString.get(flow, ae_uid), undefined, vizInt(flow, ae[0]), /* [] */0, /* () */0);
+        return Theia$Sidewinder.noop(ae_uid, Flow$ReasonReactExamples.get(flow, ae_uid), undefined, vizInt(flow, ae[0]), /* [] */0, /* () */0);
     case /* Add */4 :
-        return hSeq(ae_uid, Belt_MapString.get(flow, ae_uid), 2, /* :: */[
+        return hSeq(ae_uid, Flow$ReasonReactExamples.get(flow, ae_uid), 2, /* :: */[
                     paren(vizAExp(flow, ae[0])),
                     /* :: */[
                       Theia$Sidewinder.str(undefined, undefined, undefined, "+", /* () */0),
@@ -186,7 +187,7 @@ function vizAExp(flow, param) {
                     ]
                   ]);
     case /* Bracket */5 :
-        return hSeq(ae_uid, Belt_MapString.get(flow, ae_uid), 2, /* :: */[
+        return hSeq(ae_uid, Flow$ReasonReactExamples.get(flow, ae_uid), 2, /* :: */[
                     Theia$Sidewinder.str(undefined, undefined, undefined, "{", /* () */0),
                     /* :: */[
                       vizExp(flow, ae[0]),
@@ -204,7 +205,7 @@ function vizExp(flow, param) {
   var e = param[1];
   var e_uid = param[0];
   if (e.tag) {
-    return vSeq(e_uid, Belt_MapString.get(flow, e_uid), undefined, /* :: */[
+    return vSeq(e_uid, Flow$ReasonReactExamples.get(flow, e_uid), undefined, /* :: */[
                 hSeq(undefined, undefined, 2, /* :: */[
                       Theia$Sidewinder.str(undefined, undefined, undefined, "let", /* () */0),
                       /* :: */[
@@ -227,7 +228,7 @@ function vizExp(flow, param) {
                 ]
               ]);
   } else {
-    return Theia$Sidewinder.noop(e_uid, Belt_MapString.get(flow, e_uid), undefined, vizAExp(flow, e[0]), /* [] */0, /* () */0);
+    return Theia$Sidewinder.noop(e_uid, Flow$ReasonReactExamples.get(flow, e_uid), undefined, vizAExp(flow, e[0]), /* [] */0, /* () */0);
   }
 }
 
@@ -235,7 +236,7 @@ function vizValue(flow, param) {
   var v = param[1];
   var v_uid = param[0];
   if (v.tag) {
-    return value(v_uid, Belt_MapString.get(flow, v_uid), "closure", hSeq(undefined, undefined, undefined, List.map((function (n) {
+    return value(v_uid, Flow$ReasonReactExamples.get(flow, v_uid), "closure", hSeq(undefined, undefined, undefined, List.map((function (n) {
                           return Theia$Sidewinder.box(undefined, undefined, undefined, undefined, undefined, n, /* [] */0, /* () */0);
                         }), /* :: */[
                         vizLambda(flow, v[0]),
@@ -245,13 +246,13 @@ function vizValue(flow, param) {
                         ]
                       ])));
   } else {
-    return value(v_uid, Belt_MapString.get(flow, v_uid), "num", vizInt(flow, v[0]));
+    return value(v_uid, Flow$ReasonReactExamples.get(flow, v_uid), "num", vizInt(flow, v[0]));
   }
 }
 
 function vizBinding(flow, param) {
   var uid = param.uid;
-  return hSeq(uid, Belt_MapString.get(flow, uid), undefined, /* :: */[
+  return hSeq(uid, Flow$ReasonReactExamples.get(flow, uid), undefined, /* :: */[
               vizVid(flow, param.vid),
               /* :: */[
                 vizValue(flow, param.value_uid),
@@ -264,7 +265,7 @@ function vizEnvAux(flow, param) {
   var e = param[1];
   var e_uid = param[0];
   if (e) {
-    return vSeq(e_uid, Belt_MapString.get(flow, e_uid), undefined, /* :: */[
+    return vSeq(e_uid, Flow$ReasonReactExamples.get(flow, e_uid), undefined, /* :: */[
                 vizEnvAux(flow, e[1]),
                 /* :: */[
                   vizBinding(flow, e[0]),
@@ -272,7 +273,7 @@ function vizEnvAux(flow, param) {
                 ]
               ]);
   } else {
-    return empty(e_uid, Belt_MapString.get(flow, e_uid), /* () */0);
+    return empty(e_uid, Flow$ReasonReactExamples.get(flow, e_uid), /* () */0);
   }
 }
 
@@ -285,13 +286,13 @@ function vizEnv(flow, param) {
                 e
               ]);
   } else {
-    return Theia$Sidewinder.str(e_uid, Belt_MapString.get(flow, e_uid), undefined, "empty env", /* () */0);
+    return Theia$Sidewinder.str(e_uid, Flow$ReasonReactExamples.get(flow, e_uid), undefined, "empty env", /* () */0);
   }
 }
 
 function vizLambda(flow, param) {
   var uid = param.uid;
-  return hSeq(uid, Belt_MapString.get(flow, uid), undefined, /* :: */[
+  return hSeq(uid, Flow$ReasonReactExamples.get(flow, uid), undefined, /* :: */[
               Theia$Sidewinder.str(undefined, undefined, undefined, "\\", /* () */0),
               /* :: */[
                 vizVid(flow, param.vid),
@@ -317,7 +318,7 @@ function vizCtxt(flow, param) {
           /* [] */0
         ];
         var partial_arg$1 = 2;
-        var partial_arg$2 = Belt_MapString.get(flow, c_uid);
+        var partial_arg$2 = Flow$ReasonReactExamples.get(flow, c_uid);
         var partial_arg$3 = c_uid;
         var partial_arg$4 = function (param) {
           return hSeq(partial_arg$3, partial_arg$2, partial_arg$1, param);
@@ -332,7 +333,7 @@ function vizCtxt(flow, param) {
           /* [] */0
         ];
         var partial_arg$6 = 2;
-        var partial_arg$7 = Belt_MapString.get(flow, c_uid);
+        var partial_arg$7 = Flow$ReasonReactExamples.get(flow, c_uid);
         var partial_arg$8 = c_uid;
         var partial_arg$9 = function (param) {
           return hSeq(partial_arg$8, partial_arg$7, partial_arg$6, param);
@@ -344,7 +345,7 @@ function vizCtxt(flow, param) {
         var e2 = c[2];
         var x = c[0];
         return (function (hole) {
-            return vSeq(c_uid, Belt_MapString.get(flow, c_uid), undefined, /* :: */[
+            return vSeq(c_uid, Flow$ReasonReactExamples.get(flow, c_uid), undefined, /* :: */[
                         hSeq(undefined, undefined, 2, insert(highlight(undefined, undefined, undefined, "hsla(240, 100%, 80%, 33%)", hole, /* [] */0, /* () */0), /* :: */[
                                   Theia$Sidewinder.str(undefined, undefined, undefined, "let", /* () */0),
                                   /* :: */[
@@ -375,7 +376,7 @@ function vizCtxt(flow, param) {
           partial_arg_001
         ];
         var partial_arg$11 = 2;
-        var partial_arg$12 = Belt_MapString.get(flow, c_uid);
+        var partial_arg$12 = Flow$ReasonReactExamples.get(flow, c_uid);
         var partial_arg$13 = c_uid;
         var partial_arg$14 = function (param) {
           return hSeq(partial_arg$13, partial_arg$12, partial_arg$11, param);
@@ -394,7 +395,7 @@ function vizCtxt(flow, param) {
           partial_arg_001$1
         ];
         var partial_arg$16 = 2;
-        var partial_arg$17 = Belt_MapString.get(flow, c_uid);
+        var partial_arg$17 = Flow$ReasonReactExamples.get(flow, c_uid);
         var partial_arg$18 = c_uid;
         var partial_arg$19 = function (param) {
           return hSeq(partial_arg$18, partial_arg$17, partial_arg$16, param);
@@ -425,18 +426,18 @@ function vizFocus(flow, param) {
   var f_uid = param[0];
   switch (f.tag | 0) {
     case /* AExp */0 :
-        return Theia$Sidewinder.noop(f_uid, Belt_MapString.get(flow, f_uid), undefined, vizAExp(flow, f[0]), /* [] */0, /* () */0);
+        return Theia$Sidewinder.noop(f_uid, Flow$ReasonReactExamples.get(flow, f_uid), undefined, vizAExp(flow, f[0]), /* [] */0, /* () */0);
     case /* Exp */1 :
-        return Theia$Sidewinder.noop(f_uid, Belt_MapString.get(flow, f_uid), undefined, vizExp(flow, f[0]), /* [] */0, /* () */0);
+        return Theia$Sidewinder.noop(f_uid, Flow$ReasonReactExamples.get(flow, f_uid), undefined, vizExp(flow, f[0]), /* [] */0, /* () */0);
     case /* Value */2 :
-        return Theia$Sidewinder.noop(f_uid, Belt_MapString.get(flow, f_uid), undefined, vizValue(flow, f[0]), /* [] */0, /* () */0);
+        return Theia$Sidewinder.noop(f_uid, Flow$ReasonReactExamples.get(flow, f_uid), undefined, vizValue(flow, f[0]), /* [] */0, /* () */0);
     
   }
 }
 
 function vizFrame(flow, param) {
   var uid = param.uid;
-  return vSeq(uid, Belt_MapString.get(flow, uid), undefined, /* :: */[
+  return vSeq(uid, Flow$ReasonReactExamples.get(flow, uid), undefined, /* :: */[
               vizEnv(flow, param.env_uid),
               /* :: */[
                 zipper(undefined, undefined, hole, vizCtxts(flow, param.ctxts_uid)),
@@ -448,7 +449,7 @@ function vizFrame(flow, param) {
 function vizStack(flow, param) {
   var fs = param[1];
   var s_uid = param[0];
-  return Theia$Sidewinder.box(s_uid, Belt_MapString.get(flow, s_uid), undefined, 5, 5, fs ? vSeq(undefined, undefined, undefined, /* :: */[
+  return Theia$Sidewinder.box(s_uid, Flow$ReasonReactExamples.get(flow, s_uid), undefined, 5, 5, fs ? vSeq(undefined, undefined, undefined, /* :: */[
                     vizStack(flow, fs[1]),
                     /* :: */[
                       vizFrame(flow, fs[0]),
@@ -467,11 +468,11 @@ function vizMachineState(param) {
   return vSeq(undefined, undefined, 30, /* :: */[
               Theia$Sidewinder.str(undefined, undefined, undefined, "rule: " + match$2[0], /* () */0),
               /* :: */[
-                hSeq(uid, Belt_MapString.get(flow, uid), 20, /* :: */[
+                hSeq(uid, Flow$ReasonReactExamples.get(flow, uid), 20, /* :: */[
                       vSeq(undefined, undefined, 5, /* :: */[
                             cell(undefined, undefined, "env", vizEnv(flow, match.env_uid)),
                             /* :: */[
-                              zipper(z_uid, Belt_MapString.get(flow, z_uid), vizFocus(flow, match$1.focus_uid), vizCtxts(flow, match$1.ctxts_uid)),
+                              zipper(z_uid, Flow$ReasonReactExamples.get(flow, z_uid), vizFocus(flow, match$1.focus_uid), vizCtxts(flow, match$1.ctxts_uid)),
                               /* [] */0
                             ]
                           ]),

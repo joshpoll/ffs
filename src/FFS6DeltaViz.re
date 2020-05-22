@@ -56,7 +56,7 @@ and vizAExpOp = (flow, (uid, aexp_op): aexp_op, inputs: list(Sidewinder.Kernel.n
   | (Bracket(exp), []) =>
     hSeq(
       ~uid,
-      ~flow=?MS.get(flow, uid),
+      ~flow=?Flow.get(flow, uid),
       ~gap=2.,
       [str("{", ()), vizExp(flow, exp), str("}", ())],
     )

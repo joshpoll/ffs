@@ -18,4 +18,8 @@ let toArray = MS.toArray;
 
 let none = MS.empty;
 
-let get = MS.get;
+let get = (flow, uid): option(Sidewinder.Flow.t) =>
+  switch (MS.get(flow, uid)) {
+  | None => None
+  | Some(flow) => Some(Flow(flow))
+  };

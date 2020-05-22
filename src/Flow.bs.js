@@ -20,6 +20,14 @@ function merge(m1, m2) {
               }));
 }
 
+function get(flow, uid) {
+  var match = Belt_MapString.get(flow, uid);
+  if (match !== undefined) {
+    return /* Flow */[match];
+  }
+  
+}
+
 var MS = /* alias */0;
 
 var fromArray = Belt_MapString.fromArray;
@@ -27,8 +35,6 @@ var fromArray = Belt_MapString.fromArray;
 var toArray = Belt_MapString.toArray;
 
 var none = Belt_MapString.empty;
-
-var get = Belt_MapString.get;
 
 exports.MS = MS;
 exports.merge = merge;

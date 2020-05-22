@@ -86,10 +86,10 @@ let zipper = (~uid=?, ~flow=?, focus, konts) =>
 
 let paren = x => hSeq([str("(", ()), x, str(")", ())]);
 
-let vizVid = (flow, (x_uid, x)) => str(~uid=x_uid, ~flow=?MS.get(flow, x_uid), x, ());
+let vizVid = (flow, (x_uid, x)) => str(~uid=x_uid, ~flow=?Flow.get(flow, x_uid), x, ());
 
 let vizInt = (flow, (n_uid, n)) =>
-  str(~uid=n_uid, ~flow=?MS.get(flow, n_uid), string_of_int(n), ());
+  str(~uid=n_uid, ~flow=?Flow.get(flow, n_uid), string_of_int(n), ());
 
 /* TODO: this strips away some of the values which are important to the visualization */
 /* the visualization actually crashes, because it expects a value that isn't there!!!! */
@@ -110,27 +110,27 @@ let rec ctxtsToList = ((c_uid, c): ctxts_uid): list(ctxt_uid) =>
 
 let rec vizAExp = (flow, (ae_uid, ae)) =>
   switch (ae) {
-  | Var(x) => noop(~uid=ae_uid, ~flow=?MS.get(flow, ae_uid), vizVid(flow, x), [], ())
+  | Var(x) => noop(~uid=ae_uid, ~flow=?Flow.get(flow, ae_uid), vizVid(flow, x), [], ())
   | App(e1, e2) =>
     hSeq(
       ~uid=ae_uid,
-      ~flow=?MS.get(flow, ae_uid),
+      ~flow=?Flow.get(flow, ae_uid),
       ~gap=2.,
       [paren(vizAExp(flow, e1)), vizAExp(flow, e2)],
     )
-  | Lam(lam) => noop(~uid=ae_uid, ~flow=?MS.get(flow, ae_uid), vizLambda(flow, lam), [], ())
-  | Num(n) => noop(~uid=ae_uid, ~flow=?MS.get(flow, ae_uid), vizInt(flow, n), [], ())
+  | Lam(lam) => noop(~uid=ae_uid, ~flow=?Flow.get(flow, ae_uid), vizLambda(flow, lam), [], ())
+  | Num(n) => noop(~uid=ae_uid, ~flow=?Flow.get(flow, ae_uid), vizInt(flow, n), [], ())
   | Add(x, y) =>
     hSeq(
       ~uid=ae_uid,
-      ~flow=?MS.get(flow, ae_uid),
+      ~flow=?Flow.get(flow, ae_uid),
       ~gap=2.,
       [paren(vizAExp(flow, x)), str("+", ()), paren(vizAExp(flow, y))],
     )
   | Bracket(e) =>
     hSeq(
       ~uid=ae_uid,
-      ~flow=?MS.get(flow, ae_uid),
+      ~flow=?Flow.get(flow, ae_uid),
       ~gap=2.,
       [str("{", ()), vizExp(flow, e), str("}", ())],
     )
@@ -138,11 +138,11 @@ let rec vizAExp = (flow, (ae_uid, ae)) =>
 
 and vizExp = (flow, (e_uid, e)): Sidewinder.Kernel.node =>
   switch (e) {
-  | Lift(ae) => noop(~uid=e_uid, ~flow=?MS.get(flow, e_uid), vizAExp(flow, ae), [], ())
+  | Lift(ae) => noop(~uid=e_uid, ~flow=?Flow.get(flow, e_uid), vizAExp(flow, ae), [], ())
   | Let(x, ae1, e2) =>
     vSeq(
       ~uid=e_uid,
-      ~flow=?MS.get(flow, e_uid),
+      ~flow=?Flow.get(flow, e_uid),
       [
         hSeq(
           ~gap=2.,
@@ -155,11 +155,11 @@ and vizExp = (flow, (e_uid, e)): Sidewinder.Kernel.node =>
 
 and vizValue = (flow, (v_uid, v)) =>
   switch (v) {
-  | VNum(n) => value(~uid=v_uid, ~flow=?MS.get(flow, v_uid), "num", vizInt(flow, n))
+  | VNum(n) => value(~uid=v_uid, ~flow=?Flow.get(flow, v_uid), "num", vizInt(flow, n))
   | Clo(lam, e) =>
     value(
       ~uid=v_uid,
-      ~flow=?MS.get(flow, v_uid),
+      ~flow=?Flow.get(flow, v_uid),
       "closure",
       hSeq(List.map(n => box(n, [], ()), [vizLambda(flow, lam), vizEnv(flow, e)])),
     )
@@ -167,24 +167,24 @@ and vizValue = (flow, (v_uid, v)) =>
 
 /* TODO: this visualization is hacky, but it should allow for more continuity */
 and vizBinding = (flow, {uid, vid, value_uid}) =>
-  hSeq(~uid, ~flow=?MS.get(flow, uid), [vizVid(flow, vid), vizValue(flow, value_uid)])
+  hSeq(~uid, ~flow=?Flow.get(flow, uid), [vizVid(flow, vid), vizValue(flow, value_uid)])
 
 and vizEnvAux = (flow, (e_uid, e: env)) =>
   switch (e) {
-  | Empty => empty(~uid=e_uid, ~flow=?MS.get(flow, e_uid), ())
+  | Empty => empty(~uid=e_uid, ~flow=?Flow.get(flow, e_uid), ())
   | Env(b, e) =>
-    vSeq(~uid=e_uid, ~flow=?MS.get(flow, e_uid), [vizEnvAux(flow, e), vizBinding(flow, b)])
+    vSeq(~uid=e_uid, ~flow=?Flow.get(flow, e_uid), [vizEnvAux(flow, e), vizBinding(flow, b)])
   }
 
 and vizEnv = (flow, (e_uid, e)) =>
   switch (e) {
-  | Empty => str(~uid=e_uid, ~flow=?MS.get(flow, e_uid), "empty env", ())
+  | Empty => str(~uid=e_uid, ~flow=?Flow.get(flow, e_uid), "empty env", ())
   | _ => vizEnvAux(flow, (e_uid, e))
   }
 
 /* table(
      ~uid=e_uid,
-     ~flow=?MS.get(flow, e_uid),
+     ~flow=?Flow.get(flow, e_uid),
      ~nodes=[
        [str("Id", ()), str("Val", ())],
        ...envToList((e_uid, e))
@@ -239,7 +239,7 @@ and vizEnv = (flow, (e_uid, e)) =>
 and vizLambda = (flow, {uid, vid, exp_uid}) =>
   hSeq(
     ~uid,
-    ~flow=?MS.get(flow, uid),
+    ~flow=?Flow.get(flow, uid),
     [str("\\", ()), vizVid(flow, vid), str(".", ()), vizExp(flow, exp_uid)],
   );
 
@@ -247,14 +247,14 @@ let vizCtxt = (flow, (c_uid, c)) =>
   switch (c) {
   /* TODO: add parens in the proper places */
   | AppL((), ae) =>
-    kont(hSeq(~uid=c_uid, ~flow=?MS.get(flow, c_uid), ~gap=2.), [vizAExp(flow, ae)], 0)
+    kont(hSeq(~uid=c_uid, ~flow=?Flow.get(flow, c_uid), ~gap=2.), [vizAExp(flow, ae)], 0)
   | AppR(v, ()) =>
-    kont(hSeq(~uid=c_uid, ~flow=?MS.get(flow, c_uid), ~gap=2.), [vizValue(flow, v)], 1)
+    kont(hSeq(~uid=c_uid, ~flow=?Flow.get(flow, c_uid), ~gap=2.), [vizValue(flow, v)], 1)
   | LetL(x, (), e2) => (
       hole => {
         vSeq(
           ~uid=c_uid,
-          ~flow=?MS.get(flow, c_uid),
+          ~flow=?Flow.get(flow, c_uid),
           [
             hSeq(
               ~gap=2.,
@@ -273,13 +273,13 @@ let vizCtxt = (flow, (c_uid, c)) =>
   /* TODO: add parens around hole */
   | AddL((), ae) =>
     kont(
-      hSeq(~uid=c_uid, ~flow=?MS.get(flow, c_uid), ~gap=2.),
+      hSeq(~uid=c_uid, ~flow=?Flow.get(flow, c_uid), ~gap=2.),
       [str("+", ()), paren(vizAExp(flow, ae))],
       0,
     )
   | AddR(v, ()) =>
     kont(
-      hSeq(~uid=c_uid, ~flow=?MS.get(flow, c_uid), ~gap=2.),
+      hSeq(~uid=c_uid, ~flow=?Flow.get(flow, c_uid), ~gap=2.),
       [paren(vizValue(flow, v)), str("+", ())],
       2,
     )
@@ -297,15 +297,15 @@ let hole =
 
 let vizFocus = (flow, (f_uid, f)) =>
   switch (f) {
-  | AExp(ae) => noop(~uid=f_uid, ~flow=?MS.get(flow, f_uid), vizAExp(flow, ae), [], ())
-  | Exp(e) => noop(~uid=f_uid, ~flow=?MS.get(flow, f_uid), vizExp(flow, e), [], ())
-  | Value(v) => noop(~uid=f_uid, ~flow=?MS.get(flow, f_uid), vizValue(flow, v), [], ())
+  | AExp(ae) => noop(~uid=f_uid, ~flow=?Flow.get(flow, f_uid), vizAExp(flow, ae), [], ())
+  | Exp(e) => noop(~uid=f_uid, ~flow=?Flow.get(flow, f_uid), vizExp(flow, e), [], ())
+  | Value(v) => noop(~uid=f_uid, ~flow=?Flow.get(flow, f_uid), vizValue(flow, v), [], ())
   };
 
 let vizFrame = (flow, {uid, ctxts_uid, env_uid}) =>
   vSeq(
     ~uid,
-    ~flow=?MS.get(flow, uid),
+    ~flow=?Flow.get(flow, uid),
     [vizEnv(flow, env_uid), zipper(hole, vizCtxts(flow, ctxts_uid))],
   );
 
@@ -319,7 +319,7 @@ let vizFrame = (flow, {uid, ctxts_uid, env_uid}) =>
 let rec vizStack = (flow, (s_uid, fs)) =>
   box(
     ~uid=s_uid,
-    ~flow=?MS.get(flow, s_uid),
+    ~flow=?Flow.get(flow, s_uid),
     ~dx=5.,
     ~dy=5.,
     switch (fs) {
@@ -332,7 +332,7 @@ let rec vizStack = (flow, (s_uid, fs)) =>
 
 /* let vizStack = (flow, (s_uid, fs)) =>
    switch (fs) {
-   | Empty => str(~uid=s_uid, ~flow=?MS.get(flow, s_uid), "empty stack", ())
+   | Empty => str(~uid=s_uid, ~flow=?Flow.get(flow, s_uid), "empty stack", ())
    | _ => vizStackAux(flow, (s_uid, fs))
    }; */
 
@@ -349,7 +349,7 @@ let vizMachineState =
       str("rule: " ++ rule, ()),
       hSeq(
         ~uid,
-        ~flow=?MS.get(flow, uid),
+        ~flow=?Flow.get(flow, uid),
         ~gap=20.,
         [
           vSeq(
@@ -358,7 +358,7 @@ let vizMachineState =
               cell("env", vizEnv(flow, env_uid)),
               zipper(
                 ~uid=z_uid,
-                ~flow=?MS.get(flow, z_uid),
+                ~flow=?Flow.get(flow, z_uid),
                 vizFocus(flow, focus_uid),
                 vizCtxts(flow, ctxts_uid),
               ),
