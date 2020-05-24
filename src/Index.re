@@ -120,3 +120,11 @@ ReactDOMRe.render(
   />,
   makeContainer("section 1"),
 );
+
+ReactDOMRe.render(
+  <VizTrace
+    program={FFS5.Let("x", Num(5), Lift(Add(App(id("y"), Var("x")), Num(1))))}
+    transition=true
+  />,
+  makeContainer("demo"),
+);

@@ -8,35 +8,35 @@ var Theia$Sidewinder = require("sidewinder/src/Theia.bs.js");
 var Rectangle$Sidewinder = require("sidewinder/src/Rectangle.bs.js");
 var Transform$Sidewinder = require("sidewinder/src/Transform.bs.js");
 
-function hSeq(uid, flow, $staropt$star, nodes) {
+function hSeq(uid, flowTag, $staropt$star, nodes) {
   var gap = $staropt$star !== undefined ? $staropt$star : 0;
-  return Theia$Sidewinder.seq(uid, flow, undefined, nodes, undefined, gap, /* LeftRight */2, /* () */0);
+  return Theia$Sidewinder.seq(uid, flowTag, undefined, nodes, undefined, gap, /* LeftRight */2, /* () */0);
 }
 
-function vSeq(uid, flow, $staropt$star, nodes) {
+function vSeq(uid, flowTag, $staropt$star, nodes) {
   var gap = $staropt$star !== undefined ? $staropt$star : 0;
-  return Theia$Sidewinder.seq(uid, flow, undefined, nodes, undefined, gap, /* UpDown */0, /* () */0);
+  return Theia$Sidewinder.seq(uid, flowTag, undefined, nodes, undefined, gap, /* UpDown */0, /* () */0);
 }
 
-function value(uid, flow, name, node) {
-  return Theia$Sidewinder.box(uid, flow, /* :: */[
+function value(uid, flowTag, name, node) {
+  return Theia$Sidewinder.box(uid, flowTag, /* :: */[
               name,
               /* [] */0
             ], 5, 5, node, /* [] */0, /* () */0);
 }
 
-function cell(uid, flow, name, node) {
-  return Theia$Sidewinder.box(uid, flow, /* :: */[
+function cell(uid, flowTag, name, node) {
+  return Theia$Sidewinder.box(uid, flowTag, /* :: */[
               name,
               /* [] */0
             ], 5, 5, node, /* [] */0, /* () */0);
 }
 
-function empty(uid, flow, param) {
-  return Theia$Sidewinder.atom(uid, flow, undefined, undefined, React.createElement(React.Fragment, undefined), Rectangle$Sidewinder.fromCenterPointSize(0, 0, 0, 0), /* () */0);
+function empty(uid, flowTag, param) {
+  return Theia$Sidewinder.atom(uid, flowTag, undefined, undefined, React.createElement(React.Fragment, undefined), Rectangle$Sidewinder.fromCenterPointSize(0, 0, 0, 0), /* () */0);
 }
 
-function highlight(uid, flow, $staropt$star, fill, node, links, param) {
+function highlight(uid, flowTag, $staropt$star, fill, node, links, param) {
   var tags = $staropt$star !== undefined ? $staropt$star : /* [] */0;
   var render = function (nodes, bbox, links) {
     return React.createElement(React.Fragment, undefined, React.createElement("rect", {
@@ -59,7 +59,7 @@ function highlight(uid, flow, $staropt$star, fill, node, links, param) {
                             }));
               }), (function (bs) {
                 return Rectangle$Sidewinder.union_list($$Array.to_list(Belt_MapString.valuesToArray(bs)));
-              }), render, uid, flow, /* () */0);
+              }), render, uid, flowTag, /* () */0);
 }
 
 function paren(x) {
@@ -78,7 +78,7 @@ function paren(x) {
 var hole = Theia$Sidewinder.atom(undefined, undefined, undefined, /* [] */0, React.createElement("rect", {
           height: "10",
           width: "10",
-          fill: "red",
+          fill: "none",
           x: "5",
           y: "5"
         }), Rectangle$Sidewinder.fromPointSize(0, 0, 10, 10), /* () */0);

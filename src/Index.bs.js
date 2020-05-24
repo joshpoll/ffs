@@ -183,6 +183,24 @@ ReactDom.render(React.createElement(VizTrace$ReasonReactExamples.make, {
             ])
         }), makeContainer("section 1"));
 
+ReactDom.render(React.createElement(VizTrace$ReasonReactExamples.make, {
+          transition: true,
+          program: /* Let */Block.__(1, [
+              "x",
+              /* Num */Block.__(3, [5]),
+              /* Lift */Block.__(0, [/* Add */Block.__(4, [
+                      /* App */Block.__(1, [
+                          /* Lam */Block.__(2, [{
+                                vid: "y",
+                                exp: /* Lift */Block.__(0, [/* Var */Block.__(0, ["y"])])
+                              }]),
+                          /* Var */Block.__(0, ["x"])
+                        ]),
+                      /* Num */Block.__(3, [1])
+                    ])])
+            ])
+        }), makeContainer("demo"));
+
 exports.style = style;
 exports.makeContainer = makeContainer;
 exports.id = id;

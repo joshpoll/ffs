@@ -2,63 +2,100 @@ open Sidewinder.Theia;
 open TheiaExtensions;
 open FFS6Delta;
 
-/* TODO: these rules assume uids flow down to children appropriately!
-   That needs to be implemented in Sidewinder correctly. Also note that bubbling down relies on the
-   fact that before- and after-nodes with the same id should have the same node hierarchy */
-/* TODO: should bubbling only occur for nodes with no flow at all? */
+/* TODO: remove flow argument */
 
-let vizVid = (flow, (uid, vid): vid) => str(~uid, ~flow=?Flow.get(flow, uid), vid, ());
+let vizVid = ((uid, vid): vid) =>
+  str(~uid, ~flowTag={flowNodeType: Leaf, uid, rootPath: []}, vid, ());
 
-let vizInt = (flow, (uid, int): int_uid) =>
-  str(~uid, ~flow=?Flow.get(flow, uid), string_of_int(int), ());
+let vizInt = ((uid, int): int_uid) =>
+  str(~uid, ~flowTag={flowNodeType: Leaf, uid, rootPath: []}, string_of_int(int), ());
 
-let rec vizZExp = (vizOp, flow, (uid, {op, args}): zexp('a)) =>
-  noop(~uid, ~flow=?Flow.get(flow, uid), vizOp(flow, op, vizAExps(flow, args)), [], ())
-
-and vizZCtxt = (vizOp, flow, (uid, {op, args, values}): zctxt('a), hole) =>
+let rec vizZExp = (vizOp, (uid, {op, args}): zexp('a)) =>
   noop(
     ~uid,
-    ~flow=?Flow.get(flow, uid),
-    vizOp(flow, op, vizValues(flow, values) @ [hole, ...vizAExps(flow, args)]),
+    ~flowTag={flowNodeType: Leaf, uid, rootPath: []},
+    vizOp(op, vizAExps(args)),
     [],
     (),
   )
 
-and vizZPreVal = (vizOp, flow, (uid, {op, values}): zpreval('a)) =>
-  noop(~uid, ~flow=?Flow.get(flow, uid), vizOp(flow, op, vizValues(flow, values)), [], ())
-
-and vizLambda = (flow, (uid, {vid, exp}): lambda) =>
-  hSeq(
+and vizZCtxt = (vizOp, (uid, {op, args, values}): zctxt('a), hole) =>
+  noop(
     ~uid,
-    ~flow=?Flow.get(flow, uid),
-    [str("\\", ()), vizVid(flow, vid), str(".", ()), vizExp(flow, exp)],
+    ~flowTag={flowNodeType: Leaf, uid, rootPath: []},
+    vizOp(op, vizValues(values) @ [hole, ...vizAExps(args)]),
+    [],
+    (),
   )
 
-and vizAExpOp = (flow, (uid, aexp_op): aexp_op, inputs: list(Sidewinder.Kernel.node)) =>
+and vizZPreVal = (vizOp, (uid, {op, values}): zpreval('a)) =>
+  noop(
+    ~uid,
+    ~flowTag={flowNodeType: Leaf, uid, rootPath: []},
+    vizOp(op, vizValues(values)),
+    [],
+    (),
+  )
+
+and vizLambda = ((uid, {vid, exp}): lambda) =>
+  hSeq(
+    ~uid,
+    ~flowTag={flowNodeType: Leaf, uid, rootPath: []},
+    [str("\\", ()), vizVid(vid), str(".", ()), vizExp(exp)],
+  )
+
+and vizAExpOp = ((uid, aexp_op): aexp_op, inputs: list(Sidewinder.Kernel.node)) =>
   switch (aexp_op, inputs) {
-  | (Var(vid), []) => noop(~uid, ~flow=?Flow.get(flow, uid), vizVid(flow, vid), [], ())
+  | (Var(vid), []) =>
+    noop(~uid, ~flowTag={flowNodeType: Leaf, uid, rootPath: []}, vizVid(vid), [], ())
   | (Var(_), _) =>
     failwith("op Var expected input arity 0, but got " ++ string_of_int(List.length(inputs)))
-  | (App, [f, x]) => hSeq(~uid, ~flow=?Flow.get(flow, uid), ~gap=2., [paren(f), paren(x)])
+  | (App, [f, x]) =>
+    hSeq(
+      ~uid,
+      ~flowTag={flowNodeType: Dummy, uid, rootPath: []},
+      ~gap=2.,
+      [
+        str(~flowTag={flowNodeType: Leaf, uid, rootPath: [0]}, "(", ()),
+        f,
+        str(~flowTag={flowNodeType: Leaf, uid, rootPath: [2]}, ")", ()),
+        str(~flowTag={flowNodeType: Leaf, uid, rootPath: [3]}, "(", ()),
+        x,
+        str(~flowTag={flowNodeType: Leaf, uid, rootPath: [5]}, ")", ()),
+      ],
+    )
   | (App, _) =>
     failwith("op App expected input arity 2, but got " ++ string_of_int(List.length(inputs)))
   | (Lam(lambda), []) =>
-    noop(~uid, ~flow=?Flow.get(flow, uid), vizLambda(flow, lambda), [], ())
+    noop(~uid, ~flowTag={flowNodeType: Leaf, uid, rootPath: []}, vizLambda(lambda), [], ())
   | (Lam(_), _) =>
     failwith("op Lam expected input arity 0, but got " ++ string_of_int(List.length(inputs)))
-  | (Num(int), []) => noop(~uid, ~flow=?Flow.get(flow, uid), vizInt(flow, int), [], ())
+  | (Num(int), []) =>
+    noop(~uid, ~flowTag={flowNodeType: Leaf, uid, rootPath: []}, vizInt(int), [], ())
   | (Num(_), _) =>
     failwith("op Num expected input arity 0, but got " ++ string_of_int(List.length(inputs)))
   | (Add, [x, y]) =>
-    hSeq(~uid, ~flow=?Flow.get(flow, uid), ~gap=2., [paren(x), str("+", ()), paren(y)])
+    hSeq(
+      ~flowTag={flowNodeType: Dummy, uid, rootPath: []},
+      ~gap=2.,
+      [
+        str(~flowTag={flowNodeType: Leaf, uid, rootPath: [0]}, "(", ()),
+        x,
+        str(~flowTag={flowNodeType: Leaf, uid, rootPath: [2]}, ")", ()),
+        str(~flowTag={flowNodeType: Leaf, uid, rootPath: [3]}, "+", ()),
+        str(~flowTag={flowNodeType: Leaf, uid, rootPath: [4]}, "(", ()),
+        y,
+        str(~flowTag={flowNodeType: Leaf, uid, rootPath: [6]}, ")", ()),
+      ],
+    )
   | (Add, _) =>
     failwith("op Add expected input arity 2, but got " ++ string_of_int(List.length(inputs)))
   | (Bracket(exp), []) =>
     hSeq(
       ~uid,
-      ~flow=?Flow.get(flow, uid),
+      ~flowTag={flowNodeType: Leaf, uid, rootPath: []},
       ~gap=2.,
-      [str("{", ()), vizExp(flow, exp), str("}", ())],
+      [str("{", ()), vizExp(exp), str("}", ())],
     )
   | (Bracket(_), _) =>
     failwith(
@@ -66,123 +103,195 @@ and vizAExpOp = (flow, (uid, aexp_op): aexp_op, inputs: list(Sidewinder.Kernel.n
     )
   }
 
-and vizAExp = (flow, aexp: aexp) => vizZExp(vizOp, flow, aexp)
+and vizAExp = (aexp: aexp) => vizZExp(vizOp, aexp)
 
 /* TODO: what to do with uid? */
-and vizAExps = (flow, (uid, aexps): aexps) =>
+and vizAExps = ((uid, aexps): aexps) =>
   switch (aexps) {
   | Empty => []
-  | Cons(aexp, aexps) => [vizAExp(flow, aexp), ...vizAExps(flow, aexps)]
+  | Cons(aexp, aexps) => [vizAExp(aexp), ...vizAExps(aexps)]
   }
 
-and vizExpOp = (flow, (uid, exp_op): exp_op, inputs: list(Sidewinder.Kernel.node)) =>
+and vizExpOp = ((uid, exp_op): exp_op, inputs: list(Sidewinder.Kernel.node)) =>
   switch (exp_op, inputs) {
-  | (Lift(aexp), []) => noop(~uid, ~flow=?Flow.get(flow, uid), vizAExp(flow, aexp), [], ())
+  | (Lift(aexp), []) =>
+    noop(~uid, ~flowTag={flowNodeType: Leaf, uid, rootPath: []}, vizAExp(aexp), [], ())
   | (Lift(_), _) =>
     failwith("op Lift expected input arity 0, but got " ++ string_of_int(List.length(inputs)))
   | (Let(vid, exp), [ae1]) =>
     vSeq(
       ~uid,
-      ~flow=?Flow.get(flow, uid),
+      ~flowTag={flowNodeType: Dummy, uid, rootPath: []},
       [
-        hSeq(~gap=2., [str("let", ()), vizVid(flow, vid), str("=", ()), ae1, str("in", ())]),
-        vizExp(flow, exp),
+        hSeq(
+          ~gap=2.,
+          [
+            str(~flowTag={flowNodeType: Leaf, uid, rootPath: [0, 0]}, "let", ()),
+            vizVid(vid),
+            str(~flowTag={flowNodeType: Leaf, uid, rootPath: [0, 2]}, "=", ()),
+            ae1,
+            str(~flowTag={flowNodeType: Leaf, uid, rootPath: [0, 4]}, "in", ()),
+          ],
+        ),
+        vizExp(exp),
       ],
     )
   | (Let(_), _) =>
     failwith("op Let expected input arity 1, but got " ++ string_of_int(List.length(inputs)))
   }
 
-and vizExp = (flow, exp: exp) => vizZExp(vizOp, flow, exp)
+and vizExp = (exp: exp) => vizZExp(vizOp, exp)
 
-and vizOp = (flow, (uid, op): op, inputs: list(Sidewinder.Kernel.node)) =>
+and vizOp = ((uid, op): op, inputs: list(Sidewinder.Kernel.node)) =>
   switch (op) {
   | Exp(exp_op) =>
-    noop(~uid, ~flow=?Flow.get(flow, uid), vizExpOp(flow, exp_op, inputs), [], ())
+    noop(
+      ~uid,
+      ~flowTag={flowNodeType: Leaf, uid, rootPath: []},
+      vizExpOp(exp_op, inputs),
+      [],
+      (),
+    )
   | AExp(aexp_op) =>
-    noop(~uid, ~flow=?Flow.get(flow, uid), vizAExpOp(flow, aexp_op, inputs), [], ())
+    noop(
+      ~uid,
+      ~flowTag={flowNodeType: Leaf, uid, rootPath: []},
+      vizAExpOp(aexp_op, inputs),
+      [],
+      (),
+    )
   }
 
-and vizValue = (flow, (uid, value): value) =>
+and vizValue = ((uid, value): value) =>
   switch (value) {
   | VNum(int) =>
-    TheiaExtensions.value(~uid, ~flow=?Flow.get(flow, uid), "num", vizInt(flow, int))
+    TheiaExtensions.value(
+      ~uid,
+      ~flowTag={flowNodeType: Leaf, uid, rootPath: []},
+      "num",
+      vizInt(int),
+    )
   | Clo(lambda, env) =>
     TheiaExtensions.value(
       ~uid,
-      ~flow=?Flow.get(flow, uid),
+      ~flowTag={flowNodeType: Leaf, uid, rootPath: []},
       "closure",
-      hSeq([vizLambda(flow, lambda), vizEnv(flow, env)] |> List.map(n => box(n, [], ()))),
+      hSeq([vizLambda(lambda), vizEnv(env)] |> List.map(n => box(n, [], ()))),
     )
   }
 
 /* TODO: what to do with uid? */
-and vizValues = (flow, values: values) => {
+and vizValues = (values: values) => {
   /* tail-recursively build list backwards */
   let rec aux = (acc, (uid, values): values) =>
     switch (values) {
     | Empty => acc
-    | Cons(value, values) => aux([vizValue(flow, value), ...acc], values)
+    | Cons(value, values) => aux([vizValue(value), ...acc], values)
     };
   aux([], values);
 }
 
-and vizBinding = (flow, (uid, {vid, value}): binding) =>
-  hSeq(~uid, ~flow=?Flow.get(flow, uid), [vizVid(flow, vid), vizValue(flow, value)])
+and vizBinding = ((uid, {vid, value}): binding) =>
+  hSeq(~uid, ~flowTag={flowNodeType: Leaf, uid, rootPath: []}, [vizVid(vid), vizValue(value)])
 
-and vizEnv = (flow, (uid, env): env) =>
+and vizEnv = ((uid, env): env) =>
   switch (env) {
-  | Empty => str(~uid, ~flow=?Flow.get(flow, uid), "env", ())
+  | Empty => str(~uid, ~flowTag={flowNodeType: Leaf, uid, rootPath: []}, "env", ())
   | Cons(b, env) =>
-    vSeq(~uid, ~flow=?Flow.get(flow, uid), [vizEnv(flow, env), vizBinding(flow, b)])
+    vSeq(~uid, ~flowTag={flowNodeType: Leaf, uid, rootPath: []}, [vizEnv(env), vizBinding(b)])
   }
 
-and vizFocus = (flow, (uid, focus): focus) =>
+and vizFocus = ((uid, focus): focus) =>
   switch (focus) {
-  | ZExp(zeo) => noop(~uid, ~flow=?Flow.get(flow, uid), vizZExp(vizOp, flow, zeo), [], ())
+  | ZExp(zeo) =>
+    noop(~uid, ~flowTag={flowNodeType: Leaf, uid, rootPath: []}, vizZExp(vizOp, zeo), [], ())
   | ZPreVal(zpvo) =>
-    noop(~uid, ~flow=?Flow.get(flow, uid), vizZPreVal(vizOp, flow, zpvo), [], ())
-  | Value(value) => noop(~uid, ~flow=?Flow.get(flow, uid), vizValue(flow, value), [], ())
+    noop(
+      ~uid,
+      ~flowTag={flowNodeType: Leaf, uid, rootPath: []},
+      vizZPreVal(vizOp, zpvo),
+      [],
+      (),
+    )
+  | Value(value) =>
+    noop(~uid, ~flowTag={flowNodeType: Leaf, uid, rootPath: []}, vizValue(value), [], ())
   }
 
 /* TODO: what to do with uid? */
 /* threads ctxts through */
 /* TODO: might be reversed */
-and vizCtxts = (flow, (uid, ctxts): ctxts) =>
+and vizCtxts = ((uid, ctxts): ctxts, hole) =>
   switch (ctxts) {
-  | Empty => (x => x)
-  | Cons(ctxt, ctxts) => (
-      hole => {
-        /* TODO: uid for the highlight? */
-        let highlightHole = highlight(~fill="hsla(240, 100%, 80%, 33%)", hole, [], ());
-        vizCtxts(flow, ctxts, vizZCtxt(vizOp, flow, ctxt, highlightHole));
-      }
-    )
+  | Empty => noop(~flowTag={flowNodeType: Leaf, uid, rootPath: []}, hole, [], ())
+  | Cons(ctxt, ctxts) =>
+    /* TODO: where to place uid? */
+    let highlightHole =
+      highlight(
+        // ~flowTag={flowNodeType: Leaf, uid, rootPath: []},
+        ~fill="hsla(240, 100%, 80%, 33%)",
+        hole,
+        [],
+        (),
+      );
+    /* noop(
+         ~flowTag={flowNodeType: Leaf, uid, rootPath: []},
+         vizCtxts(ctxts, vizZCtxt(vizOp, ctxt, highlightHole)),
+         [],
+         (),
+       ); */
+    vizCtxts(
+      ctxts,
+      /* noop(
+           ~flowTag={flowNodeType: Leaf, uid, rootPath: []},
+           vizZCtxt(vizOp, ctxt, highlightHole),
+           [],
+           (),
+         ), */ vizZCtxt(
+        vizOp,
+        ctxt,
+        highlightHole,
+      ),
+    );
   }
 
-and vizZipper = (flow, (uid, {focus, ctxts}): zipper) =>
-  noop(~uid, ~flow=?Flow.get(flow, uid), vizCtxts(flow, ctxts, vizFocus(flow, focus)), [], ())
+and vizZipper = ((uid, {focus, ctxts}): zipper) =>
+  noop(
+    ~uid,
+    ~flowTag={flowNodeType: Leaf, uid, rootPath: []},
+    vizCtxts(ctxts, vizFocus(focus)),
+    [],
+    (),
+  )
 
-and vizFrame = (flow, (uid, {ctxts, env}): frame) =>
-  vSeq(~uid, ~flow=?Flow.get(flow, uid), [vizEnv(flow, env), vizCtxts(flow, ctxts, hole)])
+and vizFrame = ((uid, {ctxts, env}): frame) =>
+  vSeq(
+    ~uid,
+    ~flowTag={flowNodeType: Leaf, uid, rootPath: []},
+    [vizEnv(env), vizCtxts(ctxts, hole)],
+  )
 
-and vizStack = (flow, (uid, stack): stack) =>
+and vizStack = ((uid, stack): stack) =>
   switch (stack) {
-  | Empty => str(~uid, ~flow=?Flow.get(flow, uid), "stack", ())
+  | Empty => str(~uid, ~flowTag={flowNodeType: Leaf, uid, rootPath: []}, "stack", ())
   | Cons(frame, stack) =>
-    vSeq(~uid, ~flow=?Flow.get(flow, uid), [vizStack(flow, stack), vizFrame(flow, frame)])
+    vSeq(
+      ~uid,
+      ~flowTag={flowNodeType: Leaf, uid, rootPath: []},
+      [vizStack(stack), vizFrame(frame)],
+    )
   };
 
-let vizConfig = (((rule: string, flow: Flow.t), (uid, {zipper, env, stack}): config)) => {
+let vizConfig =
+    (((rule: string, flow: Sidewinder.Flow.t), (uid, {zipper, env, stack}): config)) => {
   vSeq(
     ~gap=30.,
     [
       str("rule: " ++ rule, ()),
       hSeq(
         ~uid,
-        ~flow=?Flow.get(flow, uid),
+        ~flowTag={flowNodeType: Leaf, uid, rootPath: []},
         ~gap=20.,
-        [vSeq(~gap=5., [vizEnv(flow, env), vizZipper(flow, zipper)]), vizStack(flow, stack)],
+        [vSeq(~gap=5., [vizEnv(env), vizZipper(zipper)]), vizStack(stack)],
       ),
     ],
   );

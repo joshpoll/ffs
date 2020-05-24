@@ -1,24 +1,24 @@
 open Sidewinder.Theia;
 
-let hSeq = (~uid=?, ~flow=?, ~gap=0., nodes) =>
-  seq(~uid?, ~flow?, ~nodes, ~linkRender=None, ~gap, ~direction=LeftRight, ());
-let vSeq = (~uid=?, ~flow=?, ~gap=0., nodes) =>
-  seq(~uid?, ~flow?, ~nodes, ~linkRender=None, ~gap, ~direction=UpDown, ());
-let value = (~uid=?, ~flow=?, name, node) =>
-  box(~uid?, ~flow?, ~tags=[name], ~dx=5., ~dy=5., node, [], ());
-let cell = (~uid=?, ~flow=?, name, node) =>
-  box(~uid?, ~flow?, ~tags=[name], ~dx=5., ~dy=5., node, [], ());
+let hSeq = (~uid=?, ~flowTag=?, ~gap=0., nodes) =>
+  seq(~uid?, ~flowTag?, ~nodes, ~linkRender=None, ~gap, ~direction=LeftRight, ());
+let vSeq = (~uid=?, ~flowTag=?, ~gap=0., nodes) =>
+  seq(~uid?, ~flowTag?, ~nodes, ~linkRender=None, ~gap, ~direction=UpDown, ());
+let value = (~uid=?, ~flowTag=?, name, node) =>
+  box(~uid?, ~flowTag?, ~tags=[name], ~dx=5., ~dy=5., node, [], ());
+let cell = (~uid=?, ~flowTag=?, name, node) =>
+  box(~uid?, ~flowTag?, ~tags=[name], ~dx=5., ~dy=5., node, [], ());
 
-let empty = (~uid=?, ~flow=?, ()) =>
+let empty = (~uid=?, ~flowTag=?, ()) =>
   atom(
     ~uid?,
-    ~flow?,
+    ~flowTag?,
     <> </>,
     Sidewinder.Rectangle.fromCenterPointSize(~cx=0., ~cy=0., ~width=0., ~height=0.),
     (),
   );
 
-let highlight = (~uid=?, ~flow=?, ~tags=[], ~fill, node, links, ()) => {
+let highlight = (~uid=?, ~flowTag=?, ~tags=[], ~fill, node, links, ()) => {
   open Sidewinder;
   let render = (nodes, bbox, links) => {
     <>
@@ -34,7 +34,7 @@ let highlight = (~uid=?, ~flow=?, ~tags=[], ~fill, node, links, ()) => {
   };
   Main.make(
     ~uid?,
-    ~flow?,
+    ~flowTag?,
     ~tags=["highlight", ...tags],
     ~nodes=[node],
     ~links,
@@ -50,7 +50,7 @@ let paren = x => hSeq([str("(", ()), x, str(")", ())]);
 let hole =
   atom(
     ~links=[],
-    <rect fill="red" width="10" height="10" x="5" y="5" />,
+    <rect fill="none" width="10" height="10" x="5" y="5" />,
     Sidewinder.Rectangle.fromPointSize(~x=0., ~y=0., ~width=10., ~height=10.),
     (),
   );

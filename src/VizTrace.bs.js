@@ -88,21 +88,23 @@ function VizTrace(Props) {
           return ;
         }), ([]));
   var swTrace = List.map(FFS6DeltaViz$ReasonReactExamples.vizConfig, trace);
+  var match$3 = List.split(trace);
+  var match$4 = List.split(match$3[0]);
   var initState;
   if (transition) {
     var nextPos = Caml_primitive.caml_int_min(state.pos + 1 | 0, state.length - 1 | 0);
-    initState = Main$Sidewinder.renderTransition(false, undefined, state.prevState, state.currState, List.nth(swTrace, state.pos), List.nth(swTrace, nextPos));
+    initState = Main$Sidewinder.renderTransition(false, undefined, state.prevState, state.currState, List.nth(swTrace, state.pos), List.nth(match$4[1], state.pos), List.nth(swTrace, nextPos));
   } else {
     initState = Main$Sidewinder.render(false, List.nth(swTrace, state.pos));
   }
   var tmp;
   if (transition) {
-    var match$3 = state.currState;
+    var match$5 = state.currState;
     tmp = React.createElement("button", {
           onClick: (function (_event) {
               return Curry._1(dispatch, /* Toggle */2);
             })
-        }, match$3 ? "To Before" : "To After");
+        }, match$5 ? "To Before" : "To After");
   } else {
     tmp = React.createElement(React.Fragment, undefined);
   }

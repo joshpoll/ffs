@@ -67,6 +67,8 @@ let make = (~padding=10., ~transition=false, ~program) => {
   });
 
   let swTrace = trace |> List.map(FFS6DeltaViz.vizConfig);
+  let (sideEffects, _) = trace |> List.split;
+  let (_, flows) = sideEffects |> List.split;
   /* |> List.map(Sidewinder.Transform.hide("idStatus"))
      |> List.map((Some(x)) => x)
      |> List.map(Sidewinder.Transform.denest("::", "::")); */
@@ -78,6 +80,7 @@ let make = (~padding=10., ~transition=false, ~program) => {
         ~prevState=state.prevState,
         ~currState=state.currState,
         List.nth(swTrace, state.pos),
+        List.nth(flows, state.pos),
         List.nth(swTrace, nextPos),
       );
     } else {

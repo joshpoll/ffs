@@ -149,629 +149,6 @@ let mkFrame = (f: frame_aux) => makeUIDConstructor("frame", f);
 let mkStack = (s: stack_aux) => makeUIDConstructor("stack", s);
 let mkConfig = (c: config_aux) => makeUIDConstructor("config", c);
 
-/* let rec lookup = (x: vid, env: env): option(value) =>
-   switch (env) {
-   | [] => None
-   | [{vid: y, value: v}, ...env] =>
-     if (x == y) {
-       Some(v);
-     } else {
-       lookup(x, env);
-     }
-   }; */
-/* TODO: x_uid and y_uid should be involved in animations */
-let rec lookup = (x: vid, env: env): option((value, Flow.t)) => {
-  let (x_uid, x_val) = x;
-  let (env_uid, env_val) = env;
-  switch (env_val) {
-  | Empty => None
-  | Cons((_, {vid: y, value: (v_uid, v_val)}), (_, env_val)) =>
-    let (y_uid, y_val) = y;
-    if (x_val == y_val) {
-      let fresh = "valLookup_" ++ rauc();
-      switch (v_val) {
-      | VNum((_, n)) =>
-        Some((
-          (fresh, VNum(("valLookup_int_" ++ rauc(), n))), /* hack special-casing so we get a fresh
-           uid for num to avoid duplicated uids later. */
-          Flow.fromArray([|
-            /* [|(x_uid, [fresh]), (env_uid, [fresh])|] */
-            (v_uid, [v_uid, fresh]),
-          |]),
-        ))
-      | _ =>
-        Some((
-          (fresh, v_val),
-          Flow.fromArray([|
-            /* [|(x_uid, [fresh]), (env_uid, [fresh])|] */
-            (v_uid, [v_uid, fresh]),
-          |]),
-        ))
-      };
-    } else {
-      lookup(x, (env_uid, env_val));
-    };
-  };
-};
-
-/* TODO: improve transition annotations */
-let step = ((_, c): config): option((config, (string, Flow.t))) =>
-  switch (c) {
-  /* val */
-  /* | {zipper: {focus: ZExp({op: AExp(Var(x)), args: []}), ctxts}, env, stack} =>
-     switch (lookup(x, env)) {
-     | None => None
-     | Some(v) => Some({
-                    zipper: {
-                      focus: Value(v),
-                      ctxts,
-                    },
-                    env,
-                    stack,
-                  }) */
-  | {
-      zipper: (
-        _,
-        {
-          focus: (
-            _,
-            ZExp((_, {op: (_, AExp((_, Var((x_uid, _) as x)))), args: (_, Empty)})),
-          ),
-          ctxts: (ctxts_uid, _) as ctxts,
-        },
-      ),
-      env: (env_uid, _) as env,
-      stack: (stack_uid, _) as stack,
-    } =>
-    switch (lookup(x, env)) {
-    | Some((v, lookup_ribbon)) =>
-      Some((
-        mkConfig({zipper: mkZipper({focus: mkFocus(Value(v)), ctxts}), env, stack}),
-        (
-          "var",
-          Flow.merge(
-            Flow.fromArray([|
-              (x_uid, []),
-              (ctxts_uid, [ctxts_uid]),
-              (env_uid, [env_uid]),
-              (stack_uid, [stack_uid]),
-            |]),
-            lookup_ribbon,
-          ),
-        ),
-      ))
-
-    | None => None
-    }
-  /* lam */
-  /* | {zipper: {focus: ZExp({op: AExp(Lam(l)), args: []}), ctxts}, env, stack} =>
-     Some({
-       zipper: {
-         focus: Value(Clo(l, env)),
-         ctxts,
-       },
-       env,
-       stack,
-     }) */
-  | {
-      zipper: (
-        _,
-        {
-          focus: (
-            _,
-            ZExp((_, {op: (_, AExp((_, Lam((l_uid, _) as l)))), args: (_, Empty)})),
-          ),
-          ctxts: (ctxts_uid, _) as ctxts,
-        },
-      ),
-      env: (env_uid, env_val) as env,
-      stack: (stack_uid, _) as stack,
-    } =>
-    let (env2_uid, _) as env2 = mkEnv(env_val);
-    Some((
-      mkConfig({
-        zipper: mkZipper({focus: mkFocus(Value(mkValue(Clo(l, env2)))), ctxts}),
-        env,
-        stack,
-      }),
-      (
-        "lam",
-        Flow.fromArray([|
-          (l_uid, [l_uid]),
-          (env_uid, [env_uid, env2_uid]),
-          (ctxts_uid, [ctxts_uid]),
-          (stack_uid, [stack_uid]),
-        |]),
-      ),
-    ));
-  /* zipper skip */
-  /* | {zipper: {focus: ZExp({op, args: []}), ctxts}, env, stack} =>
-     Some({
-       zipper: {
-         focus: ZPreVal({op, values: []}),
-         ctxts,
-       },
-       env,
-       stack,
-     }) */
-  | {
-      zipper: (
-        _,
-        {
-          focus: (_, ZExp((_, {op: (op_uid, _) as op, args: (_, Empty)}))),
-          ctxts: (ctxts_uid, _) as ctxts,
-        },
-      ),
-      env: (env_uid, _) as env,
-      stack: (stack_uid, _) as stack,
-    } =>
-    Some((
-      mkConfig({
-        zipper:
-          mkZipper({
-            focus: mkFocus(ZPreVal(mkZPreVal({op, values: mkValues(Empty)}))),
-            ctxts,
-          }),
-        env,
-        stack,
-      }),
-      (
-        "zipper skip",
-        Flow.fromArray([|
-          (op_uid, [op_uid]),
-          (ctxts_uid, [ctxts_uid]),
-          (env_uid, [env_uid]),
-          (stack_uid, [stack_uid]),
-        |]),
-      ),
-    ))
-  /* zipper begin */
-  /* | {zipper: {focus: ZExp({op, args: [a, ...args]}), ctxts}, env, stack} =>
-     Some({
-       zipper: {
-         focus: ZExp(a),
-         ctxts: [{op, args, values: []}, ...ctxts],
-       },
-       env,
-       stack,
-     }) */
-  | {
-      zipper: (
-        _,
-        {
-          focus: (
-            _,
-            ZExp((
-              _,
-              {
-                op: (op_uid, _) as op,
-                args: (_, Cons((a_uid, _) as a, (args_uid, _) as args)),
-              },
-            )),
-          ),
-          ctxts: (ctxts_uid, _) as ctxts,
-        },
-      ),
-      env: (env_uid, _) as env,
-      stack: (stack_uid, _) as stack,
-    } =>
-    Some((
-      mkConfig({
-        zipper:
-          mkZipper({
-            focus: mkFocus(ZExp(a)),
-            ctxts: mkCtxts(Cons(mkZCtxt({op, args, values: mkValues(Empty)}), ctxts)),
-          }),
-        env,
-        stack,
-      }),
-      (
-        "zipper begin",
-        Flow.fromArray([|
-          (op_uid, [op_uid]),
-          (a_uid, [a_uid]),
-          (args_uid, [args_uid]),
-          (ctxts_uid, [ctxts_uid]),
-          (env_uid, [env_uid]),
-          (stack_uid, [stack_uid]),
-        |]),
-      ),
-    ))
-  /* zipper continue */
-  /*  | {
-        zipper: {focus: Value(v), ctxts: [{op, args: [a, ...args], values}, ...ctxts]},
-        env,
-        stack,
-      } =>
-      Some({
-        zipper: {
-          focus: ZExp(a),
-          ctxts: [{op, args, values: [v, ...values]}, ...ctxts],
-        },
-        env,
-        stack,
-      }) */
-  | {
-      zipper: (
-        _,
-        {
-          focus: (_, Value((v_uid, _) as v)),
-          ctxts: (
-            _,
-            Cons(
-              (
-                _,
-                {
-                  op: (op_uid, _) as op,
-                  args: (_, Cons((a_uid, _) as a, (args_uid, _) as args)),
-                  values: (values_uid, _) as values,
-                },
-              ),
-              (ctxts_uid, _) as ctxts,
-            ),
-          ),
-        },
-      ),
-      env: (env_uid, _) as env,
-      stack: (stack_uid, _) as stack,
-    } =>
-    Some((
-      mkConfig({
-        zipper:
-          mkZipper({
-            focus: mkFocus(ZExp(a)),
-            ctxts:
-              mkCtxts(Cons(mkZCtxt({op, args, values: mkValues(Cons(v, values))}), ctxts)),
-          }),
-        env,
-        stack,
-      }),
-      (
-        "zipper continue",
-        Flow.fromArray([|
-          (v_uid, [v_uid]),
-          (op_uid, [op_uid]),
-          (a_uid, [a_uid]),
-          (args_uid, [args_uid]),
-          (values_uid, [values_uid]),
-          (ctxts_uid, [ctxts_uid]),
-          (env_uid, [env_uid]),
-          (stack_uid, [stack_uid]),
-        |]),
-      ),
-    ))
-
-  /* zipper end */
-  /* NOTE! The delta version doesn't reverse the list, because that would make things harder. */
-  /* | {zipper: {focus: Value(v), ctxts: [{op, args: [], values}, ...ctxts]}, env, stack} =>
-     Some({
-       zipper: {
-         focus: ZPreVal({op, values: List.rev(values)}),
-         ctxts,
-       },
-       env,
-       stack,
-     }) */
-  | {
-      zipper: (
-        _,
-        {
-          focus: (_, Value((v_uid, _) as v)),
-          ctxts: (
-            _,
-            Cons(
-              (
-                _,
-                {op: (op_uid, _) as op, args: (_, Empty), values: (values_uid, _) as values},
-              ),
-              (ctxts_uid, _) as ctxts,
-            ),
-          ),
-        },
-      ),
-      env: (env_uid, _) as env,
-      stack: (stack_uid, _) as stack,
-    } =>
-    Some((
-      mkConfig({
-        zipper:
-          mkZipper({
-            focus: mkFocus(ZPreVal(mkZPreVal({op, values: mkValues(Cons(v, values))}))),
-            ctxts,
-          }),
-        env,
-        stack,
-      }),
-      (
-        "zipper end",
-        Flow.fromArray([|
-          (v_uid, [v_uid]),
-          (op_uid, [op_uid]),
-          (values_uid, [values_uid]),
-          (ctxts_uid, [ctxts_uid]),
-          (env_uid, [env_uid]),
-          (stack_uid, [stack_uid]),
-        |]),
-      ),
-    ))
-  /* app enter */
-  /* | {
-       zipper: {
-         focus: ZPreVal({op: AExp(App), values: [Clo({vid: x, exp: e}, env), v2]}),
-         ctxts,
-       },
-       env: env',
-       stack,
-     } =>
-     Some({
-       zipper: {
-         focus: ZExp(e),
-         ctxts: [],
-       },
-       env: [{vid: x, value: v2}, ...env],
-       stack: [{ctxts, env: env'}, ...stack],
-     }) */
-  | {
-      zipper: (
-        _,
-        {
-          focus: (
-            _,
-            ZPreVal((
-              _,
-              {
-                op: (_, AExp((_, App))),
-                values: (
-                  _,
-                  Cons(
-                    (v2_uid, _) as v2,
-                    (
-                      _,
-                      Cons(
-                        (
-                          _,
-                          Clo(
-                            (_, {vid: (x_uid, _) as x, exp: (e_uid, _) as e}),
-                            (env_uid, _) as env,
-                          ),
-                        ),
-                        (_, Empty),
-                      ),
-                    ),
-                  ),
-                ),
-              },
-            )),
-          ),
-          ctxts: (ctxts_uid, _) as ctxts,
-        },
-      ),
-      env: (env'_uid, _) as env',
-      stack: (stack_uid, _) as stack,
-    } =>
-    Some((
-      mkConfig({
-        zipper: mkZipper({focus: mkFocus(ZExp(e)), ctxts: mkCtxts(Empty)}),
-        env: mkEnv(Cons(mkBinding({vid: x, value: v2}), env)),
-        stack: mkStack(Cons(mkFrame({ctxts, env: env'}), stack)),
-      }),
-      (
-        "app enter",
-        Flow.fromArray([|
-          (v2_uid, [v2_uid]),
-          (x_uid, [x_uid]),
-          (e_uid, [e_uid]),
-          (env_uid, [env_uid]),
-          (ctxts_uid, [ctxts_uid]),
-          (env'_uid, [env'_uid]),
-          (stack_uid, [stack_uid]),
-        |]),
-      ),
-    ))
-  /* app exit */
-  | {
-      zipper: (_, {focus: (_, Value((v_uid, _) as v)), ctxts: (_, Empty)}),
-      env: (env_uid, _) as env,
-      stack: (
-        _,
-        Cons(
-          (_, {ctxts: (ctxts_uid, _) as ctxts, env: (env'_uid, _) as env'}),
-          (stack_uid, _) as stack,
-        ),
-      ),
-    } =>
-    Some((
-      mkConfig({zipper: mkZipper({focus: mkFocus(Value(v)), ctxts}), env: env', stack}),
-      (
-        "app exit",
-        Flow.fromArray([|
-          (v_uid, [v_uid]),
-          (env_uid, []),
-          (ctxts_uid, [ctxts_uid]),
-          (env'_uid, [env'_uid]),
-          (stack_uid, [stack_uid]),
-        |]),
-      ),
-    ))
-  /* let */
-  | {
-      zipper: (
-        _,
-        {
-          focus: (
-            _,
-            ZPreVal((
-              _,
-              {
-                op: (_, Exp((_, Let((x_uid, _) as x, (e2_uid, _) as e2)))),
-                values: (_, Cons((v1_uid, _) as v1, (_, Empty))),
-              },
-            )),
-          ),
-          ctxts: (ctxts_uid, _) as ctxts,
-        },
-      ),
-      env: (env_uid, _) as env,
-      stack: (stack_uid, _) as stack,
-    } =>
-    Some((
-      mkConfig({
-        zipper: mkZipper({focus: mkFocus(ZExp(e2)), ctxts}),
-        env: mkEnv(Cons(mkBinding({vid: x, value: v1}), env)),
-        stack,
-      }),
-      (
-        "let",
-        Flow.fromArray([|
-          (x_uid, [x_uid]),
-          (e2_uid, [e2_uid]),
-          (v1_uid, [v1_uid]),
-          (ctxts_uid, [ctxts_uid]),
-          (env_uid, [env_uid]),
-          (stack_uid, [stack_uid]),
-        |]),
-      ),
-    ))
-  /* num */
-  | {
-      zipper: (
-        _,
-        {
-          focus: (
-            _,
-            ZPreVal((_, {op: (_, AExp((_, Num((n_uid, _) as n)))), values: (_, Empty)})),
-          ),
-          ctxts: (ctxts_uid, _) as ctxts,
-        },
-      ),
-      env: (env_uid, _) as env,
-      stack: (stack_uid, _) as stack,
-    } =>
-    Some((
-      mkConfig({
-        zipper: mkZipper({focus: mkFocus(Value(mkValue(VNum(n)))), ctxts}),
-        env,
-        stack,
-      }),
-      (
-        "num",
-        Flow.fromArray([|
-          (n_uid, [n_uid]),
-          (ctxts_uid, [ctxts_uid]),
-          (env_uid, [env_uid]),
-          (stack_uid, [stack_uid]),
-        |]),
-      ),
-    ))
-  /* add */
-  | {
-      zipper: (
-        _,
-        {
-          focus: (
-            _,
-            ZPreVal((
-              _,
-              {
-                op: (_, AExp((_, Add))),
-                values: (
-                  _,
-                  Cons(
-                    (_, VNum((v2_uid, v2_val))),
-                    (_, Cons((_, VNum((v1_uid, v1_val))), (_, Empty))),
-                  ),
-                ),
-              },
-            )),
-          ),
-          ctxts: (ctxts_uid, _) as ctxts,
-        },
-      ),
-      env: (env_uid, _) as env,
-      stack: (stack_uid, _) as stack,
-    } =>
-    let (v3_uid, _) as v3 = mkInt(v1_val + v2_val);
-    Some((
-      mkConfig({
-        zipper: mkZipper({focus: mkFocus(Value(mkValue(VNum(v3)))), ctxts}),
-        env,
-        stack,
-      }),
-      (
-        "add",
-        Flow.fromArray([|
-          (v1_uid, [v3_uid]),
-          (v2_uid, [v3_uid]),
-          (ctxts_uid, [ctxts_uid]),
-          (env_uid, [env_uid]),
-          (stack_uid, [stack_uid]),
-        |]),
-      ),
-    ));
-  /* bracket */
-  | {
-      zipper: (
-        _,
-        {
-          focus: (
-            _,
-            ZPreVal((
-              _,
-              {op: (_, AExp((_, Bracket((e_uid, _) as e)))), values: (_, Empty)},
-            )),
-          ),
-          ctxts: (ctxts_uid, _) as ctxts,
-        },
-      ),
-      env: (env_uid, _) as env,
-      stack: (stack_uid, _) as stack,
-    } =>
-    Some((
-      mkConfig({
-        zipper: mkZipper({focus: mkFocus(ZExp(e)), ctxts: mkCtxts(Empty)}),
-        env,
-        stack: mkStack(Cons(mkFrame({ctxts, env}), stack)),
-      }),
-      (
-        "bracket",
-        Flow.fromArray([|
-          (e_uid, [e_uid]),
-          (ctxts_uid, [ctxts_uid]),
-          (env_uid, [env_uid]),
-          (stack_uid, [stack_uid]),
-        |]),
-      ),
-    ))
-  /* lift */
-  | {
-      zipper: (
-        _,
-        {
-          focus: (
-            _,
-            ZPreVal((_, {op: (_, Exp((_, Lift((ae_uid, _) as ae)))), values: (_, Empty)})),
-          ),
-          ctxts: (ctxts_uid, _) as ctxts,
-        },
-      ),
-      env: (env_uid, _) as env,
-      stack: (stack_uid, _) as stack,
-    } =>
-    Some((
-      mkConfig({zipper: mkZipper({focus: mkFocus(ZExp(ae)), ctxts}), env, stack}),
-      (
-        "lift",
-        Flow.fromArray([|
-          (ae_uid, [ae_uid]),
-          (ctxts_uid, [ctxts_uid]),
-          (env_uid, [env_uid]),
-          (stack_uid, [stack_uid]),
-        |]),
-      ),
-    ))
-  | _ => None
-  };
-
 /* to uid */
 let vidToUID = (v: FFS6.vid): vid => mkVid(v);
 
@@ -1017,6 +394,629 @@ and configFromUID = ((_, {zipper, env, stack}): config): FFS6.config => {
   stack: stackFromUID(stack),
 };
 
+/* let rec lookup = (x: vid, env: env): option(value) =>
+   switch (env) {
+   | [] => None
+   | [{vid: y, value: v}, ...env] =>
+     if (x == y) {
+       Some(v);
+     } else {
+       lookup(x, env);
+     }
+   }; */
+/* TODO: x_uid and y_uid should be involved in animations */
+let rec lookup = (x: vid, env: env): option((value, Sidewinder.Flow.t)) => {
+  let (x_uid, x_val) = x;
+  let (env_uid, env_val) = env;
+  switch (env_val) {
+  | Empty => None
+  | Cons((_, {vid: y, value: (v_uid, v_val)}), (_, env_val)) =>
+    let (y_uid, y_val) = y;
+    if (x_val == y_val) {
+      let fresh = "valLookup_" ++ rauc();
+      switch (v_val) {
+      | VNum((_, n)) =>
+        Some((
+          (fresh, VNum(("valLookup_int_" ++ rauc(), n))), /* hack special-casing so we get a fresh
+           uid for num to avoid duplicated uids later. */
+          Sidewinder.Flow.fromArray([|
+            /* [|(x_uid, [fresh]), (env_uid, [fresh])|] */
+            (v_uid, [v_uid, fresh]),
+          |]),
+        ))
+      | _ =>
+        Some((
+          (fresh, v_val),
+          Sidewinder.Flow.fromArray([|
+            /* [|(x_uid, [fresh]), (env_uid, [fresh])|] */
+            (v_uid, [v_uid, fresh]),
+          |]),
+        ))
+      };
+    } else {
+      lookup(x, (env_uid, env_val));
+    };
+  };
+};
+
+/* TODO: improve transition annotations */
+let step = ((_, c): config): option((config, (string, Sidewinder.Flow.t))) =>
+  switch (c) {
+  /* val */
+  /* | {zipper: {focus: ZExp({op: AExp(Var(x)), args: []}), ctxts}, env, stack} =>
+     switch (lookup(x, env)) {
+     | None => None
+     | Some(v) => Some({
+                    zipper: {
+                      focus: Value(v),
+                      ctxts,
+                    },
+                    env,
+                    stack,
+                  }) */
+  | {
+      zipper: (
+        _,
+        {
+          focus: (
+            _,
+            ZExp((_, {op: (_, AExp((_, Var((x_uid, _) as x)))), args: (_, Empty)})),
+          ),
+          ctxts: (ctxts_uid, _) as ctxts,
+        },
+      ),
+      env: (env_uid, _) as env,
+      stack: (stack_uid, _) as stack,
+    } =>
+    switch (lookup(x, env)) {
+    | Some((v, lookup_ribbon)) =>
+      Some((
+        mkConfig({zipper: mkZipper({focus: mkFocus(Value(v)), ctxts}), env, stack}),
+        (
+          "var",
+          Sidewinder.Flow.union(
+            Sidewinder.Flow.fromArray([|
+              (x_uid, []),
+              (ctxts_uid, [ctxts_uid]),
+              (env_uid, [env_uid]),
+              (stack_uid, [stack_uid]),
+            |]),
+            lookup_ribbon,
+          ),
+        ),
+      ))
+
+    | None => None
+    }
+  /* lam */
+  /* | {zipper: {focus: ZExp({op: AExp(Lam(l)), args: []}), ctxts}, env, stack} =>
+     Some({
+       zipper: {
+         focus: Value(Clo(l, env)),
+         ctxts,
+       },
+       env,
+       stack,
+     }) */
+  | {
+      zipper: (
+        _,
+        {
+          focus: (
+            _,
+            ZExp((_, {op: (_, AExp((_, Lam((l_uid, _) as l)))), args: (_, Empty)})),
+          ),
+          ctxts: (ctxts_uid, _) as ctxts,
+        },
+      ),
+      env: (env_uid, _) as env,
+      stack: (stack_uid, _) as stack,
+    } =>
+    let (env2_uid, _) as env2 = envToUID(envFromUID(env)); /* use `from` and `to` to scrub all copied IDs */
+    Some((
+      mkConfig({
+        zipper: mkZipper({focus: mkFocus(Value(mkValue(Clo(l, env2)))), ctxts}),
+        env,
+        stack,
+      }),
+      (
+        "lam",
+        Sidewinder.Flow.fromArray([|
+          (l_uid, [l_uid]),
+          (env_uid, [env_uid, env2_uid]),
+          (ctxts_uid, [ctxts_uid]),
+          (stack_uid, [stack_uid]),
+        |]),
+      ),
+    ));
+  /* zipper skip */
+  /* | {zipper: {focus: ZExp({op, args: []}), ctxts}, env, stack} =>
+     Some({
+       zipper: {
+         focus: ZPreVal({op, values: []}),
+         ctxts,
+       },
+       env,
+       stack,
+     }) */
+  | {
+      zipper: (
+        _,
+        {
+          focus: (_, ZExp((_, {op: (op_uid, _) as op, args: (_, Empty)}))),
+          ctxts: (ctxts_uid, _) as ctxts,
+        },
+      ),
+      env: (env_uid, _) as env,
+      stack: (stack_uid, _) as stack,
+    } =>
+    Some((
+      mkConfig({
+        zipper:
+          mkZipper({
+            focus: mkFocus(ZPreVal(mkZPreVal({op, values: mkValues(Empty)}))),
+            ctxts,
+          }),
+        env,
+        stack,
+      }),
+      (
+        "zipper skip",
+        Sidewinder.Flow.fromArray([|
+          (op_uid, [op_uid]),
+          (ctxts_uid, [ctxts_uid]),
+          (env_uid, [env_uid]),
+          (stack_uid, [stack_uid]),
+        |]),
+      ),
+    ))
+  /* zipper begin */
+  /* | {zipper: {focus: ZExp({op, args: [a, ...args]}), ctxts}, env, stack} =>
+     Some({
+       zipper: {
+         focus: ZExp(a),
+         ctxts: [{op, args, values: []}, ...ctxts],
+       },
+       env,
+       stack,
+     }) */
+  | {
+      zipper: (
+        _,
+        {
+          focus: (
+            _,
+            ZExp((
+              _,
+              {
+                op: (op_uid, _) as op,
+                args: (_, Cons((a_uid, _) as a, (args_uid, _) as args)),
+              },
+            )),
+          ),
+          ctxts: (ctxts_uid, _) as ctxts,
+        },
+      ),
+      env: (env_uid, _) as env,
+      stack: (stack_uid, _) as stack,
+    } =>
+    Some((
+      mkConfig({
+        zipper:
+          mkZipper({
+            focus: mkFocus(ZExp(a)),
+            ctxts: mkCtxts(Cons(mkZCtxt({op, args, values: mkValues(Empty)}), ctxts)),
+          }),
+        env,
+        stack,
+      }),
+      (
+        "zipper begin",
+        Sidewinder.Flow.fromArray([|
+          (op_uid, [op_uid]),
+          (a_uid, [a_uid]),
+          (args_uid, [args_uid]),
+          (ctxts_uid, [ctxts_uid]),
+          (env_uid, [env_uid]),
+          (stack_uid, [stack_uid]),
+        |]),
+      ),
+    ))
+  /* zipper continue */
+  /*  | {
+        zipper: {focus: Value(v), ctxts: [{op, args: [a, ...args], values}, ...ctxts]},
+        env,
+        stack,
+      } =>
+      Some({
+        zipper: {
+          focus: ZExp(a),
+          ctxts: [{op, args, values: [v, ...values]}, ...ctxts],
+        },
+        env,
+        stack,
+      }) */
+  | {
+      zipper: (
+        _,
+        {
+          focus: (_, Value((v_uid, _) as v)),
+          ctxts: (
+            _,
+            Cons(
+              (
+                _,
+                {
+                  op: (op_uid, _) as op,
+                  args: (_, Cons((a_uid, _) as a, (args_uid, _) as args)),
+                  values: (values_uid, _) as values,
+                },
+              ),
+              (ctxts_uid, _) as ctxts,
+            ),
+          ),
+        },
+      ),
+      env: (env_uid, _) as env,
+      stack: (stack_uid, _) as stack,
+    } =>
+    Some((
+      mkConfig({
+        zipper:
+          mkZipper({
+            focus: mkFocus(ZExp(a)),
+            ctxts:
+              mkCtxts(Cons(mkZCtxt({op, args, values: mkValues(Cons(v, values))}), ctxts)),
+          }),
+        env,
+        stack,
+      }),
+      (
+        "zipper continue",
+        Sidewinder.Flow.fromArray([|
+          (v_uid, [v_uid]),
+          (op_uid, [op_uid]),
+          (a_uid, [a_uid]),
+          (args_uid, [args_uid]),
+          (values_uid, [values_uid]),
+          (ctxts_uid, [ctxts_uid]),
+          (env_uid, [env_uid]),
+          (stack_uid, [stack_uid]),
+        |]),
+      ),
+    ))
+
+  /* zipper end */
+  /* NOTE! The delta version doesn't reverse the list, because that would make things harder. */
+  /* | {zipper: {focus: Value(v), ctxts: [{op, args: [], values}, ...ctxts]}, env, stack} =>
+     Some({
+       zipper: {
+         focus: ZPreVal({op, values: List.rev(values)}),
+         ctxts,
+       },
+       env,
+       stack,
+     }) */
+  | {
+      zipper: (
+        _,
+        {
+          focus: (_, Value((v_uid, _) as v)),
+          ctxts: (
+            _,
+            Cons(
+              (
+                _,
+                {op: (op_uid, _) as op, args: (_, Empty), values: (values_uid, _) as values},
+              ),
+              (ctxts_uid, _) as ctxts,
+            ),
+          ),
+        },
+      ),
+      env: (env_uid, _) as env,
+      stack: (stack_uid, _) as stack,
+    } =>
+    Some((
+      mkConfig({
+        zipper:
+          mkZipper({
+            focus: mkFocus(ZPreVal(mkZPreVal({op, values: mkValues(Cons(v, values))}))),
+            ctxts,
+          }),
+        env,
+        stack,
+      }),
+      (
+        "zipper end",
+        Sidewinder.Flow.fromArray([|
+          (v_uid, [v_uid]),
+          (op_uid, [op_uid]),
+          (values_uid, [values_uid]),
+          (ctxts_uid, [ctxts_uid]),
+          (env_uid, [env_uid]),
+          (stack_uid, [stack_uid]),
+        |]),
+      ),
+    ))
+  /* app enter */
+  /* | {
+       zipper: {
+         focus: ZPreVal({op: AExp(App), values: [Clo({vid: x, exp: e}, env), v2]}),
+         ctxts,
+       },
+       env: env',
+       stack,
+     } =>
+     Some({
+       zipper: {
+         focus: ZExp(e),
+         ctxts: [],
+       },
+       env: [{vid: x, value: v2}, ...env],
+       stack: [{ctxts, env: env'}, ...stack],
+     }) */
+  | {
+      zipper: (
+        _,
+        {
+          focus: (
+            _,
+            ZPreVal((
+              _,
+              {
+                op: (_, AExp((_, App))),
+                values: (
+                  _,
+                  Cons(
+                    (v2_uid, _) as v2,
+                    (
+                      _,
+                      Cons(
+                        (
+                          _,
+                          Clo(
+                            (_, {vid: (x_uid, _) as x, exp: (e_uid, _) as e}),
+                            (env_uid, _) as env,
+                          ),
+                        ),
+                        (_, Empty),
+                      ),
+                    ),
+                  ),
+                ),
+              },
+            )),
+          ),
+          ctxts: (ctxts_uid, _) as ctxts,
+        },
+      ),
+      env: (env'_uid, _) as env',
+      stack: (stack_uid, _) as stack,
+    } =>
+    Some((
+      mkConfig({
+        zipper: mkZipper({focus: mkFocus(ZExp(e)), ctxts: mkCtxts(Empty)}),
+        env: mkEnv(Cons(mkBinding({vid: x, value: v2}), env)),
+        stack: mkStack(Cons(mkFrame({ctxts, env: env'}), stack)),
+      }),
+      (
+        "app enter",
+        Sidewinder.Flow.fromArray([|
+          (v2_uid, [v2_uid]),
+          (x_uid, [x_uid]),
+          (e_uid, [e_uid]),
+          (env_uid, [env_uid]),
+          (ctxts_uid, [ctxts_uid]),
+          (env'_uid, [env'_uid]),
+          (stack_uid, [stack_uid]),
+        |]),
+      ),
+    ))
+  /* app exit */
+  | {
+      zipper: (_, {focus: (_, Value((v_uid, _) as v)), ctxts: (_, Empty)}),
+      env: (env_uid, _) as env,
+      stack: (
+        _,
+        Cons(
+          (_, {ctxts: (ctxts_uid, _) as ctxts, env: (env'_uid, _) as env'}),
+          (stack_uid, _) as stack,
+        ),
+      ),
+    } =>
+    Some((
+      mkConfig({zipper: mkZipper({focus: mkFocus(Value(v)), ctxts}), env: env', stack}),
+      (
+        "app exit",
+        Sidewinder.Flow.fromArray([|
+          (v_uid, [v_uid]),
+          (env_uid, []),
+          (ctxts_uid, [ctxts_uid]),
+          (env'_uid, [env'_uid]),
+          (stack_uid, [stack_uid]),
+        |]),
+      ),
+    ))
+  /* let */
+  | {
+      zipper: (
+        _,
+        {
+          focus: (
+            _,
+            ZPreVal((
+              _,
+              {
+                op: (_, Exp((_, Let((x_uid, _) as x, (e2_uid, _) as e2)))),
+                values: (_, Cons((v1_uid, _) as v1, (_, Empty))),
+              },
+            )),
+          ),
+          ctxts: (ctxts_uid, _) as ctxts,
+        },
+      ),
+      env: (env_uid, _) as env,
+      stack: (stack_uid, _) as stack,
+    } =>
+    Some((
+      mkConfig({
+        zipper: mkZipper({focus: mkFocus(ZExp(e2)), ctxts}),
+        env: mkEnv(Cons(mkBinding({vid: x, value: v1}), env)),
+        stack,
+      }),
+      (
+        "let",
+        Sidewinder.Flow.fromArray([|
+          (x_uid, [x_uid]),
+          (e2_uid, [e2_uid]),
+          (v1_uid, [v1_uid]),
+          (ctxts_uid, [ctxts_uid]),
+          (env_uid, [env_uid]),
+          (stack_uid, [stack_uid]),
+        |]),
+      ),
+    ))
+  /* num */
+  | {
+      zipper: (
+        _,
+        {
+          focus: (
+            _,
+            ZPreVal((_, {op: (_, AExp((_, Num((n_uid, _) as n)))), values: (_, Empty)})),
+          ),
+          ctxts: (ctxts_uid, _) as ctxts,
+        },
+      ),
+      env: (env_uid, _) as env,
+      stack: (stack_uid, _) as stack,
+    } =>
+    Some((
+      mkConfig({
+        zipper: mkZipper({focus: mkFocus(Value(mkValue(VNum(n)))), ctxts}),
+        env,
+        stack,
+      }),
+      (
+        "num",
+        Sidewinder.Flow.fromArray([|
+          (n_uid, [n_uid]),
+          (ctxts_uid, [ctxts_uid]),
+          (env_uid, [env_uid]),
+          (stack_uid, [stack_uid]),
+        |]),
+      ),
+    ))
+  /* add */
+  | {
+      zipper: (
+        _,
+        {
+          focus: (
+            _,
+            ZPreVal((
+              _,
+              {
+                op: (_, AExp((_, Add))),
+                values: (
+                  _,
+                  Cons(
+                    (_, VNum((v2_uid, v2_val))),
+                    (_, Cons((_, VNum((v1_uid, v1_val))), (_, Empty))),
+                  ),
+                ),
+              },
+            )),
+          ),
+          ctxts: (ctxts_uid, _) as ctxts,
+        },
+      ),
+      env: (env_uid, _) as env,
+      stack: (stack_uid, _) as stack,
+    } =>
+    let (v3_uid, _) as v3 = mkInt(v1_val + v2_val);
+    Some((
+      mkConfig({
+        zipper: mkZipper({focus: mkFocus(Value(mkValue(VNum(v3)))), ctxts}),
+        env,
+        stack,
+      }),
+      (
+        "add",
+        Sidewinder.Flow.fromArray([|
+          (v1_uid, [v3_uid]),
+          (v2_uid, [v3_uid]),
+          (ctxts_uid, [ctxts_uid]),
+          (env_uid, [env_uid]),
+          (stack_uid, [stack_uid]),
+        |]),
+      ),
+    ));
+  /* bracket */
+  | {
+      zipper: (
+        _,
+        {
+          focus: (
+            _,
+            ZPreVal((
+              _,
+              {op: (_, AExp((_, Bracket((e_uid, _) as e)))), values: (_, Empty)},
+            )),
+          ),
+          ctxts: (ctxts_uid, _) as ctxts,
+        },
+      ),
+      env: (env_uid, _) as env,
+      stack: (stack_uid, _) as stack,
+    } =>
+    Some((
+      mkConfig({
+        zipper: mkZipper({focus: mkFocus(ZExp(e)), ctxts: mkCtxts(Empty)}),
+        env,
+        stack: mkStack(Cons(mkFrame({ctxts, env}), stack)),
+      }),
+      (
+        "bracket",
+        Sidewinder.Flow.fromArray([|
+          (e_uid, [e_uid]),
+          (ctxts_uid, [ctxts_uid]),
+          (env_uid, [env_uid]),
+          (stack_uid, [stack_uid]),
+        |]),
+      ),
+    ))
+  /* lift */
+  | {
+      zipper: (
+        _,
+        {
+          focus: (
+            _,
+            ZPreVal((_, {op: (_, Exp((_, Lift((ae_uid, _) as ae)))), values: (_, Empty)})),
+          ),
+          ctxts: (ctxts_uid, _) as ctxts,
+        },
+      ),
+      env: (env_uid, _) as env,
+      stack: (stack_uid, _) as stack,
+    } =>
+    Some((
+      mkConfig({zipper: mkZipper({focus: mkFocus(ZExp(ae)), ctxts}), env, stack}),
+      (
+        "lift",
+        Sidewinder.Flow.fromArray([|
+          (ae_uid, [ae_uid]),
+          (ctxts_uid, [ctxts_uid]),
+          (env_uid, [env_uid]),
+          (stack_uid, [stack_uid]),
+        |]),
+      ),
+    ))
+  | _ => None
+  };
+
 /* def inject (e : exp) : state := ⟨sum.inl e, ⟨option.none, env.emp⟩, []⟩ */
 let inject = (e: FFS6.exp): config =>
   configToUID({
@@ -1072,12 +1072,18 @@ let rec iterateMaybeSideEffect = (f: 'a => option(('a, 'b)), x: 'a): (list('a), 
     ([x, ...als], [b, ...bls]);
   };
 
-let interpretTrace = (p: FFS6.exp): list(((string, Flow.t), config)) => {
+let interpretTrace = (p: FFS6.exp): list(((string, Sidewinder.Flow.t), config)) => {
   let (states, rules) = iterateMaybeSideEffect(step, inject(p));
   // Js.log2("rules", rules |> Array.of_list);
   let (actualRules, flow) = rules |> List.split;
-  Js.log2("rules", List.combine(actualRules, List.map(Flow.toArray, flow)) |> Array.of_list);
-  List.combine(rules @ [("", Flow.none)], takeWhileInclusive(c => !isFinal(c), states));
+  Js.log2(
+    "rules",
+    List.combine(actualRules, List.map(Sidewinder.Flow.toArray, flow)) |> Array.of_list,
+  );
+  List.combine(
+    rules @ [("", Sidewinder.Flow.none)],
+    takeWhileInclusive(c => !isFinal(c), states),
+  );
 };
 
 let interpret = p => {
