@@ -1,10 +1,8 @@
 'use strict';
 
-var $$Array = require("bs-platform/lib/js/array.js");
 var Block = require("bs-platform/lib/js/block.js");
 var React = require("react");
 var ReactDom = require("react-dom");
-var FFS6$ReasonReactExamples = require("./FFS6.bs.js");
 var VizTrace$ReasonReactExamples = require("./VizTrace.bs.js");
 var ExampleStyles$ReasonReactExamples = require("./ExampleStyles.bs.js");
 
@@ -36,140 +34,6 @@ function id(x) {
 }
 
 ReactDom.render(React.createElement(VizTrace$ReasonReactExamples.make, {
-          program: /* Lift */Block.__(0, [/* Num */Block.__(3, [5])])
-        }), makeContainer("5"));
-
-console.log("interpret trace: 5", $$Array.of_list(FFS6$ReasonReactExamples.interpretTrace(FFS6$ReasonReactExamples.expFromFFS5(/* Lift */Block.__(0, [/* Num */Block.__(3, [5])])))));
-
-ReactDom.render(React.createElement(VizTrace$ReasonReactExamples.make, {
-          program: /* Lift */Block.__(0, [/* App */Block.__(1, [
-                  /* Lam */Block.__(2, [{
-                        vid: "x",
-                        exp: /* Lift */Block.__(0, [/* Var */Block.__(0, ["x"])])
-                      }]),
-                  /* Lam */Block.__(2, [{
-                        vid: "y",
-                        exp: /* Lift */Block.__(0, [/* Var */Block.__(0, ["y"])])
-                      }])
-                ])])
-        }), makeContainer("app(id, id)"));
-
-ReactDom.render(React.createElement(VizTrace$ReasonReactExamples.make, {
-          program: /* Lift */Block.__(0, [/* Add */Block.__(4, [
-                  /* Num */Block.__(3, [1]),
-                  /* Add */Block.__(4, [
-                      /* Num */Block.__(3, [2]),
-                      /* Num */Block.__(3, [3])
-                    ])
-                ])])
-        }), makeContainer("1 + (2 + 3)"));
-
-console.log("interpret trace: 1 + (2 + 3)", $$Array.of_list(FFS6$ReasonReactExamples.interpretTrace(FFS6$ReasonReactExamples.expFromFFS5(/* Lift */Block.__(0, [/* Add */Block.__(4, [
-                        /* Num */Block.__(3, [1]),
-                        /* Add */Block.__(4, [
-                            /* Num */Block.__(3, [2]),
-                            /* Num */Block.__(3, [3])
-                          ])
-                      ])])))));
-
-ReactDom.render(React.createElement(VizTrace$ReasonReactExamples.make, {
-          program: /* Let */Block.__(1, [
-              "x",
-              /* Num */Block.__(3, [5]),
-              /* Let */Block.__(1, [
-                  "y",
-                  /* Num */Block.__(3, [6]),
-                  /* Lift */Block.__(0, [/* Add */Block.__(4, [
-                          /* Var */Block.__(0, ["x"]),
-                          /* Var */Block.__(0, ["y"])
-                        ])])
-                ])
-            ])
-        }), makeContainer("let add"));
-
-ReactDom.render(React.createElement(VizTrace$ReasonReactExamples.make, {
-          transition: true,
-          program: /* Let */Block.__(1, [
-              "x",
-              /* Num */Block.__(3, [5]),
-              /* Let */Block.__(1, [
-                  "y",
-                  /* Num */Block.__(3, [6]),
-                  /* Lift */Block.__(0, [/* Add */Block.__(4, [
-                          /* Var */Block.__(0, ["x"]),
-                          /* Var */Block.__(0, ["y"])
-                        ])])
-                ])
-            ])
-        }), makeContainer("let add transition"));
-
-ReactDom.render(React.createElement(VizTrace$ReasonReactExamples.make, {
-          transition: true,
-          program: /* Lift */Block.__(0, [/* App */Block.__(1, [
-                  /* Lam */Block.__(2, [{
-                        vid: "x",
-                        exp: /* Lift */Block.__(0, [/* Var */Block.__(0, ["x"])])
-                      }]),
-                  /* Lam */Block.__(2, [{
-                        vid: "y",
-                        exp: /* Lift */Block.__(0, [/* Var */Block.__(0, ["y"])])
-                      }])
-                ])])
-        }), makeContainer("id id transition"));
-
-ReactDom.render(React.createElement(VizTrace$ReasonReactExamples.make, {
-          transition: true,
-          program: /* Let */Block.__(1, [
-              "x",
-              /* Num */Block.__(3, [34]),
-              /* Let */Block.__(1, [
-                  "y",
-                  /* Num */Block.__(3, [17]),
-                  /* Let */Block.__(1, [
-                      "z",
-                      /* Add */Block.__(4, [
-                          /* Add */Block.__(4, [
-                              /* Var */Block.__(0, ["x"]),
-                              /* Var */Block.__(0, ["y"])
-                            ]),
-                          /* Add */Block.__(4, [
-                              /* Var */Block.__(0, ["y"]),
-                              /* Num */Block.__(3, [2])
-                            ])
-                        ]),
-                      /* Lift */Block.__(0, [/* Add */Block.__(4, [
-                              /* Var */Block.__(0, ["z"]),
-                              /* Num */Block.__(3, [1])
-                            ])])
-                    ])
-                ])
-            ])
-        }), makeContainer("lecture 1"));
-
-ReactDom.render(React.createElement(VizTrace$ReasonReactExamples.make, {
-          transition: true,
-          program: /* Let */Block.__(1, [
-              "a",
-              /* Num */Block.__(3, [1]),
-              /* Let */Block.__(1, [
-                  "b",
-                  /* Add */Block.__(4, [
-                      /* Num */Block.__(3, [2]),
-                      /* Var */Block.__(0, ["a"])
-                    ]),
-                  /* Let */Block.__(1, [
-                      "a",
-                      /* Num */Block.__(3, [3]),
-                      /* Lift */Block.__(0, [/* Add */Block.__(4, [
-                              /* Var */Block.__(0, ["a"]),
-                              /* Var */Block.__(0, ["b"])
-                            ])])
-                    ])
-                ])
-            ])
-        }), makeContainer("section 1"));
-
-ReactDom.render(React.createElement(VizTrace$ReasonReactExamples.make, {
           transition: true,
           program: /* Let */Block.__(1, [
               "x",
@@ -185,7 +49,65 @@ ReactDom.render(React.createElement(VizTrace$ReasonReactExamples.make, {
                       /* Num */Block.__(3, [1])
                     ])])
             ])
-        }), makeContainer("demo"));
+        }), makeContainer("Demo. See state 17."));
+
+ReactDom.render(React.createElement(React.Fragment, undefined, React.createElement("div", undefined, "Inspired by ", React.createElement("a", {
+                  href: "https://www.youtube.com/watch?v=_vJ1PlF_oxA&feature=youtu.be&t=357",
+                  target: "_blank"
+                }, "Lecture 1 of UW's Programming Languages Course.")), React.createElement(VizTrace$ReasonReactExamples.make, {
+              transition: true,
+              program: /* Let */Block.__(1, [
+                  "x",
+                  /* Num */Block.__(3, [34]),
+                  /* Let */Block.__(1, [
+                      "y",
+                      /* Num */Block.__(3, [17]),
+                      /* Let */Block.__(1, [
+                          "z",
+                          /* Add */Block.__(4, [
+                              /* Add */Block.__(4, [
+                                  /* Var */Block.__(0, ["x"]),
+                                  /* Var */Block.__(0, ["y"])
+                                ]),
+                              /* Add */Block.__(4, [
+                                  /* Var */Block.__(0, ["y"]),
+                                  /* Num */Block.__(3, [2])
+                                ])
+                            ]),
+                          /* Lift */Block.__(0, [/* Add */Block.__(4, [
+                                  /* Var */Block.__(0, ["z"]),
+                                  /* Num */Block.__(3, [1])
+                                ])])
+                        ])
+                    ])
+                ])
+            })), makeContainer("Lecture 1: ML Variable Bindings and Expressions"));
+
+ReactDom.render(React.createElement(React.Fragment, undefined, React.createElement("div", undefined, "Inspired by ", React.createElement("a", {
+                  href: "https://courses.cs.washington.edu/courses/cse341/20sp/files/section/sec01/sec01-slides.pdf",
+                  target: "_blank"
+                }, "Section 1 of UW's Programming Languages Course.")), React.createElement(VizTrace$ReasonReactExamples.make, {
+              transition: true,
+              program: /* Let */Block.__(1, [
+                  "a",
+                  /* Num */Block.__(3, [1]),
+                  /* Let */Block.__(1, [
+                      "b",
+                      /* Add */Block.__(4, [
+                          /* Num */Block.__(3, [2]),
+                          /* Var */Block.__(0, ["a"])
+                        ]),
+                      /* Let */Block.__(1, [
+                          "a",
+                          /* Num */Block.__(3, [3]),
+                          /* Lift */Block.__(0, [/* Add */Block.__(4, [
+                                  /* Var */Block.__(0, ["a"]),
+                                  /* Var */Block.__(0, ["b"])
+                                ])])
+                        ])
+                    ])
+                ])
+            })), makeContainer("Section 1: Shadowing"));
 
 exports.style = style;
 exports.makeContainer = makeContainer;
