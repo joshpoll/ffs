@@ -11,12 +11,12 @@ function readAndUpdateCounter(param) {
 }
 
 function rauc(param) {
-  return String(readAndUpdateCounter(/* () */0));
+  return String(readAndUpdateCounter(undefined));
 }
 
 function makeUIDConstructor(s, x) {
   return /* tuple */[
-          s + ("_" + String(readAndUpdateCounter(/* () */0))),
+          s + ("_" + String(readAndUpdateCounter(undefined))),
           x
         ];
 }

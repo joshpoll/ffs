@@ -7,17 +7,15 @@ var Caml_option = require("bs-platform/lib/js/caml_option.js");
 function lookup(x, _env) {
   while(true) {
     var env = _env;
-    if (env) {
-      var match = env[0];
-      if (x === match.id) {
-        return match.value;
-      } else {
-        _env = env[1];
-        continue ;
-      }
-    } else {
+    if (!env) {
       return ;
     }
+    var match = env[0];
+    if (x === match.id) {
+      return match.value;
+    }
+    _env = env[1];
+    continue ;
   };
 }
 
@@ -29,11 +27,11 @@ function step(param) {
   var focus = param.focus;
   switch (focus.tag | 0) {
     case /* Var */0 :
-        var match = lookup(focus[0], env);
-        if (match !== undefined) {
+        var v = lookup(focus[0], env);
+        if (v !== undefined) {
           return /* tuple */[
                   {
-                    focus: /* Val */Block.__(3, [match]),
+                    focus: /* Val */Block.__(3, [v]),
                     frame: frame,
                     stack: stack
                   },
@@ -48,21 +46,21 @@ function step(param) {
     case /* App */1 :
         var f = focus[0];
         if (f.tag === /* Val */3) {
-          var match$1 = focus[1];
-          if (match$1.tag === /* Val */3) {
-            var match$2 = f[0];
-            var match$3 = match$2[0];
+          var v$1 = focus[1];
+          if (v$1.tag === /* Val */3) {
+            var match = f[0];
+            var match$1 = match[0];
             return /* tuple */[
                     {
-                      focus: match$3.expr,
+                      focus: match$1.expr,
                       frame: {
                         ctxts: ctxts,
                         env: /* :: */[
                           {
-                            id: match$3.id,
-                            value: match$1[0]
+                            id: match$1.id,
+                            value: v$1[0]
                           },
-                          match$2[1]
+                          match[1]
                         ]
                       },
                       stack: /* :: */[
@@ -84,7 +82,7 @@ function step(param) {
                   frame: {
                     ctxts: /* :: */[
                       /* AppL */Block.__(0, [
-                          /* () */0,
+                          undefined,
                           focus[1]
                         ]),
                       ctxts
@@ -114,78 +112,78 @@ function step(param) {
                 ]
               ];
     case /* Val */3 :
-        var v = focus[0];
-        if (ctxts) {
-          var match$4 = ctxts[0];
-          if (match$4.tag) {
+        var v$2 = focus[0];
+        if (!ctxts) {
+          if (stack) {
             return /* tuple */[
                     {
-                      focus: /* App */Block.__(1, [
-                          /* Val */Block.__(3, [match$4[0]]),
-                          /* Val */Block.__(3, [v])
-                        ]),
-                      frame: {
-                        ctxts: ctxts[1],
-                        env: env
-                      },
-                      stack: stack
+                      focus: focus,
+                      frame: stack[0],
+                      stack: stack[1]
                     },
                     /* tuple */[
-                      "mutate AppR to App. move v_f into Val. move v into Val",
-                      /* PREPE */5
+                      "move frame to frame",
+                      /* POP */6
                     ]
                   ];
           } else {
-            return /* tuple */[
-                    {
-                      focus: match$4[1],
-                      frame: {
-                        ctxts: /* :: */[
-                          /* AppR */Block.__(1, [
-                              v,
-                              /* () */0
-                            ]),
-                          ctxts[1]
-                        ],
-                        env: env
-                      },
-                      stack: stack
-                    },
-                    /* tuple */[
-                      "mutate AppL to AppR. move x to focus. move v to AppR.",
-                      /* EVALX */4
-                    ]
-                  ];
+            return ;
           }
-        } else if (stack) {
+        }
+        var match$2 = ctxts[0];
+        if (match$2.tag) {
           return /* tuple */[
                   {
-                    focus: focus,
-                    frame: stack[0],
-                    stack: stack[1]
+                    focus: /* App */Block.__(1, [
+                        /* Val */Block.__(3, [match$2[0]]),
+                        /* Val */Block.__(3, [v$2])
+                      ]),
+                    frame: {
+                      ctxts: ctxts[1],
+                      env: env
+                    },
+                    stack: stack
                   },
                   /* tuple */[
-                    "move frame to frame",
-                    /* POP */6
+                    "mutate AppR to App. move v_f into Val. move v into Val",
+                    /* PREPE */5
                   ]
                 ];
         } else {
-          return ;
+          return /* tuple */[
+                  {
+                    focus: match$2[1],
+                    frame: {
+                      ctxts: /* :: */[
+                        /* AppR */Block.__(1, [
+                            v$2,
+                            undefined
+                          ]),
+                        ctxts[1]
+                      ],
+                      env: env
+                    },
+                    stack: stack
+                  },
+                  /* tuple */[
+                    "mutate AppL to AppR. move x to focus. move v to AppR.",
+                    /* EVALX */4
+                  ]
+                ];
         }
     
   }
 }
 
 function takeWhileInclusive(p, l) {
-  if (l) {
-    var x = l[0];
-    return /* :: */[
-            x,
-            Curry._1(p, x) ? takeWhileInclusive(p, l[1]) : /* [] */0
-          ];
-  } else {
+  if (!l) {
     return /* [] */0;
   }
+  var x = l[0];
+  return /* :: */[
+          x,
+          Curry._1(p, x) ? takeWhileInclusive(p, l[1]) : /* [] */0
+        ];
 }
 
 function inject(p) {
@@ -204,16 +202,15 @@ function isFinal(ms) {
 }
 
 function iterateMaybeAux(f, x) {
-  if (x !== undefined) {
-    var x$1 = Caml_option.valFromOption(x);
-    var fx = Curry._1(f, x$1);
-    return /* :: */[
-            x$1,
-            iterateMaybeAux(f, fx)
-          ];
-  } else {
+  if (x === undefined) {
     return /* [] */0;
   }
+  var x$1 = Caml_option.valFromOption(x);
+  var fx = Curry._1(f, x$1);
+  return /* :: */[
+          x$1,
+          iterateMaybeAux(f, fx)
+        ];
 }
 
 function advance(ms) {

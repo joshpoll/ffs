@@ -12,7 +12,7 @@ function vizVid(param) {
               flowNodeType: /* Leaf */1,
               uid: uid,
               rootPath: /* [] */0
-            }, undefined, param[1], /* () */0);
+            }, undefined, param[1], undefined);
 }
 
 function vizInt(param) {
@@ -21,7 +21,7 @@ function vizInt(param) {
               flowNodeType: /* Leaf */1,
               uid: uid,
               rootPath: /* [] */0
-            }, undefined, String(param[1]), /* () */0);
+            }, undefined, String(param[1]), undefined);
 }
 
 function vizZExp(vizOp, param) {
@@ -31,7 +31,7 @@ function vizZExp(vizOp, param) {
               flowNodeType: /* Leaf */1,
               uid: uid,
               rootPath: /* [] */0
-            }, undefined, Curry._2(vizOp, match.op, vizAExps(match.args)), /* [] */0, /* () */0);
+            }, undefined, Curry._2(vizOp, match.op, vizAExps(match.args)), /* [] */0, undefined);
 }
 
 function vizValue(param) {
@@ -43,7 +43,7 @@ function vizValue(param) {
                 uid: uid,
                 rootPath: /* [] */0
               }, "closure", TheiaExtensions$ReasonReactExamples.hSeq(undefined, undefined, undefined, List.map((function (n) {
-                          return Theia$Sidewinder.box(undefined, undefined, undefined, undefined, undefined, n, /* [] */0, /* () */0);
+                          return Theia$Sidewinder.box(undefined, undefined, undefined, undefined, undefined, n, /* [] */0, undefined);
                         }), /* :: */[
                         vizLambda(value[0]),
                         /* :: */[
@@ -68,13 +68,13 @@ function vizOp(param, inputs) {
                 flowNodeType: /* Leaf */1,
                 uid: uid,
                 rootPath: /* [] */0
-              }, undefined, vizAExpOp(op[0], inputs), /* [] */0, /* () */0);
+              }, undefined, vizAExpOp(op[0], inputs), /* [] */0, undefined);
   } else {
     return Theia$Sidewinder.noop(uid, {
                 flowNodeType: /* Leaf */1,
                 uid: uid,
                 rootPath: /* [] */0
-              }, undefined, vizExpOp(op[0], inputs), /* [] */0, /* () */0);
+              }, undefined, vizExpOp(op[0], inputs), /* [] */0, undefined);
   }
 }
 
@@ -85,7 +85,7 @@ function vizZPreVal(vizOp, param) {
               flowNodeType: /* Leaf */1,
               uid: uid,
               rootPath: /* [] */0
-            }, undefined, Curry._2(vizOp, match.op, vizValues(match.values)), /* [] */0, /* () */0);
+            }, undefined, Curry._2(vizOp, match.op, vizValues(match.values)), /* [] */0, undefined);
 }
 
 function vizValues(values) {
@@ -95,16 +95,15 @@ function vizValues(values) {
     var param = _param;
     var acc = _acc;
     var values$1 = param[1];
-    if (values$1) {
-      _param = values$1[1];
-      _acc = /* :: */[
-        vizValue(values$1[0]),
-        acc
-      ];
-      continue ;
-    } else {
+    if (!values$1) {
       return acc;
     }
+    _param = values$1[1];
+    _acc = /* :: */[
+      vizValue(values$1[0]),
+      acc
+    ];
+    continue ;
   };
 }
 
@@ -130,7 +129,7 @@ function vizZCtxt(vizOp, param, hole) {
             }, undefined, Curry._2(vizOp, match.op, Pervasives.$at(vizValues(match.values), /* :: */[
                       hole,
                       vizAExps(match.args)
-                    ])), /* [] */0, /* () */0);
+                    ])), /* [] */0, undefined);
 }
 
 function vizCtxts(_param, _hole) {
@@ -138,18 +137,17 @@ function vizCtxts(_param, _hole) {
     var param = _param;
     var hole = _hole;
     var ctxts = param[1];
-    if (ctxts) {
-      var highlightHole = TheiaExtensions$ReasonReactExamples.highlight(undefined, undefined, undefined, "hsla(240, 100%, 80%, 33%)", hole, /* [] */0, /* () */0);
-      _hole = vizZCtxt(vizOp, ctxts[0], highlightHole);
-      _param = ctxts[1];
-      continue ;
-    } else {
+    if (!ctxts) {
       return Theia$Sidewinder.noop(undefined, {
                   flowNodeType: /* Leaf */1,
                   uid: param[0],
                   rootPath: /* [] */0
-                }, undefined, hole, /* [] */0, /* () */0);
+                }, undefined, hole, /* [] */0, undefined);
     }
+    var highlightHole = TheiaExtensions$ReasonReactExamples.highlight(undefined, undefined, undefined, "hsla(240, 100%, 80%, 33%)", hole, /* [] */0, undefined);
+    _hole = vizZCtxt(vizOp, ctxts[0], highlightHole);
+    _param = ctxts[1];
+    continue ;
   };
 }
 
@@ -173,7 +171,7 @@ function vizStack(param) {
                 flowNodeType: /* Leaf */1,
                 uid: uid,
                 rootPath: /* [] */0
-              }, undefined, "stack", /* () */0);
+              }, undefined, "stack", undefined);
   }
 }
 
@@ -213,7 +211,7 @@ function vizEnv(param) {
                 flowNodeType: /* Leaf */1,
                 uid: uid,
                 rootPath: /* [] */0
-              }, undefined, "env", /* () */0);
+              }, undefined, "env", undefined);
   }
 }
 
@@ -225,11 +223,11 @@ function vizLambda(param) {
               uid: uid,
               rootPath: /* [] */0
             }, undefined, /* :: */[
-              Theia$Sidewinder.str(undefined, undefined, undefined, "\\", /* () */0),
+              Theia$Sidewinder.str(undefined, undefined, undefined, "\\", undefined),
               /* :: */[
                 vizVid(match.vid),
                 /* :: */[
-                  Theia$Sidewinder.str(undefined, undefined, undefined, ".", /* () */0),
+                  Theia$Sidewinder.str(undefined, undefined, undefined, ".", undefined),
                   /* :: */[
                     vizZExp(vizOp, match.exp),
                     /* [] */0
@@ -279,7 +277,7 @@ function vizExpOp(param, inputs) {
                                     /* [] */0
                                   ]
                                 ]
-                              }, undefined, "let", /* () */0),
+                              }, undefined, "let", undefined),
                           /* :: */[
                             vizVid(exp_op[0]),
                             /* :: */[
@@ -293,7 +291,7 @@ function vizExpOp(param, inputs) {
                                         /* [] */0
                                       ]
                                     ]
-                                  }, undefined, "=", /* () */0),
+                                  }, undefined, "=", undefined),
                               /* :: */[
                                 inputs[0],
                                 /* :: */[
@@ -307,7 +305,7 @@ function vizExpOp(param, inputs) {
                                             /* [] */0
                                           ]
                                         ]
-                                      }, undefined, "in", /* () */0),
+                                      }, undefined, "in", undefined),
                                   /* [] */0
                                 ]
                               ]
@@ -330,7 +328,7 @@ function vizExpOp(param, inputs) {
                 flowNodeType: /* Leaf */1,
                 uid: uid,
                 rootPath: /* [] */0
-              }, undefined, vizZExp(vizOp, exp_op[0]), /* [] */0, /* () */0);
+              }, undefined, vizZExp(vizOp, exp_op[0]), /* [] */0, undefined);
   }
 }
 
@@ -354,7 +352,7 @@ function vizAExpOp(param, inputs) {
                               0,
                               /* [] */0
                             ]
-                          }, undefined, "(", /* () */0),
+                          }, undefined, "(", undefined),
                       /* :: */[
                         inputs[0],
                         /* :: */[
@@ -365,7 +363,7 @@ function vizAExpOp(param, inputs) {
                                   2,
                                   /* [] */0
                                 ]
-                              }, undefined, ")", /* () */0),
+                              }, undefined, ")", undefined),
                           /* :: */[
                             Theia$Sidewinder.str(undefined, {
                                   flowNodeType: /* Leaf */1,
@@ -374,7 +372,7 @@ function vizAExpOp(param, inputs) {
                                     3,
                                     /* [] */0
                                   ]
-                                }, undefined, "(", /* () */0),
+                                }, undefined, "(", undefined),
                             /* :: */[
                               match[0],
                               /* :: */[
@@ -385,7 +383,7 @@ function vizAExpOp(param, inputs) {
                                         5,
                                         /* [] */0
                                       ]
-                                    }, undefined, ")", /* () */0),
+                                    }, undefined, ")", undefined),
                                 /* [] */0
                               ]
                             ]
@@ -397,76 +395,75 @@ function vizAExpOp(param, inputs) {
         
       }
       return Pervasives.failwith("op App expected input arity 2, but got " + String(List.length(inputs)));
-    } else {
-      if (inputs) {
-        var match$1 = inputs[1];
-        if (match$1 && !match$1[1]) {
-          return TheiaExtensions$ReasonReactExamples.hSeq(undefined, {
-                      flowNodeType: /* Dummy */0,
-                      uid: uid,
-                      rootPath: /* [] */0
-                    }, 2, /* :: */[
-                      Theia$Sidewinder.str(undefined, {
-                            flowNodeType: /* Leaf */1,
-                            uid: uid,
-                            rootPath: /* :: */[
-                              0,
-                              /* [] */0
-                            ]
-                          }, undefined, "(", /* () */0),
+    }
+    if (inputs) {
+      var match$1 = inputs[1];
+      if (match$1 && !match$1[1]) {
+        return TheiaExtensions$ReasonReactExamples.hSeq(undefined, {
+                    flowNodeType: /* Dummy */0,
+                    uid: uid,
+                    rootPath: /* [] */0
+                  }, 2, /* :: */[
+                    Theia$Sidewinder.str(undefined, {
+                          flowNodeType: /* Leaf */1,
+                          uid: uid,
+                          rootPath: /* :: */[
+                            0,
+                            /* [] */0
+                          ]
+                        }, undefined, "(", undefined),
+                    /* :: */[
+                      inputs[0],
                       /* :: */[
-                        inputs[0],
+                        Theia$Sidewinder.str(undefined, {
+                              flowNodeType: /* Leaf */1,
+                              uid: uid,
+                              rootPath: /* :: */[
+                                2,
+                                /* [] */0
+                              ]
+                            }, undefined, ")", undefined),
                         /* :: */[
                           Theia$Sidewinder.str(undefined, {
                                 flowNodeType: /* Leaf */1,
                                 uid: uid,
                                 rootPath: /* :: */[
-                                  2,
+                                  3,
                                   /* [] */0
                                 ]
-                              }, undefined, ")", /* () */0),
+                              }, undefined, "+", undefined),
                           /* :: */[
                             Theia$Sidewinder.str(undefined, {
                                   flowNodeType: /* Leaf */1,
                                   uid: uid,
                                   rootPath: /* :: */[
-                                    3,
+                                    4,
                                     /* [] */0
                                   ]
-                                }, undefined, "+", /* () */0),
+                                }, undefined, "(", undefined),
                             /* :: */[
-                              Theia$Sidewinder.str(undefined, {
-                                    flowNodeType: /* Leaf */1,
-                                    uid: uid,
-                                    rootPath: /* :: */[
-                                      4,
-                                      /* [] */0
-                                    ]
-                                  }, undefined, "(", /* () */0),
+                              match$1[0],
                               /* :: */[
-                                match$1[0],
-                                /* :: */[
-                                  Theia$Sidewinder.str(undefined, {
-                                        flowNodeType: /* Leaf */1,
-                                        uid: uid,
-                                        rootPath: /* :: */[
-                                          6,
-                                          /* [] */0
-                                        ]
-                                      }, undefined, ")", /* () */0),
-                                  /* [] */0
-                                ]
+                                Theia$Sidewinder.str(undefined, {
+                                      flowNodeType: /* Leaf */1,
+                                      uid: uid,
+                                      rootPath: /* :: */[
+                                        6,
+                                        /* [] */0
+                                      ]
+                                    }, undefined, ")", undefined),
+                                /* [] */0
                               ]
                             ]
                           ]
                         ]
                       ]
-                    ]);
-        }
-        
+                    ]
+                  ]);
       }
-      return Pervasives.failwith("op Add expected input arity 2, but got " + String(List.length(inputs)));
+      
     }
+    return Pervasives.failwith("op Add expected input arity 2, but got " + String(List.length(inputs)));
   } else {
     switch (aexp_op.tag | 0) {
       case /* Var */0 :
@@ -477,7 +474,7 @@ function vizAExpOp(param, inputs) {
                         flowNodeType: /* Leaf */1,
                         uid: uid,
                         rootPath: /* [] */0
-                      }, undefined, vizVid(aexp_op[0]), /* [] */0, /* () */0);
+                      }, undefined, vizVid(aexp_op[0]), /* [] */0, undefined);
           }
       case /* Lam */1 :
           if (inputs) {
@@ -487,7 +484,7 @@ function vizAExpOp(param, inputs) {
                         flowNodeType: /* Leaf */1,
                         uid: uid,
                         rootPath: /* [] */0
-                      }, undefined, vizLambda(aexp_op[0]), /* [] */0, /* () */0);
+                      }, undefined, vizLambda(aexp_op[0]), /* [] */0, undefined);
           }
       case /* Num */2 :
           if (inputs) {
@@ -497,7 +494,7 @@ function vizAExpOp(param, inputs) {
                         flowNodeType: /* Leaf */1,
                         uid: uid,
                         rootPath: /* [] */0
-                      }, undefined, vizInt(aexp_op[0]), /* [] */0, /* () */0);
+                      }, undefined, vizInt(aexp_op[0]), /* [] */0, undefined);
           }
       case /* Bracket */3 :
           if (inputs) {
@@ -508,11 +505,11 @@ function vizAExpOp(param, inputs) {
                         uid: uid,
                         rootPath: /* [] */0
                       }, 2, /* :: */[
-                        Theia$Sidewinder.str(undefined, undefined, undefined, "{", /* () */0),
+                        Theia$Sidewinder.str(undefined, undefined, undefined, "{", undefined),
                         /* :: */[
                           vizZExp(vizOp, aexp_op[0]),
                           /* :: */[
-                            Theia$Sidewinder.str(undefined, undefined, undefined, "}", /* () */0),
+                            Theia$Sidewinder.str(undefined, undefined, undefined, "}", undefined),
                             /* [] */0
                           ]
                         ]
@@ -536,19 +533,19 @@ function vizFocus(param) {
                     flowNodeType: /* Leaf */1,
                     uid: uid,
                     rootPath: /* [] */0
-                  }, undefined, vizZExp(vizOp, focus[0]), /* [] */0, /* () */0);
+                  }, undefined, vizZExp(vizOp, focus[0]), /* [] */0, undefined);
     case /* ZPreVal */1 :
         return Theia$Sidewinder.noop(uid, {
                     flowNodeType: /* Leaf */1,
                     uid: uid,
                     rootPath: /* [] */0
-                  }, undefined, vizZPreVal(vizOp, focus[0]), /* [] */0, /* () */0);
+                  }, undefined, vizZPreVal(vizOp, focus[0]), /* [] */0, undefined);
     case /* Value */2 :
         return Theia$Sidewinder.noop(uid, {
                     flowNodeType: /* Leaf */1,
                     uid: uid,
                     rootPath: /* [] */0
-                  }, undefined, vizValue(focus[0]), /* [] */0, /* () */0);
+                  }, undefined, vizValue(focus[0]), /* [] */0, undefined);
     
   }
 }
@@ -564,7 +561,7 @@ function vizZipper(param) {
               flowNodeType: /* Leaf */1,
               uid: uid,
               rootPath: /* [] */0
-            }, undefined, vizCtxts(match.ctxts, vizFocus(match.focus)), /* [] */0, /* () */0);
+            }, undefined, vizCtxts(match.ctxts, vizFocus(match.focus)), /* [] */0, undefined);
 }
 
 function vizConfig(param) {
@@ -572,7 +569,7 @@ function vizConfig(param) {
   var match$1 = match[1];
   var uid = match[0];
   return TheiaExtensions$ReasonReactExamples.vSeq(undefined, undefined, 30, /* :: */[
-              Theia$Sidewinder.str(undefined, undefined, undefined, "rule: " + param[0][0], /* () */0),
+              Theia$Sidewinder.str(undefined, undefined, undefined, "rule: " + param[0][0], undefined),
               /* :: */[
                 TheiaExtensions$ReasonReactExamples.hSeq(uid, {
                       flowNodeType: /* Leaf */1,

@@ -8,39 +8,37 @@ var Caml_option = require("bs-platform/lib/js/caml_option.js");
 function lookup(x, _env) {
   while(true) {
     var env = _env;
-    if (env) {
-      var match = env[0];
-      if (x === match.vid) {
-        return match.value;
-      } else {
-        _env = env[1];
-        continue ;
-      }
-    } else {
+    if (!env) {
       return ;
     }
+    var match = env[0];
+    if (x === match.vid) {
+      return match.value;
+    }
+    _env = env[1];
+    continue ;
   };
 }
 
 function step(c) {
   var match = c.zipper;
-  var match$1 = match.focus;
-  switch (match$1.tag | 0) {
+  var v = match.focus;
+  switch (v.tag | 0) {
     case /* ZExp */0 :
-        var match$2 = match$1[0];
-        var op = match$2.op;
+        var match$1 = v[0];
+        var op = match$1.op;
         if (op.tag) {
-          var match$3 = op[0];
-          if (typeof match$3 !== "number") {
-            switch (match$3.tag | 0) {
+          var x = op[0];
+          if (typeof x !== "number") {
+            switch (x.tag | 0) {
               case /* Var */0 :
-                  if (!match$2.args) {
+                  if (!match$1.args) {
                     var env = c.env;
-                    var match$4 = lookup(match$3[0], env);
-                    if (match$4 !== undefined) {
+                    var v$1 = lookup(x[0], env);
+                    if (v$1 !== undefined) {
                       return {
                               zipper: {
-                                focus: /* Value */Block.__(2, [match$4]),
+                                focus: /* Value */Block.__(2, [v$1]),
                                 ctxts: match.ctxts
                               },
                               env: env,
@@ -52,12 +50,12 @@ function step(c) {
                   }
                   break;
               case /* Lam */1 :
-                  if (!match$2.args) {
+                  if (!match$1.args) {
                     var env$1 = c.env;
                     return {
                             zipper: {
                               focus: /* Value */Block.__(2, [/* Clo */Block.__(1, [
-                                      match$3[0],
+                                      x[0],
                                       env$1
                                     ])]),
                               ctxts: match.ctxts
@@ -73,15 +71,15 @@ function step(c) {
           }
           
         }
-        var match$5 = match$2.args;
-        if (match$5) {
+        var match$2 = match$1.args;
+        if (match$2) {
           return {
                   zipper: {
-                    focus: /* ZExp */Block.__(0, [match$5[0]]),
+                    focus: /* ZExp */Block.__(0, [match$2[0]]),
                     ctxts: /* :: */[
                       {
                         op: op,
-                        args: match$5[1],
+                        args: match$2[1],
                         values: /* [] */0
                       },
                       match.ctxts
@@ -104,91 +102,89 @@ function step(c) {
                 };
         }
     case /* ZPreVal */1 :
-        var match$6 = match$1[0];
-        var match$7 = match$6.op;
-        if (match$7.tag) {
-          var match$8 = match$7[0];
-          if (typeof match$8 === "number") {
-            if (match$8 === /* App */0) {
-              var match$9 = match$6.values;
-              if (match$9) {
-                var match$10 = match$9[0];
-                if (match$10.tag) {
-                  var match$11 = match$9[1];
-                  if (match$11 && !match$11[1]) {
-                    var match$12 = match$10[0];
-                    return {
-                            zipper: {
-                              focus: /* ZExp */Block.__(0, [match$12.exp]),
-                              ctxts: /* [] */0
-                            },
-                            env: /* :: */[
-                              {
-                                vid: match$12.vid,
-                                value: match$11[0]
-                              },
-                              match$10[1]
-                            ],
-                            stack: /* :: */[
-                              {
-                                ctxts: match.ctxts,
-                                env: c.env
-                              },
-                              c.stack
-                            ]
-                          };
-                  } else {
-                    return ;
-                  }
-                } else {
-                  return ;
-                }
-              } else {
+        var match$3 = v[0];
+        var match$4 = match$3.op;
+        if (match$4.tag) {
+          var n = match$4[0];
+          if (typeof n === "number") {
+            if (n === /* App */0) {
+              var match$5 = match$3.values;
+              if (!match$5) {
                 return ;
               }
-            } else {
-              var match$13 = match$6.values;
-              if (match$13) {
-                var match$14 = match$13[0];
-                if (match$14.tag) {
-                  return ;
-                } else {
-                  var match$15 = match$13[1];
-                  if (match$15) {
-                    var match$16 = match$15[0];
-                    if (match$16.tag || match$15[1]) {
-                      return ;
-                    } else {
-                      var v3 = match$14[0] + match$16[0] | 0;
-                      return {
-                              zipper: {
-                                focus: /* Value */Block.__(2, [/* VNum */Block.__(0, [v3])]),
-                                ctxts: match.ctxts
-                              },
-                              env: c.env,
-                              stack: c.stack
-                            };
-                    }
-                  } else {
-                    return ;
-                  }
-                }
-              } else {
+              var match$6 = match$5[0];
+              if (!match$6.tag) {
                 return ;
               }
+              var match$7 = match$5[1];
+              if (!match$7) {
+                return ;
+              }
+              if (match$7[1]) {
+                return ;
+              }
+              var match$8 = match$6[0];
+              return {
+                      zipper: {
+                        focus: /* ZExp */Block.__(0, [match$8.exp]),
+                        ctxts: /* [] */0
+                      },
+                      env: /* :: */[
+                        {
+                          vid: match$8.vid,
+                          value: match$7[0]
+                        },
+                        match$6[1]
+                      ],
+                      stack: /* :: */[
+                        {
+                          ctxts: match.ctxts,
+                          env: c.env
+                        },
+                        c.stack
+                      ]
+                    };
             }
+            var match$9 = match$3.values;
+            if (!match$9) {
+              return ;
+            }
+            var v1 = match$9[0];
+            if (v1.tag) {
+              return ;
+            }
+            var match$10 = match$9[1];
+            if (!match$10) {
+              return ;
+            }
+            var v2 = match$10[0];
+            if (v2.tag) {
+              return ;
+            }
+            if (match$10[1]) {
+              return ;
+            }
+            var v3 = v1[0] + v2[0] | 0;
+            return {
+                    zipper: {
+                      focus: /* Value */Block.__(2, [/* VNum */Block.__(0, [v3])]),
+                      ctxts: match.ctxts
+                    },
+                    env: c.env,
+                    stack: c.stack
+                  };
           } else {
-            switch (match$8.tag | 0) {
+            switch (n.tag | 0) {
               case /* Var */0 :
               case /* Lam */1 :
                   return ;
               case /* Num */2 :
-                  if (match$6.values) {
+                  if (match$3.values) {
                     return ;
                   } else {
                     return {
                             zipper: {
-                              focus: /* Value */Block.__(2, [/* VNum */Block.__(0, [match$8[0]])]),
+                              focus: /* Value */Block.__(2, [/* VNum */Block.__(0, [n[0]])]),
                               ctxts: match.ctxts
                             },
                             env: c.env,
@@ -196,84 +192,84 @@ function step(c) {
                           };
                   }
               case /* Bracket */3 :
-                  if (match$6.values) {
+                  if (match$3.values) {
                     return ;
-                  } else {
-                    var env$2 = c.env;
-                    return {
-                            zipper: {
-                              focus: /* ZExp */Block.__(0, [match$8[0]]),
-                              ctxts: /* [] */0
-                            },
-                            env: env$2,
-                            stack: /* :: */[
-                              {
-                                ctxts: match.ctxts,
-                                env: env$2
-                              },
-                              c.stack
-                            ]
-                          };
                   }
+                  var env$2 = c.env;
+                  return {
+                          zipper: {
+                            focus: /* ZExp */Block.__(0, [n[0]]),
+                            ctxts: /* [] */0
+                          },
+                          env: env$2,
+                          stack: /* :: */[
+                            {
+                              ctxts: match.ctxts,
+                              env: env$2
+                            },
+                            c.stack
+                          ]
+                        };
               
             }
           }
         } else {
-          var match$17 = match$7[0];
-          if (match$17.tag) {
-            var match$18 = match$6.values;
-            if (match$18 && !match$18[1]) {
+          var ae = match$4[0];
+          if (!ae.tag) {
+            if (match$3.values) {
+              return ;
+            } else {
               return {
                       zipper: {
-                        focus: /* ZExp */Block.__(0, [match$17[1]]),
+                        focus: /* ZExp */Block.__(0, [ae[0]]),
                         ctxts: match.ctxts
                       },
-                      env: /* :: */[
-                        {
-                          vid: match$17[0],
-                          value: match$18[0]
-                        },
-                        c.env
-                      ],
+                      env: c.env,
                       stack: c.stack
                     };
-            } else {
-              return ;
             }
-          } else if (match$6.values) {
-            return ;
-          } else {
+          }
+          var match$11 = match$3.values;
+          if (match$11 && !match$11[1]) {
             return {
                     zipper: {
-                      focus: /* ZExp */Block.__(0, [match$17[0]]),
+                      focus: /* ZExp */Block.__(0, [ae[1]]),
                       ctxts: match.ctxts
                     },
-                    env: c.env,
+                    env: /* :: */[
+                      {
+                        vid: ae[0],
+                        value: match$11[0]
+                      },
+                      c.env
+                    ],
                     stack: c.stack
                   };
+          } else {
+            return ;
           }
         }
     case /* Value */2 :
-        var match$19 = match.ctxts;
-        var v = match$1[0];
-        if (match$19) {
-          var match$20 = match$19[0];
-          var match$21 = match$20.args;
-          var op$1 = match$20.op;
-          if (match$21) {
+        var match$12 = match.ctxts;
+        var v$2 = v[0];
+        if (match$12) {
+          var match$13 = match$12[0];
+          var match$14 = match$13.args;
+          var op$1 = match$13.op;
+          if (match$14) {
             return {
                     zipper: {
-                      focus: /* ZExp */Block.__(0, [match$21[0]]),
+                      focus: /* ZExp */Block.__(0, [match$14[0]]),
                       ctxts: /* :: */[
                         {
                           op: op$1,
-                          args: match$21[1],
+                          args: match$14[1],
                           values: /* :: */[
-                            v,
-                            match$20.values
+                            v$2,
+                            match$13.values
                           ]
                         },
-                        match$19[1]
+                        match$12[1]
                       ]
                     },
                     env: c.env,
@@ -285,32 +281,30 @@ function step(c) {
                       focus: /* ZPreVal */Block.__(1, [{
                             op: op$1,
                             values: List.rev(/* :: */[
-                                  v,
-                                  match$20.values
+                                  v$2,
+                                  match$13.values
                                 ])
                           }]),
-                      ctxts: match$19[1]
+                      ctxts: match$12[1]
                     },
                     env: c.env,
                     stack: c.stack
                   };
           }
-        } else {
-          var match$22 = c.stack;
-          if (match$22) {
-            var match$23 = match$22[0];
-            return {
-                    zipper: {
-                      focus: /* Value */Block.__(2, [v]),
-                      ctxts: match$23.ctxts
-                    },
-                    env: match$23.env,
-                    stack: match$22[1]
-                  };
-          } else {
-            return ;
-          }
         }
+        var match$15 = c.stack;
+        if (!match$15) {
+          return ;
+        }
+        var match$16 = match$15[0];
+        return {
+                zipper: {
+                  focus: /* Value */Block.__(2, [v$2]),
+                  ctxts: match$16.ctxts
+                },
+                env: match$16.env,
+                stack: match$15[1]
+              };
     
   }
 }
@@ -426,28 +420,26 @@ function isFinal(c) {
 }
 
 function iterateMaybeAux(f, x) {
-  if (x !== undefined) {
-    var x$1 = Caml_option.valFromOption(x);
-    var fx = Curry._1(f, x$1);
-    return /* :: */[
-            x$1,
-            iterateMaybeAux(f, fx)
-          ];
-  } else {
+  if (x === undefined) {
     return /* [] */0;
   }
+  var x$1 = Caml_option.valFromOption(x);
+  var fx = Curry._1(f, x$1);
+  return /* :: */[
+          x$1,
+          iterateMaybeAux(f, fx)
+        ];
 }
 
 function takeWhileInclusive(p, l) {
-  if (l) {
-    var x = l[0];
-    return /* :: */[
-            x,
-            Curry._1(p, x) ? takeWhileInclusive(p, l[1]) : /* [] */0
-          ];
-  } else {
+  if (!l) {
     return /* [] */0;
   }
+  var x = l[0];
+  return /* :: */[
+          x,
+          Curry._1(p, x) ? takeWhileInclusive(p, l[1]) : /* [] */0
+        ];
 }
 
 function iterateMaybe(f, x) {

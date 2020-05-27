@@ -7,28 +7,28 @@ var Pervasives = require("bs-platform/lib/js/pervasives.js");
 var Theia$Sidewinder = require("sidewinder/src/Theia.bs.js");
 var Rectangle$Sidewinder = require("sidewinder/src/Rectangle.bs.js");
 
-function hSeq($staropt$star, nodes) {
-  var gap = $staropt$star !== undefined ? $staropt$star : 0;
-  return Theia$Sidewinder.seq(undefined, undefined, undefined, nodes, undefined, gap, /* LeftRight */2, /* () */0);
+function hSeq(gapOpt, nodes) {
+  var gap = gapOpt !== undefined ? gapOpt : 0;
+  return Theia$Sidewinder.seq(undefined, undefined, undefined, nodes, undefined, gap, /* LeftRight */2, undefined);
 }
 
-function vSeq($staropt$star, nodes) {
-  var gap = $staropt$star !== undefined ? $staropt$star : 0;
-  return Theia$Sidewinder.seq(undefined, undefined, undefined, nodes, undefined, gap, /* UpDown */0, /* () */0);
+function vSeq(gapOpt, nodes) {
+  var gap = gapOpt !== undefined ? gapOpt : 0;
+  return Theia$Sidewinder.seq(undefined, undefined, undefined, nodes, undefined, gap, /* UpDown */0, undefined);
 }
 
 function value(name, node) {
   return Theia$Sidewinder.box(undefined, undefined, /* :: */[
               name,
               /* [] */0
-            ], 5, 5, node, /* [] */0, /* () */0);
+            ], 5, 5, node, /* [] */0, undefined);
 }
 
 function cell(name, node) {
   return Theia$Sidewinder.box(undefined, undefined, /* :: */[
               name,
               /* [] */0
-            ], 5, 5, node, /* [] */0, /* () */0);
+            ], 5, 5, node, /* [] */0, undefined);
 }
 
 function split(list, n) {
@@ -39,27 +39,25 @@ function split(list, n) {
     var l = _l;
     var acc = _acc;
     var i = _i;
-    if (l) {
-      if (i === 0) {
-        return /* tuple */[
-                List.rev(acc),
-                l
-              ];
-      } else {
-        _l = l[1];
-        _acc = /* :: */[
-          l[0],
-          acc
-        ];
-        _i = i - 1 | 0;
-        continue ;
-      }
-    } else {
+    if (!l) {
       return /* tuple */[
               List.rev(acc),
               /* [] */0
             ];
     }
+    if (i === 0) {
+      return /* tuple */[
+              List.rev(acc),
+              l
+            ];
+    }
+    _l = l[1];
+    _acc = /* :: */[
+      l[0],
+      acc
+    ];
+    _i = i - 1 | 0;
+    continue ;
   };
 }
 
@@ -86,15 +84,15 @@ function zipper(focus, konts) {
 function vizExpr(e) {
   switch (e.tag | 0) {
     case /* Var */0 :
-        return Theia$Sidewinder.str(undefined, undefined, undefined, e[0], /* () */0);
+        return Theia$Sidewinder.str(undefined, undefined, undefined, e[0], undefined);
     case /* App */1 :
         return hSeq(2, /* :: */[
                     hSeq(undefined, /* :: */[
-                          Theia$Sidewinder.str(undefined, undefined, undefined, "(", /* () */0),
+                          Theia$Sidewinder.str(undefined, undefined, undefined, "(", undefined),
                           /* :: */[
                             vizExpr(e[0]),
                             /* :: */[
-                              Theia$Sidewinder.str(undefined, undefined, undefined, ")", /* () */0),
+                              Theia$Sidewinder.str(undefined, undefined, undefined, ")", undefined),
                               /* [] */0
                             ]
                           ]
@@ -114,7 +112,7 @@ function vizExpr(e) {
 
 function vizValue(v) {
   return value("closure", hSeq(undefined, List.map((function (n) {
-                        return Theia$Sidewinder.box(undefined, undefined, undefined, undefined, undefined, n, /* [] */0, /* () */0);
+                        return Theia$Sidewinder.box(undefined, undefined, undefined, undefined, undefined, n, /* [] */0, undefined);
                       }), /* :: */[
                       vizLambda(v[0]),
                       /* :: */[
@@ -127,15 +125,15 @@ function vizValue(v) {
 function vizEnv(e) {
   return Theia$Sidewinder.table(undefined, undefined, undefined, /* :: */[
               /* :: */[
-                Theia$Sidewinder.str(undefined, undefined, undefined, "Id", /* () */0),
+                Theia$Sidewinder.str(undefined, undefined, undefined, "Id", undefined),
                 /* :: */[
-                  Theia$Sidewinder.str(undefined, undefined, undefined, "Val", /* () */0),
+                  Theia$Sidewinder.str(undefined, undefined, undefined, "Val", undefined),
                   /* [] */0
                 ]
               ],
               List.map((function (param) {
                       return /* :: */[
-                              Theia$Sidewinder.str(undefined, undefined, undefined, param.id, /* () */0),
+                              Theia$Sidewinder.str(undefined, undefined, undefined, param.id, undefined),
                               /* :: */[
                                 vizValue(param.value),
                                 /* [] */0
@@ -158,12 +156,12 @@ function vizEnv(e) {
                             y1: ((Rectangle$Sidewinder.y2(source) + Rectangle$Sidewinder.y1(target)) / 2).toString(),
                             y2: ((Rectangle$Sidewinder.y2(source) + Rectangle$Sidewinder.y1(target)) / 2).toString()
                           });
-              }), 0, 0, /* LeftRight */2, /* UpDown */0, /* () */0);
+              }), 0, 0, /* LeftRight */2, /* UpDown */0, undefined);
 }
 
 function vizLambda(param) {
   return hSeq(undefined, /* :: */[
-              Theia$Sidewinder.str(undefined, undefined, undefined, "\\" + (param.id + "."), /* () */0),
+              Theia$Sidewinder.str(undefined, undefined, undefined, "\\" + (param.id + "."), undefined),
               /* :: */[
                 vizExpr(param.expr),
                 /* [] */0
@@ -184,19 +182,18 @@ function vizCtxt(c) {
     return (function (param) {
         return kont(partial_arg$1, partial_arg, 1, param);
       });
-  } else {
-    var partial_arg_000$1 = vizExpr(c[1]);
-    var partial_arg$2 = /* :: */[
-      partial_arg_000$1,
-      /* [] */0
-    ];
-    var partial_arg$3 = function (eta) {
-      return hSeq(undefined, eta);
-    };
-    return (function (param) {
-        return kont(partial_arg$3, partial_arg$2, 0, param);
-      });
   }
+  var partial_arg_000$1 = vizExpr(c[1]);
+  var partial_arg$2 = /* :: */[
+    partial_arg_000$1,
+    /* [] */0
+  ];
+  var partial_arg$3 = function (eta) {
+    return hSeq(undefined, eta);
+  };
+  return (function (param) {
+      return kont(partial_arg$3, partial_arg$2, 0, param);
+    });
 }
 
 function vizCtxts(param) {
@@ -209,7 +206,7 @@ var hole = Theia$Sidewinder.atom(undefined, undefined, undefined, /* [] */0, Rea
           fill: "red",
           x: "5",
           y: "5"
-        }), Rectangle$Sidewinder.fromPointSize(0, 0, 10, 10), /* () */0);
+        }), Rectangle$Sidewinder.fromPointSize(0, 0, 10, 10), undefined);
 
 function vizFrame(param) {
   return vSeq(undefined, /* :: */[
@@ -225,7 +222,7 @@ function vizStack(fs) {
   if (fs) {
     return vSeq(undefined, List.map(vizFrame, fs));
   } else {
-    return Theia$Sidewinder.str(undefined, undefined, undefined, " ", /* () */0);
+    return Theia$Sidewinder.str(undefined, undefined, undefined, " ", undefined);
   }
 }
 

@@ -17,14 +17,14 @@ function FetchedDogPictures(Props) {
                     Curry._1(setState, (function (_previousState) {
                             return /* LoadedDogs */[jsonResponse.message];
                           }));
-                    return Promise.resolve(/* () */0);
+                    return Promise.resolve(undefined);
                   })).catch((function (_err) {
                   Curry._1(setState, (function (_previousState) {
                           return /* ErrorFetchingDogs */1;
                         }));
-                  return Promise.resolve(/* () */0);
+                  return Promise.resolve(undefined);
                 }));
-          return ;
+          
         }), ([]));
   var tmp;
   if (typeof state === "number") {
@@ -32,12 +32,11 @@ function FetchedDogPictures(Props) {
   } else {
     var dogs = state[0];
     tmp = Belt_Array.mapWithIndex(dogs, (function (i, dog) {
-            var match = i === (dogs.length - 1 | 0);
             var imageStyle = {
               backgroundImage: "url(" + (String(dog) + ")"),
               backgroundPosition: "center",
               height: "120px",
-              marginRight: match ? "0px" : "8px",
+              marginRight: i === (dogs.length - 1 | 0) ? "0px" : "8px",
               width: "100%",
               backgroundSize: "cover",
               borderRadius: "8px",

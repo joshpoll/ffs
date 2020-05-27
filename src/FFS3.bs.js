@@ -5,17 +5,15 @@ var Pervasives = require("bs-platform/lib/js/pervasives.js");
 function lookup(x, _env) {
   while(true) {
     var env = _env;
-    if (env) {
-      var match = env[0];
-      if (x === match.vid) {
-        return match.value;
-      } else {
-        _env = env[1];
-        continue ;
-      }
-    } else {
+    if (!env) {
       return ;
     }
+    var match = env[0];
+    if (x === match.vid) {
+      return match.value;
+    }
+    _env = env[1];
+    continue ;
   };
 }
 
